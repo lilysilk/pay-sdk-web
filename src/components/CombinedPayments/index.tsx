@@ -1,69 +1,29 @@
 import type { FC } from "react";
-import React, {
-  lazy,
-  Suspense,
-  useState,
-  useCallback,
-  useMemo,
-  useEffect,
-} from "react";
-import { ErrorBoundary } from "react-error-boundary";
+import { lazy, useState, useCallback, useMemo } from "react";
+import LazyLoadWrapper, {
+  type ComponentStatus,
+} from "@/components/LazyLoadWrapper";
 
 // 懒加载所有支付组件
-const PCICard = lazy(() => import("../PaymentServiceProviders/PCICard"));
-const Adyen = lazy(() => import("../PaymentServiceProviders/Adyen"));
-const Airwallex = lazy(() => import("../PaymentServiceProviders/Airwallex"));
-const Checkout = lazy(() => import("../PaymentServiceProviders/Checkout"));
-const Klarna = lazy(() => import("../PaymentServiceProviders/Klarna"));
-const Nuvei = lazy(() => import("../PaymentServiceProviders/Nuvei"));
-const Paypal = lazy(() => import("../PaymentServiceProviders/Paypal"));
+const PCICard = lazy(
+  () => import("@/components/PaymentServiceProviders/PCICard")
+);
+const Adyen = lazy(() => import("@/components/PaymentServiceProviders/Adyen"));
+const Airwallex = lazy(
+  () => import("@/components/PaymentServiceProviders/Airwallex")
+);
+const Checkout = lazy(
+  () => import("@/components/PaymentServiceProviders/Checkout")
+);
+const Klarna = lazy(
+  () => import("@/components/PaymentServiceProviders/Klarna")
+);
+const Nuvei = lazy(() => import("@/components/PaymentServiceProviders/Nuvei"));
+const Paypal = lazy(
+  () => import("@/components/PaymentServiceProviders/Paypal")
+);
 
 interface CombinedPaymentsProps {}
-
-// 组件状态类型
-type ComponentStatus = "loading" | "success" | "error";
-
-// 支付组件包装器 - 智能状态管理
-const PaymentProviderWrapper: FC<{
-  children: React.ReactNode;
-  name: string;
-  onStatusChange: (name: string, status: ComponentStatus) => void;
-}> = ({ children, name, onStatusChange }) => {
-  // 初始化为loading状态
-  useEffect(() => {
-    onStatusChange(name, "loading");
-  }, [name, onStatusChange]);
-
-  return (
-    <ErrorBoundary
-      fallback={null} // 静默失败，什么都不显示
-      onError={(error) => {
-        console.error(`${name} failed to load:`, error);
-        onStatusChange(name, "error");
-      }}
-    >
-      <Suspense fallback={null}>
-        <ComponentSuccessTracker name={name} onSuccess={onStatusChange}>
-          {children}
-        </ComponentSuccessTracker>
-      </Suspense>
-    </ErrorBoundary>
-  );
-};
-
-// 成功状态追踪器
-const ComponentSuccessTracker: FC<{
-  children: React.ReactNode;
-  name: string;
-  onSuccess: (name: string, status: ComponentStatus) => void;
-}> = ({ children, name, onSuccess }) => {
-  // 组件渲染成功时调用
-  useEffect(() => {
-    onSuccess(name, "success");
-  }, [name, onSuccess]);
-
-  return <>{children}</>;
-};
 
 const CombinedPayments: FC<CombinedPaymentsProps> = ({}) => {
   // 组件状态管理
@@ -137,42 +97,33 @@ const CombinedPayments: FC<CombinedPaymentsProps> = ({}) => {
 
   return (
     <div>
-      <PaymentProviderWrapper
-        name="PCICard"
-        onStatusChange={handleStatusChange}
-      >
+      <LazyLoadWrapper name="PCICard" onStatusChange={handleStatusChange}>
         <PCICard />
-      </PaymentProviderWrapper>
+      </LazyLoadWrapper>
 
-      <PaymentProviderWrapper name="Adyen" onStatusChange={handleStatusChange}>
+      <LazyLoadWrapper name="Adyen" onStatusChange={handleStatusChange}>
         <Adyen />
-      </PaymentProviderWrapper>
+      </LazyLoadWrapper>
 
-      <PaymentProviderWrapper
-        name="Airwallex"
-        onStatusChange={handleStatusChange}
-      >
+      <LazyLoadWrapper name="Airwallex" onStatusChange={handleStatusChange}>
         <Airwallex />
-      </PaymentProviderWrapper>
+      </LazyLoadWrapper>
 
-      <PaymentProviderWrapper
-        name="Checkout"
-        onStatusChange={handleStatusChange}
-      >
+      <LazyLoadWrapper name="Checkout" onStatusChange={handleStatusChange}>
         <Checkout />
-      </PaymentProviderWrapper>
+      </LazyLoadWrapper>
 
-      <PaymentProviderWrapper name="Klarna" onStatusChange={handleStatusChange}>
+      <LazyLoadWrapper name="Klarna" onStatusChange={handleStatusChange}>
         <Klarna />
-      </PaymentProviderWrapper>
+      </LazyLoadWrapper>
 
-      <PaymentProviderWrapper name="Nuvei" onStatusChange={handleStatusChange}>
+      <LazyLoadWrapper name="Nuvei" onStatusChange={handleStatusChange}>
         <Nuvei />
-      </PaymentProviderWrapper>
+      </LazyLoadWrapper>
 
-      <PaymentProviderWrapper name="Paypal" onStatusChange={handleStatusChange}>
+      <LazyLoadWrapper name="Paypal" onStatusChange={handleStatusChange}>
         <Paypal />
-      </PaymentProviderWrapper>
+      </LazyLoadWrapper>
     </div>
   );
 };

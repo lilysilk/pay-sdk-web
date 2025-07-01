@@ -16,7 +16,10 @@
     "noEmit": true,
     "jsx": "react-jsx",
     "sourceMap": true,
-    "importHelpers": true // 减少重复的helper代码
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["src/*"]
+    }
   },
   "include": ["src/**/*"],
   "exclude": ["node_modules", "dist"]

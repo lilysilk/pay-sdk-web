@@ -36,6 +36,8 @@
     "@airwallex/components-sdk": "^1.21.0",
     "@checkout.com/checkout-web-components": "^1.0.0",
     "@paypal/react-paypal-js": "^8.8.3",
+    "@tanstack/react-query": "^5.81.5",
+    "ky": "^1.8.1",
     "react-error-boundary": "^6.0.0"
   }
 }

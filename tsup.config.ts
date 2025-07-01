@@ -13,6 +13,10 @@ export default defineConfig({
   esbuildOptions(options) {
     options.jsx = "automatic";
     options.jsxImportSource = "react";
+    // 配置路径别名
+    options.alias = {
+      "@": "./src",
+    };
   },
   outDir: "dist",
   target: "es2018",
