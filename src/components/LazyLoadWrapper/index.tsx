@@ -1,6 +1,7 @@
 import type { FC } from "react";
 import React, { Suspense, useEffect } from "react";
 import { ErrorBoundary } from "react-error-boundary";
+import { useMemoizedFn } from "@/hooks";
 
 // 组件状态类型
 export type ComponentStatus = "loading" | "success" | "error";
@@ -11,10 +12,12 @@ const ComponentSuccessTracker: FC<{
   name: string;
   onSuccess: (name: string, status: ComponentStatus) => void;
 }> = ({ children, name, onSuccess }) => {
+  const handleOnSuccess = useMemoizedFn(onSuccess);
+
   // 组件渲染成功时调用
   useEffect(() => {
-    onSuccess(name, "success");
-  }, [name, onSuccess]);
+    handleOnSuccess(name, "success");
+  }, [name]);
 
   return children;
 };
@@ -25,10 +28,11 @@ const LazyLoadWrapper: FC<{
   name: string;
   onStatusChange: (name: string, status: ComponentStatus) => void;
 }> = ({ children, name, onStatusChange }) => {
+  const handleStatusChange = useMemoizedFn(onStatusChange);
   // 初始化为loading状态
   useEffect(() => {
-    onStatusChange(name, "loading");
-  }, [name, onStatusChange]);
+    handleStatusChange(name, "loading");
+  }, [name]);
 
   return (
     <ErrorBoundary

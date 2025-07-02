@@ -12,7 +12,12 @@
     "build": "tsup",
     "dev": "tsup --watch",
     "clean": "rm -rf dist",
-    "type-check": "tsc --noEmit"
+    "type-check": "tsc --noEmit",
+    "example:install": "cd example && yarn install --force",
+    "example:dev": "cd example && yarn dev",
+    "example:build": "cd example && yarn build",
+    "dev:all": "concurrently \"yarn dev\" \"yarn example:dev\"",
+    "refresh:example": "yarn build && cd example && rm -rf node_modules && yarn install"
   },
   "keywords": [
     "payment",
@@ -24,6 +29,7 @@
   "devDependencies": {
     "@types/react": "^18.0.0",
     "@types/react-dom": "^18.0.0",
+    "concurrently": "^8.2.2",
     "tsup": "^8.0.0",
     "typescript": "^5.0.0"
   },
@@ -37,6 +43,7 @@
     "@checkout.com/checkout-web-components": "^1.0.0",
     "@paypal/react-paypal-js": "^8.8.3",
     "@tanstack/react-query": "^5.81.5",
+    "jotai": "^2.12.5",
     "ky": "^1.8.1",
     "react-error-boundary": "^6.0.0"
   }
