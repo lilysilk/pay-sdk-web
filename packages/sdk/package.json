@@ -1,0 +1,44 @@
+{
+  "name": "lilysilk-pay-sdk-web",
+  "version": "0.0.1",
+  "description": "Lilysilk Pay SDK for Web",
+  "main": "dist/index.js",
+  "module": "dist/index.mjs",
+  "types": "dist/index.d.ts",
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsup",
+    "dev": "tsup --watch",
+    "clean": "rm -rf dist",
+    "type-check": "tsc --noEmit"
+  },
+  "keywords": [
+    "payment",
+    "sdk",
+    "lilysilk"
+  ],
+  "author": "",
+  "license": "MIT",
+  "devDependencies": {
+    "@types/react": "^18.0.0",
+    "@types/react-dom": "^18.0.0",
+    "tsup": "^8.0.0",
+    "typescript": "^5.0.0"
+  },
+  "peerDependencies": {
+    "react": ">=18.2.0",
+    "react-dom": ">=18.2.0"
+  },
+  "dependencies": {
+    "@adyen/adyen-web": "^6.18.0",
+    "@airwallex/components-sdk": "^1.21.0",
+    "@checkout.com/checkout-web-components": "^1.0.0",
+    "@paypal/react-paypal-js": "^8.8.3",
+    "@tanstack/react-query": "^5.81.5",
+    "jotai": "^2.12.5",
+    "ky": "^1.8.1",
+    "react-error-boundary": "^6.0.0"
+  }
+}

@@ -1,25 +1,21 @@
 {
-  "name": "lilysilk-pay-sdk-web",
-  "version": "0.0.1",
-  "description": "Lilysilk Pay SDK for Web",
-  "main": "dist/index.js",
-  "module": "dist/index.mjs",
-  "types": "dist/index.d.ts",
-  "files": [
-    "dist"
-  ],
+  "name": "@lilysilk/monorepo",
+  "version": "1.0.0",
+  "description": "Lilysilk Pay SDK Monorepo",
+  "private": true,
   "scripts": {
-    "build": "tsup",
-    "dev": "tsup --watch",
-    "clean": "rm -rf dist",
-    "type-check": "tsc --noEmit",
-    "example:install": "cd example && yarn install --force",
-    "example:dev": "cd example && yarn dev",
-    "example:build": "cd example && yarn build",
-    "dev:all": "concurrently \"yarn dev\" \"yarn example:dev\"",
-    "refresh:example": "yarn build && cd example && rm -rf node_modules && yarn install"
+    "build": "pnpm -r build",
+    "dev": "pnpm -r --parallel dev",
+    "clean": "pnpm -r clean",
+    "type-check": "pnpm -r type-check",
+    "sdk:build": "pnpm --filter lilysilk-pay-sdk-web build",
+    "sdk:dev": "pnpm --filter lilysilk-pay-sdk-web dev",
+    "example:dev": "pnpm --filter @lilysilk/example dev",
+    "example:build": "pnpm --filter @lilysilk/example build",
+    "dev:all": "pnpm --parallel --filter lilysilk-pay-sdk-web --filter @lilysilk/example dev"
   },
   "keywords": [
+    "monorepo",
     "payment",
     "sdk",
     "lilysilk"
@@ -27,24 +23,6 @@
   "author": "",
   "license": "MIT",
   "devDependencies": {
-    "@types/react": "^18.0.0",
-    "@types/react-dom": "^18.0.0",
-    "concurrently": "^8.2.2",
-    "tsup": "^8.0.0",
     "typescript": "^5.0.0"
-  },
-  "peerDependencies": {
-    "react": ">=18.2.0",
-    "react-dom": ">=18.2.0"
-  },
-  "dependencies": {
-    "@adyen/adyen-web": "^6.18.0",
-    "@airwallex/components-sdk": "^1.21.0",
-    "@checkout.com/checkout-web-components": "^1.0.0",
-    "@paypal/react-paypal-js": "^8.8.3",
-    "@tanstack/react-query": "^5.81.5",
-    "jotai": "^2.12.5",
-    "ky": "^1.8.1",
-    "react-error-boundary": "^6.0.0"
   }
 }
