@@ -8,7 +8,8 @@
     "outDir": "dist",
     "rootDir": "src",
     "incremental": false,
-    "composite": false
+    "composite": false,
+    "jsxImportSource": "@emotion/react"
   },
   "include": ["src/**/*"],
   "exclude": ["dist", "node_modules"]
