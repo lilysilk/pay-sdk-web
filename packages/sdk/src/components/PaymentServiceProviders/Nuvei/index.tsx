@@ -1,12 +1,14 @@
 import type { FC } from "react";
-import { Accordion } from "@/components/Accordion";
+import PaymentMethodCard from "@/components/PaymentMethodCard";
 
 interface NuveiProps {}
 
 const Nuvei: FC<NuveiProps> = ({}) => {
   return (
     <div>
-      <Accordion id="nuvei" />
+      <PaymentMethodCard id="nuvei">
+        <div>1</div>
+      </PaymentMethodCard>
     </div>
   );
 };

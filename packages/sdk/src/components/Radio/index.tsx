@@ -77,7 +77,7 @@ const labelStyles = css({
 
 const inputStyles = css({
   // 隐藏原生input但保持功能性
-  opacity: 0,
+  opacity: 0.001,
   position: "absolute",
   zIndex: -1,
   width: "100%",

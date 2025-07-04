@@ -1,12 +1,14 @@
 import type { FC } from "react";
-import { Accordion } from "@/components/Accordion";
+import PaymentMethodCard from "@/components/PaymentMethodCard";
 
 interface AirwallexProps {}
 
 const Airwallex: FC<AirwallexProps> = ({}) => {
   return (
     <div>
-      <Accordion id="airwallex" />
+      <PaymentMethodCard id="airwallex">
+        <div>1</div>
+      </PaymentMethodCard>
     </div>
   );
 };

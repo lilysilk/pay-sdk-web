@@ -1,16 +1,15 @@
 import type { FC, PropsWithChildren } from "react";
-import React from "react";
-import { useSetAtom } from "jotai";
+import { useAtomValue, useSetAtom } from "jotai";
 import { css } from "@emotion/react";
-import { paymentMethodAtom } from "@/atom";
+import { paymentMethodAtom, getAccordionIsSelectedAtom } from "@/atom";
+import { useMemoizedFn } from "@/hooks";
 import Radio from "@/components/Radio";
 
-interface AccordionItemProps extends PropsWithChildren {
+interface PaymentMethodCardProps extends PropsWithChildren {
   id: string;
-  logo: React.ReactNode;
-  title: React.ReactNode;
-  isSelected: boolean;
-  onSelect: (id: string) => void;
+  logo?: React.ReactNode;
+  title?: React.ReactNode;
+  onSelect?: (id: string) => void;
 }
 
 const containerStyles = css({
@@ -57,26 +56,31 @@ const contentStyles = css({
   },
 });
 
-const AccordionItem: FC<AccordionItemProps> = ({
+const PaymentMethodCard: FC<PaymentMethodCardProps> = ({
   id,
+  children,
   logo,
   title,
-  children,
-  isSelected,
   onSelect,
 }) => {
+  const isSelected = useAtomValue(getAccordionIsSelectedAtom(id));
   const setPaymentMethod = useSetAtom(paymentMethodAtom);
 
+  const handleClick = useMemoizedFn(() => {
+    setPaymentMethod(id);
+    onSelect?.(id);
+  });
+
   return (
-    <div css={containerStyles} onClick={() => setPaymentMethod(id)}>
-      <div css={headerStyles}>
+    <div css={containerStyles}>
+      <div css={headerStyles} onClick={handleClick}>
         <div css={headerContentStyles}>
           <Radio
             name="payment-method"
             checked={isSelected}
             css={{ flex: "none" }}
           />
-          <div css={titleStyles}>{title}</div>
+          <div css={titleStyles}>{id}</div>
         </div>
       </div>
       {isSelected && <div css={contentStyles}>{children}</div>}
@@ -84,4 +88,4 @@ const AccordionItem: FC<AccordionItemProps> = ({
   );
 };
 
-export default AccordionItem;
+export default PaymentMethodCard;

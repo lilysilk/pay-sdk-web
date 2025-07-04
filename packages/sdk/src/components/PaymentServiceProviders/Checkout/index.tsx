@@ -1,12 +1,14 @@
 import type { FC } from "react";
-import { Accordion } from "@/components/Accordion";
+import PaymentMethodCard from "@/components/PaymentMethodCard";
 
 interface CheckoutProps {}
 
 const Checkout: FC<CheckoutProps> = ({}) => {
   return (
     <div>
-      <Accordion id="checkout" />
+      <PaymentMethodCard id="checkout">
+        <div>1</div>
+      </PaymentMethodCard>
     </div>
   );
 };

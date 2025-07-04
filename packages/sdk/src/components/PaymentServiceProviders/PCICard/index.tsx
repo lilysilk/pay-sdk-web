@@ -1,12 +1,14 @@
 import type { FC } from "react";
-import { Accordion } from "@/components/Accordion";
+import PaymentMethodCard from "@/components/PaymentMethodCard";
 
 interface PCICardProps {}
 
 const PCICard: FC<PCICardProps> = ({}) => {
   return (
     <div>
-      <Accordion id="pcicard" />
+      <PaymentMethodCard id="pcicard">
+        <div>1</div>
+      </PaymentMethodCard>
     </div>
   );
 };
