@@ -1,5 +1,8 @@
 import type { FC } from "react";
 import { lazy, useState, useCallback, useMemo } from "react";
+import { useMutation } from "@tanstack/react-query";
+import { useMemoizedFn } from "@/hooks";
+import { confirmPayment } from "@/api";
 import LazyLoadWrapper, {
   type ComponentStatus,
 } from "@/components/LazyLoadWrapper";
@@ -23,9 +26,21 @@ const Paypal = lazy(
   () => import("@/components/PaymentServiceProviders/Paypal")
 );
 
-interface CombinedPaymentsProps {}
+interface CombinedPaymentsProps {
+  paymentMethodsConfig: any;
+  onConfirm: (payment: any) => void;
+  onPaymentMethodSelected?: (paymentMethod: string) => void;
+  onError?: (error: Error) => void;
+  onSubmit?: (orderId: string, paymentMethod: string) => void;
+}
 
-const CombinedPayments: FC<CombinedPaymentsProps> = ({}) => {
+const CombinedPayments: FC<CombinedPaymentsProps> = ({
+  paymentMethodsConfig,
+  onConfirm,
+  onPaymentMethodSelected,
+  onError,
+  onSubmit,
+}) => {
   // 组件状态管理
   const [componentStates, setComponentStates] = useState<
     Record<string, ComponentStatus>
@@ -52,6 +67,24 @@ const CombinedPayments: FC<CombinedPaymentsProps> = ({}) => {
 
   // 检查是否所有组件都失败了（只有在有组件的情况下）
   const allComponentsFailed = stats.total > 0 && stats.error === stats.total;
+
+  const { mutate: confirmPaymentMutate } = useMutation({
+    mutationFn: async (payment: any) => {
+      const res = await confirmPayment("123");
+      return res;
+    },
+    onSuccess(data) {
+      onConfirm(data);
+    },
+    onError(error) {
+      onError?.(error);
+    },
+  });
+
+  const handleSubmit = useMemoizedFn((payment: any) => {
+    onSubmit?.("123", "123");
+    confirmPaymentMutate(payment);
+  });
 
   // 如果所有组件都失败，显示总的回退UI
   if (allComponentsFailed) {
@@ -98,31 +131,52 @@ const CombinedPayments: FC<CombinedPaymentsProps> = ({}) => {
   return (
     <div>
       <LazyLoadWrapper name="PCICard" onStatusChange={handleStatusChange}>
-        <PCICard />
+        <PCICard
+          onPaymentMethodSelected={onPaymentMethodSelected}
+          onSubmit={handleSubmit}
+        />
       </LazyLoadWrapper>
 
       <LazyLoadWrapper name="Adyen" onStatusChange={handleStatusChange}>
-        <Adyen />
+        <Adyen
+          onPaymentMethodSelected={onPaymentMethodSelected}
+          onSubmit={handleSubmit}
+        />
       </LazyLoadWrapper>
 
       <LazyLoadWrapper name="Airwallex" onStatusChange={handleStatusChange}>
-        <Airwallex />
+        <Airwallex
+          onPaymentMethodSelected={onPaymentMethodSelected}
+          onSubmit={handleSubmit}
+        />
       </LazyLoadWrapper>
 
       <LazyLoadWrapper name="Checkout" onStatusChange={handleStatusChange}>
-        <Checkout />
+        <Checkout
+          onPaymentMethodSelected={onPaymentMethodSelected}
+          onSubmit={handleSubmit}
+        />
       </LazyLoadWrapper>
 
       <LazyLoadWrapper name="Klarna" onStatusChange={handleStatusChange}>
-        <Klarna />
+        <Klarna
+          onPaymentMethodSelected={onPaymentMethodSelected}
+          onSubmit={handleSubmit}
+        />
       </LazyLoadWrapper>
 
       <LazyLoadWrapper name="Nuvei" onStatusChange={handleStatusChange}>
-        <Nuvei />
+        <Nuvei
+          onPaymentMethodSelected={onPaymentMethodSelected}
+          onSubmit={handleSubmit}
+        />
       </LazyLoadWrapper>
 
       <LazyLoadWrapper name="Paypal" onStatusChange={handleStatusChange}>
-        <Paypal />
+        <Paypal
+          onPaymentMethodSelected={onPaymentMethodSelected}
+          onSubmit={handleSubmit}
+        />
       </LazyLoadWrapper>
     </div>
   );

@@ -22,6 +22,7 @@
   "author": "",
   "license": "MIT",
   "devDependencies": {
+    "@types/lodash-es": "^4.17.12",
     "@types/react": "^18.0.0",
     "@types/react-dom": "^18.0.0",
     "tsup": "^8.0.0",
@@ -33,13 +34,14 @@
   },
   "dependencies": {
     "@adyen/adyen-web": "^6.18.0",
-    "@airwallex/components-sdk": "^1.21.0",
+    "@airwallex/components-sdk": "^1.22.0",
     "@checkout.com/checkout-web-components": "^1.0.0",
     "@emotion/react": "^11.13.3",
     "@paypal/react-paypal-js": "^8.8.3",
     "@tanstack/react-query": "^5.81.5",
     "jotai": "^2.12.5",
     "ky": "^1.8.1",
+    "lodash-es": "^4.17.21",
     "react-error-boundary": "^6.0.0"
   }
 }

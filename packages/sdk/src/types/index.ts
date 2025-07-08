@@ -8,3 +8,5 @@ export interface Response<T> {
   errCode?: string;
   i18nErrCode?: string;
 }
+
+export type Environment = "dev" | "beta" | "pre" | "prod";
