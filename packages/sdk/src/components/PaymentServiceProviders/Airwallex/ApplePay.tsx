@@ -22,15 +22,22 @@ export interface AirWallexApplePayConfig {
 interface AirWallexApplePayProps {
   initAirwallexPromise: ReturnType<typeof init>;
   config: AirWallexApplePayConfig;
+  onSubmit?: (payment: any) => void;
+  onCompleted?: (payment: any) => void;
+  onError?: (error: Error) => void;
 }
 
 const AirWallexApplePay: FC<AirWallexApplePayProps> = ({
   initAirwallexPromise,
   config,
+  onSubmit,
+  onCompleted,
+  onError,
 }) => {
   const [isReady, setIsReady] = useState<boolean>(false);
   const containerRef = useRef<HTMLDivElement>(null);
   const elementRef = useRef<ElementTypes["applePayButton"]>();
+  const isUnmountedRef = useRef(false);
 
   const initElement = useMemoizedFn(async () => {
     await initAirwallexPromise;
@@ -59,8 +66,10 @@ const AirWallexApplePay: FC<AirWallexApplePayProps> = ({
       },
     });
 
-    element.mount(containerRef.current!);
-    elementRef.current = element;
+    if (!isUnmountedRef.current) {
+      element.mount(containerRef.current!);
+      elementRef.current = element;
+    }
   });
 
   useEffect(() => {
@@ -69,21 +78,33 @@ const AirWallexApplePay: FC<AirWallexApplePayProps> = ({
     const onReady = () => {
       setIsReady(true);
     };
-    const onSuccess = () => {};
-    const onError = () => {};
-    const onClick = () => {};
-    const onCancel = () => {};
+    const handleSuccess = () => {
+      onCompleted?.({});
+    };
+    const handleError = (event: CustomEvent) => {
+      onError?.(new Error(event.detail));
+    };
+    const handleClick = () => {
+      onSubmit?.({});
+    };
+    const handleCancel = () => {};
 
     containerRef.current?.addEventListener("onReady", onReady as EventListener);
     containerRef.current?.addEventListener(
       "onSuccess",
-      onSuccess as EventListener
+      handleSuccess as EventListener
     );
-    containerRef.current?.addEventListener("onError", onError as EventListener);
-    containerRef.current?.addEventListener("onClick", onClick as EventListener);
+    containerRef.current?.addEventListener(
+      "onError",
+      handleError as EventListener
+    );
+    containerRef.current?.addEventListener(
+      "onClick",
+      handleClick as EventListener
+    );
     containerRef.current?.addEventListener(
       "onCancel",
-      onCancel as EventListener
+      handleCancel as EventListener
     );
 
     return () => {
@@ -93,21 +114,21 @@ const AirWallexApplePay: FC<AirWallexApplePayProps> = ({
       );
       containerRef.current?.removeEventListener(
         "onSuccess",
-        onSuccess as EventListener
+        handleSuccess as EventListener
       );
       containerRef.current?.removeEventListener(
         "onError",
-        onError as EventListener
+        handleError as EventListener
       );
       containerRef.current?.removeEventListener(
         "onClick",
-        onClick as EventListener
+        handleClick as EventListener
       );
       containerRef.current?.removeEventListener(
         "onCancel",
-        onCancel as EventListener
+        handleCancel as EventListener
       );
-
+      isUnmountedRef.current = true;
       elementRef.current?.unmount();
       elementRef.current = undefined;
     };

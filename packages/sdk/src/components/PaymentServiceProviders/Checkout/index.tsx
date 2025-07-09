@@ -2,34 +2,68 @@ import { useRef, type FC } from "react";
 import {
   loadCheckoutWebComponents,
   type CheckoutWebComponents,
+  type ComponentNameUnion,
 } from "@checkout.com/checkout-web-components";
-import { useMemoizedFn } from "@/hooks";
+import { ConsultCheckoutSSD, ConsultPaymentMethodSSD } from "@/types";
 import PaymentMethodCard from "@/components/PaymentMethodCard";
+import CheckoutElement from "./Element";
 
 interface CheckoutProps {
+  config: ConsultCheckoutSSD;
   onPaymentMethodSelected?: (paymentMethod: string) => void;
   onSubmit?: (payment: any) => void;
+  onCompleted?: (payment: any) => void;
+  onError?: (error: Error) => void;
 }
 
-const Checkout: FC<CheckoutProps> = ({ onPaymentMethodSelected, onSubmit }) => {
-  const initCheckoutPromiseRef = useRef<Promise<CheckoutWebComponents> | null>(
-    null
-  );
-  if (initCheckoutPromiseRef.current === null) {
-    initCheckoutPromiseRef.current = loadCheckoutWebComponents({
-      paymentSession,
-      publicKey,
+const Checkout: FC<CheckoutProps> = ({
+  config,
+  onPaymentMethodSelected,
+  onSubmit,
+  onCompleted,
+  onError,
+}) => {
+  const initCheckoutPromiseRef = useRef(
+    loadCheckoutWebComponents({
+      paymentSession: config.authMeta,
+      publicKey: config.merchantConfiguration.publicKey,
       environment: "sandbox",
       locale: "en",
-    });
-  }
+    })
+  );
+
+  const renderElement = (method: ConsultPaymentMethodSSD) => {
+    const extraOptions =
+      method.type === "googlepay"
+        ? {
+            buttonType: "fill",
+          }
+        : {};
+
+    return (
+      <CheckoutElement
+        name={method.type as ComponentNameUnion}
+        extraOptions={extraOptions}
+        initCheckoutPromise={initCheckoutPromiseRef.current!}
+        onSubmit={onSubmit}
+        onCompleted={onCompleted}
+        onError={onError}
+      />
+    );
+  };
 
   return (
-    <div>
-      <PaymentMethodCard id="checkout" onSelect={onPaymentMethodSelected}>
-        <div>1</div>
-      </PaymentMethodCard>
-    </div>
+    <>
+      {config.paymentConfiguration.paymentMethods.map((method) => (
+        <PaymentMethodCard
+          id={`checkou-${method.type}`}
+          key={method.type}
+          onSelect={onPaymentMethodSelected}
+        >
+          {renderElement(method)}
+        </PaymentMethodCard>
+      ))}
+    </>
   );
 };
 

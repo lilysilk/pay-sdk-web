@@ -20,15 +20,22 @@ export interface AirWallexGooglePayConfig {
 interface AirWallexGooglePayProps {
   initAirwallexPromise: ReturnType<typeof init>;
   config: AirWallexGooglePayConfig;
+  onSubmit?: (payment: any) => void;
+  onCompleted?: (payment: any) => void;
+  onError?: (error: Error) => void;
 }
 
 const AirWallexGooglePay: FC<AirWallexGooglePayProps> = ({
   initAirwallexPromise,
   config,
+  onSubmit,
+  onCompleted,
+  onError,
 }) => {
   const [isReady, setIsReady] = useState<boolean>(false);
   const containerRef = useRef<HTMLDivElement>(null);
   const elementRef = useRef<ElementTypes["googlePayButton"]>();
+  const isUnmountedRef = useRef(false);
 
   const initElement = useMemoizedFn(async () => {
     await initAirwallexPromise;
@@ -47,55 +54,78 @@ const AirWallexGooglePay: FC<AirWallexGooglePayProps> = ({
       buttonSizeMode: "fill",
     });
 
-    element.mount(containerRef.current!);
-    elementRef.current = element;
+    if (!isUnmountedRef.current) {
+      element.mount(containerRef.current!);
+      elementRef.current = element;
+    }
   });
 
   useEffect(() => {
     initElement();
 
-    const onReady = () => {
+    const handdleReady = () => {
       setIsReady(true);
     };
-    const onSuccess = () => {};
-    const onError = () => {};
-    const onClick = () => {};
-    const onCancel = () => {};
 
-    containerRef.current?.addEventListener("onReady", onReady as EventListener);
+    const handleSuccess = () => {
+      onCompleted?.({});
+    };
+
+    const handleError = (event: CustomEvent) => {
+      onError?.(new Error(event.detail));
+    };
+
+    const handleClick = () => {
+      onSubmit?.({});
+    };
+
+    const handleCancel = () => {
+      // 用来取消loading状态？
+    };
+
+    containerRef.current?.addEventListener(
+      "onReady",
+      handdleReady as EventListener
+    );
     containerRef.current?.addEventListener(
       "onSuccess",
-      onSuccess as EventListener
+      handleSuccess as EventListener
     );
-    containerRef.current?.addEventListener("onError", onError as EventListener);
-    containerRef.current?.addEventListener("onClick", onClick as EventListener);
+    containerRef.current?.addEventListener(
+      "onError",
+      handleError as EventListener
+    );
+    containerRef.current?.addEventListener(
+      "onClick",
+      handleClick as EventListener
+    );
     containerRef.current?.addEventListener(
       "onCancel",
-      onCancel as EventListener
+      handleCancel as EventListener
     );
 
     return () => {
       containerRef.current?.removeEventListener(
         "onReady",
-        onReady as EventListener
+        handdleReady as EventListener
       );
       containerRef.current?.removeEventListener(
         "onSuccess",
-        onSuccess as EventListener
+        handleSuccess as EventListener
       );
       containerRef.current?.removeEventListener(
         "onError",
-        onError as EventListener
+        handleError as EventListener
       );
       containerRef.current?.removeEventListener(
         "onClick",
-        onClick as EventListener
+        handleClick as EventListener
       );
       containerRef.current?.removeEventListener(
         "onCancel",
-        onCancel as EventListener
+        handleCancel as EventListener
       );
-
+      isUnmountedRef.current = true;
       elementRef.current?.unmount();
       elementRef.current = undefined;
     };

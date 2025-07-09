@@ -1,5 +1,12 @@
-import type { FC } from "react";
+import { useRef, type FC } from "react";
 import PaymentMethodCard from "@/components/PaymentMethodCard";
+import { loadExternalScript } from "@/utils";
+
+declare global {
+  interface Window {
+    SafeCharge: any;
+  }
+}
 
 interface NuveiProps {
   onPaymentMethodSelected?: (paymentMethod: string) => void;
@@ -7,12 +14,26 @@ interface NuveiProps {
 }
 
 const Nuvei: FC<NuveiProps> = ({ onPaymentMethodSelected, onSubmit }) => {
+  const initNuveiPromiseRef = useRef(
+    (async () => {
+      await loadExternalScript(
+        "nuvei-sdk",
+        "https://cdn.safecharge.com/safecharge_resources/v1/websdk/safecharge.js"
+      );
+      return window.SafeCharge({
+        env: "test",
+        merchantId: "",
+        merchantSiteId: "",
+      });
+    })()
+  );
+
   return (
-    <div>
+    <>
       <PaymentMethodCard id="nuvei" onSelect={onPaymentMethodSelected}>
         <div>1</div>
       </PaymentMethodCard>
-    </div>
+    </>
   );
 };
 

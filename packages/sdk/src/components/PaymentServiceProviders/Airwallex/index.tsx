@@ -1,20 +1,29 @@
-import { useEffect, type FC } from "react";
-import { init, createElement } from "@airwallex/components-sdk";
+import { type FC } from "react";
+import { init } from "@airwallex/components-sdk";
+import { ConsultAirWallexSSD } from "@/types";
 import PaymentMethodCard from "@/components/PaymentMethodCard";
-import AirWallexDropIn from "./DropIn";
+// import AirWallexDropIn from "./DropIn";
 import AirWallexApplePay from "./ApplePay";
 import AirWallexGooglePay from "./GooglePay";
 
 interface AirwallexProps {
+  countryCode: string;
+  config: ConsultAirWallexSSD;
   onPaymentMethodSelected?: (paymentMethod: string) => void;
   onSubmit?: (payment: any) => void;
+  onCompleted?: (payment: any) => void;
+  onError?: (error: Error) => void;
 }
 
 let initAirwallexPromise: ReturnType<typeof init> | null = null;
 
 const Airwallex: FC<AirwallexProps> = ({
+  countryCode,
+  config,
   onPaymentMethodSelected,
   onSubmit,
+  onCompleted,
+  onError,
 }) => {
   if (initAirwallexPromise === null) {
     initAirwallexPromise = init({
@@ -24,18 +33,16 @@ const Airwallex: FC<AirwallexProps> = ({
     });
   }
 
+  const baseConfig = {
+    intent_id: config.authMeta?.id,
+    client_secret: config.authMeta?.client_secret,
+    currency: config.authMeta?.currency,
+    amount: config.authMeta?.amount,
+    countryCode: countryCode,
+  };
+
   return (
     <>
-      {/* <PaymentMethodCard id="airwallex" onSelect={onPaymentMethodSelected}>
-        <AirWallexDropIn
-          initAirwallexPromise={initAirwallexPromise}
-          intentConfig={{
-            intent_id: "123",
-            client_secret: "123",
-            currency: "USD",
-          }}
-        />
-      </PaymentMethodCard> */}
       <PaymentMethodCard
         id="airwallex-applePay"
         onSelect={onPaymentMethodSelected}
@@ -43,10 +50,13 @@ const Airwallex: FC<AirwallexProps> = ({
         <AirWallexApplePay
           initAirwallexPromise={initAirwallexPromise}
           config={{
-            intent_id: "123",
-            client_secret: "123",
-            currency: "USD",
+            ...baseConfig,
+            autoCapture: config.merchantConfiguration?.autoCapture === "true",
+            billing: config.authMeta?.billing,
           }}
+          onSubmit={onSubmit}
+          onCompleted={onCompleted}
+          onError={onError}
         />
       </PaymentMethodCard>
       <PaymentMethodCard
@@ -56,10 +66,12 @@ const Airwallex: FC<AirwallexProps> = ({
         <AirWallexGooglePay
           initAirwallexPromise={initAirwallexPromise}
           config={{
-            intent_id: "123",
-            client_secret: "123",
-            currency: "USD",
+            ...baseConfig,
+            merchantName: config.merchantConfiguration?.googleMerchantName,
           }}
+          onSubmit={onSubmit}
+          onCompleted={onCompleted}
+          onError={onError}
         />
       </PaymentMethodCard>
     </>

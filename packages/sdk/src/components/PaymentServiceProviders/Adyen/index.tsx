@@ -9,18 +9,15 @@ interface AdyenProps {
 }
 
 const Adyen: FC<AdyenProps> = ({ onPaymentMethodSelected, onSubmit }) => {
-  // const initAdyenPromiseRef = useRef<ReturnType<typeof AdyenCheckout> | null>(
-  //   null
-  // );
-  // if (initAdyenPromiseRef.current === null) {
-  //   initAdyenPromiseRef.current = AdyenCheckout({
-  //     environment: "test",
-  //     clientKey: "test",
-  //     locale: "en",
-  //     countryCode: "US",
-  //     paymentMethodsResponse: {},
-  //   });
-  // }
+  const initAdyenPromiseRef = useRef(
+    AdyenCheckout({
+      environment: "test",
+      clientKey: "test",
+      locale: "en",
+      countryCode: "US",
+      paymentMethodsResponse: {},
+    })
+  );
 
   return (
     <div>
