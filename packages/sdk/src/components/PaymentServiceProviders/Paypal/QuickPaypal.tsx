@@ -1,17 +1,16 @@
 import type { FC } from "react";
+import React from "react";
 import { PayPalScriptProvider } from "@paypal/react-paypal-js";
 import PaymentMethodCard from "@/components/PaymentMethodCard";
 import PaypalElement from "./Element";
 
-interface PaypalProps {
-  onPaymentMethodSelected?: (paymentMethod: string) => void;
+interface QuickPaypalProps {
   onSubmit?: (payment: any) => Promise<any>;
   onCompleted?: (payment: any) => Promise<any>;
   onError?: (error: Error) => void;
 }
 
-const Paypal: FC<PaypalProps> = ({
-  onPaymentMethodSelected,
+const QuickPaypal: FC<QuickPaypalProps> = ({
   onSubmit,
   onCompleted,
   onError,
@@ -29,15 +28,13 @@ const Paypal: FC<PaypalProps> = ({
         commit: false,
       }}
     >
-      <PaymentMethodCard id="paypal" onSelect={onPaymentMethodSelected}>
-        <PaypalElement
-          onSubmit={onSubmit}
-          onCompleted={onCompleted}
-          onError={onError}
-        />
-      </PaymentMethodCard>
+      <PaypalElement
+        onSubmit={onSubmit}
+        onCompleted={onCompleted}
+        onError={onError}
+      />
     </PayPalScriptProvider>
   );
 };
 
-export default Paypal;
+export default QuickPaypal;
