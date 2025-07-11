@@ -2,9 +2,17 @@ import { useRef, useEffect, type FC } from "react";
 import { AdyenCheckout, Dropin } from "@adyen/adyen-web/auto";
 import { useMemoizedFn } from "@/hooks";
 
-interface AdyenDropInProps {}
+interface AdyenDropInProps {
+  onSubmit?: (payment: any) => Promise<any>;
+  onComplete?: (payment: any) => Promise<any>;
+  onError?: (error: Error) => void;
+}
 
-const AdyenDropIn: FC<AdyenDropInProps> = ({}) => {
+const AdyenDropIn: FC<AdyenDropInProps> = ({
+  onSubmit,
+  onComplete: onCompleted,
+  onError,
+}) => {
   const containerRef = useRef<HTMLDivElement>(null);
   const elementRef = useRef<Dropin>();
 
@@ -21,15 +29,19 @@ const AdyenDropIn: FC<AdyenDropInProps> = ({}) => {
       paymentMethodsResponse: {},
       onSubmit: (state, component, actions) => {
         console.log(state, component, actions);
+        onSubmit?.({});
       },
       onError: (error) => {
         console.log(error);
+        onError?.(error);
       },
       onPaymentCompleted: (result) => {
         console.log(result);
+        onCompleted?.({});
       },
       onPaymentFailed: (error) => {
         console.log(error);
+        onError?.(new Error("failed"));
       },
     });
 

@@ -127,8 +127,8 @@ interface CheckoutElementPropss<T extends ComponentNameUnion> {
   initCheckoutPromise: Promise<CheckoutWebComponents>;
   name: T;
   extraOptions?: Partial<ComponentOptionsByComponentName[T]>;
-  onSubmit?: (payment: any) => void;
-  onCompleted?: (payment: any) => void;
+  onSubmit?: (payment: any) => Promise<any>;
+  onCompleted?: (payment: any) => Promise<any>;
   onError?: (error: Error) => void;
 }
 

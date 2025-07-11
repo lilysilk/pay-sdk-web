@@ -6,9 +6,13 @@ import {
   MESSAGE_NAMESPACE,
 } from "./utils/messageChannel";
 
-interface CreditCardProps {}
+interface CreditCardProps {
+  onSubmit?: (payment: any) => Promise<any>;
+  onComplete?: (payment: any) => Promise<any>;
+  onError?: (error: Error) => void;
+}
 
-const CreditCard: FC<CreditCardProps> = ({}) => {
+const CreditCard: FC<CreditCardProps> = ({ onSubmit, onComplete, onError }) => {
   const iframeRef = useRef<HTMLIFrameElement>(null);
   const redirectUrl = useRef<string>();
   const [showThreeDS, setShowThreeDS] = useState(false);

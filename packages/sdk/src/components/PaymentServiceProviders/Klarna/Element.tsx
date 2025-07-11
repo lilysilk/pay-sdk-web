@@ -3,15 +3,15 @@ import { useMemoizedFn } from "@/hooks";
 
 interface KlarnaElementProps {
   initKlarnaPromise: Promise<any>;
-  onSubmit?: (payment: any) => void;
-  onCompleted?: (payment: any) => void;
+  onSubmit?: (payment: any) => Promise<any>;
+  onComplete?: (payment: any) => Promise<any>;
   onError?: (error: Error) => void;
 }
 
 const KlarnaElement: FC<KlarnaElementProps> = ({
   initKlarnaPromise,
   onSubmit,
-  onCompleted,
+  onComplete,
   onError,
 }) => {
   const containerRef = useRef<HTMLDivElement>(null);

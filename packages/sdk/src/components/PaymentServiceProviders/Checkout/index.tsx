@@ -11,8 +11,8 @@ import CheckoutElement from "./Element";
 interface CheckoutProps {
   config: ConsultCheckoutSSD;
   onPaymentMethodSelected?: (paymentMethod: string) => void;
-  onSubmit?: (payment: any) => void;
-  onCompleted?: (payment: any) => void;
+  onSubmit?: (payment: any) => Promise<any>;
+  onComplete?: (payment: any) => Promise<any>;
   onError?: (error: Error) => void;
 }
 
@@ -20,7 +20,7 @@ const Checkout: FC<CheckoutProps> = ({
   config,
   onPaymentMethodSelected,
   onSubmit,
-  onCompleted,
+  onComplete,
   onError,
 }) => {
   const initCheckoutPromiseRef = useRef(
@@ -46,7 +46,7 @@ const Checkout: FC<CheckoutProps> = ({
         extraOptions={extraOptions}
         initCheckoutPromise={initCheckoutPromiseRef.current!}
         onSubmit={onSubmit}
-        onCompleted={onCompleted}
+        onCompleted={onComplete}
         onError={onError}
       />
     );

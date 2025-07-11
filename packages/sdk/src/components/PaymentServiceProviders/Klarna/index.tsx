@@ -1,4 +1,5 @@
 import { type FC, useRef } from "react";
+import type { ConsultKlarnaSSD } from "@/types";
 import { loadExternalScript } from "@/utils/loadExternalScript";
 import PaymentMethodCard from "@/components/PaymentMethodCard";
 import KlarnaElement from "./Element";
@@ -10,16 +11,18 @@ declare global {
 }
 
 interface KlarnaProps {
+  config: ConsultKlarnaSSD;
   onPaymentMethodSelected?: (paymentMethod: string) => void;
-  onSubmit?: (payment: any) => void;
-  onCompleted?: (payment: any) => void;
+  onSubmit?: (payment: any) => Promise<any>;
+  onComplete?: (payment: any) => Promise<any>;
   onError?: (error: Error) => void;
 }
 
 const Klarna: FC<KlarnaProps> = ({
+  config,
   onPaymentMethodSelected,
   onSubmit,
-  onCompleted,
+  onComplete,
   onError,
 }) => {
   const initKlarnaPromiseRef = useRef(
@@ -37,7 +40,7 @@ const Klarna: FC<KlarnaProps> = ({
       );
       await klarnaReadyPromise;
       window?.Klarna?.Payments?.init({
-        client_token: "123",
+        client_token: config.authMeta.token,
       });
       return window?.Klarna;
     })()
@@ -49,7 +52,7 @@ const Klarna: FC<KlarnaProps> = ({
         <KlarnaElement
           initKlarnaPromise={initKlarnaPromiseRef.current}
           onSubmit={onSubmit}
-          onCompleted={onCompleted}
+          onComplete={onComplete}
           onError={onError}
         />
       </PaymentMethodCard>

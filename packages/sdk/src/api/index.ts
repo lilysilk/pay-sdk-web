@@ -1,15 +1,22 @@
 import { request } from "@/utils";
-import type { Response } from "@/types";
+import type {
+  Response,
+  ConsultPaymentSSD,
+  ConsultPaymentParams,
+} from "@/types";
 
 /**
  * 删除账单学习地址
  * @param
  */
-export const consultPayment = async (params: {}) => {
+export const consultPayment = async (params: ConsultPaymentParams) => {
   return request
-    .post<Response<any>>(`/order/api/v2/order/removeAddress.json`, {
-      json: params,
-    })
+    .post<Response<ConsultPaymentSSD>>(
+      `/order/api/v2/order/removeAddress.json`,
+      {
+        json: params,
+      }
+    )
     .json();
 };
 

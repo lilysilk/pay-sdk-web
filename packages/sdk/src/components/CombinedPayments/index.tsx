@@ -2,6 +2,7 @@ import type { FC } from "react";
 import { lazy, useState, useCallback, useMemo } from "react";
 import { useMutation } from "@tanstack/react-query";
 import { useMemoizedFn } from "@/hooks";
+import type { ConsultPaymentItemSSD } from "@/types";
 import { confirmPayment } from "@/api";
 import LazyLoadWrapper, {
   type ComponentStatus,
@@ -27,16 +28,16 @@ const Paypal = lazy(
 );
 
 interface CombinedPaymentsProps {
-  paymentMethodsConfig: any;
-  onConfirm: (payment: any) => void;
+  paymentServiceProviders: ConsultPaymentItemSSD[];
   onPaymentMethodSelected?: (paymentMethod: string) => void;
-  onError?: (error: Error) => void;
   onSubmit?: (orderId: string, paymentMethod: string) => void;
+  onComplete?: (payment: any) => Promise<any>;
+  onError?: (error: Error) => void;
 }
 
 const CombinedPayments: FC<CombinedPaymentsProps> = ({
-  paymentMethodsConfig,
-  onConfirm,
+  paymentServiceProviders,
+  onComplete,
   onPaymentMethodSelected,
   onError,
   onSubmit,
@@ -68,22 +69,20 @@ const CombinedPayments: FC<CombinedPaymentsProps> = ({
   // 检查是否所有组件都失败了（只有在有组件的情况下）
   const allComponentsFailed = stats.total > 0 && stats.error === stats.total;
 
-  const { mutate: confirmPaymentMutate } = useMutation({
+  const { mutateAsync: confirmPaymentMutateAsync } = useMutation({
     mutationFn: async (payment: any) => {
       const res = await confirmPayment("123");
       return res;
     },
-    onSuccess(data) {
-      onConfirm(data);
-    },
+    onSuccess(data) {},
     onError(error) {
       onError?.(error);
     },
   });
 
-  const handleSubmit = useMemoizedFn((payment: any) => {
+  const handleSubmit = useMemoizedFn(async (payment: any) => {
     onSubmit?.("123", "123");
-    confirmPaymentMutate(payment);
+    return confirmPaymentMutateAsync(payment);
   });
 
   // 如果所有组件都失败，显示总的回退UI
@@ -128,57 +127,97 @@ const CombinedPayments: FC<CombinedPaymentsProps> = ({
     );
   }
 
-  return (
-    <div>
-      <LazyLoadWrapper name="PCICard" onStatusChange={handleStatusChange}>
+  const renderPaymentServiceProvider = (item: ConsultPaymentItemSSD) => {
+    if (item.type === "PCICARD") {
+      return (
         <PCICard
+          config={item}
           onPaymentMethodSelected={onPaymentMethodSelected}
           onSubmit={handleSubmit}
+          onComplete={onComplete}
+          onError={onError}
         />
-      </LazyLoadWrapper>
-
-      <LazyLoadWrapper name="Adyen" onStatusChange={handleStatusChange}>
+      );
+    }
+    if (item.type === "ADYEN") {
+      return (
         <Adyen
+          config={item}
           onPaymentMethodSelected={onPaymentMethodSelected}
           onSubmit={handleSubmit}
+          onComplete={onComplete}
+          onError={onError}
         />
-      </LazyLoadWrapper>
-
-      <LazyLoadWrapper name="Airwallex" onStatusChange={handleStatusChange}>
+      );
+    }
+    if (item.type === "AIRWALLEX") {
+      return (
         <Airwallex
+          config={item}
           onPaymentMethodSelected={onPaymentMethodSelected}
           onSubmit={handleSubmit}
+          onComplete={onComplete}
+          onError={onError}
         />
-      </LazyLoadWrapper>
-
-      <LazyLoadWrapper name="Checkout" onStatusChange={handleStatusChange}>
+      );
+    }
+    if (item.type === "CHECKOUT") {
+      return (
         <Checkout
+          config={item}
           onPaymentMethodSelected={onPaymentMethodSelected}
           onSubmit={handleSubmit}
+          onComplete={onComplete}
+          onError={onError}
         />
-      </LazyLoadWrapper>
-
-      <LazyLoadWrapper name="Klarna" onStatusChange={handleStatusChange}>
+      );
+    }
+    if (item.type === "KLARNA") {
+      return (
         <Klarna
+          config={item}
           onPaymentMethodSelected={onPaymentMethodSelected}
           onSubmit={handleSubmit}
+          onComplete={onComplete}
+          onError={onError}
         />
-      </LazyLoadWrapper>
-
-      <LazyLoadWrapper name="Nuvei" onStatusChange={handleStatusChange}>
+      );
+    }
+    if (item.type === "NUVEI") {
+      return (
         <Nuvei
+          config={item}
           onPaymentMethodSelected={onPaymentMethodSelected}
           onSubmit={handleSubmit}
+          onComplete={onComplete}
+          onError={onError}
         />
-      </LazyLoadWrapper>
-
-      <LazyLoadWrapper name="Paypal" onStatusChange={handleStatusChange}>
+      );
+    }
+    if (item.type === "PAYPAL") {
+      return (
         <Paypal
+          config={item}
           onPaymentMethodSelected={onPaymentMethodSelected}
           onSubmit={handleSubmit}
+          onComplete={onComplete}
+          onError={onError}
         />
-      </LazyLoadWrapper>
-    </div>
+      );
+    }
+    return null;
+  };
+
+  return (
+    <>
+      {paymentServiceProviders.map((item) => {
+        return (
+          <LazyLoadWrapper name={item.type} onStatusChange={handleStatusChange}>
+            {renderPaymentServiceProvider(item)}
+          </LazyLoadWrapper>
+        );
+      })}
+    </>
   );
 };
 

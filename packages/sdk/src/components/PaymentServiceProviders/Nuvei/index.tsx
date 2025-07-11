@@ -1,5 +1,6 @@
 import { useRef, type FC } from "react";
 import PaymentMethodCard from "@/components/PaymentMethodCard";
+import type { ConsultNuveiSSD } from "@/types";
 import { loadExternalScript } from "@/utils";
 
 declare global {
@@ -9,11 +10,20 @@ declare global {
 }
 
 interface NuveiProps {
+  config: ConsultNuveiSSD;
   onPaymentMethodSelected?: (paymentMethod: string) => void;
-  onSubmit?: (payment: any) => void;
+  onSubmit?: (payment: any) => Promise<any>;
+  onComplete?: (payment: any) => Promise<any>;
+  onError?: (error: Error) => void;
 }
 
-const Nuvei: FC<NuveiProps> = ({ onPaymentMethodSelected, onSubmit }) => {
+const Nuvei: FC<NuveiProps> = ({
+  config,
+  onPaymentMethodSelected,
+  onSubmit,
+  onComplete,
+  onError,
+}) => {
   const initNuveiPromiseRef = useRef(
     (async () => {
       await loadExternalScript(
@@ -21,9 +31,9 @@ const Nuvei: FC<NuveiProps> = ({ onPaymentMethodSelected, onSubmit }) => {
         "https://cdn.safecharge.com/safecharge_resources/v1/websdk/safecharge.js"
       );
       return window.SafeCharge({
-        env: "test",
-        merchantId: "",
-        merchantSiteId: "",
+        env: config.merchantConfiguration.payEnvironment,
+        merchantId: config.merchantConfiguration.merchantId,
+        merchantSiteId: config.merchantConfiguration.merchantSiteId,
       });
     })()
   );

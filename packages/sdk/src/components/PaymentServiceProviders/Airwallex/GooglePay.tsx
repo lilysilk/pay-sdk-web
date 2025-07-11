@@ -20,8 +20,8 @@ export interface AirWallexGooglePayConfig {
 interface AirWallexGooglePayProps {
   initAirwallexPromise: ReturnType<typeof init>;
   config: AirWallexGooglePayConfig;
-  onSubmit?: (payment: any) => void;
-  onCompleted?: (payment: any) => void;
+  onSubmit?: (payment: any) => Promise<any>;
+  onComplete?: (payment: any) => Promise<any>;
   onError?: (error: Error) => void;
 }
 
@@ -29,7 +29,7 @@ const AirWallexGooglePay: FC<AirWallexGooglePayProps> = ({
   initAirwallexPromise,
   config,
   onSubmit,
-  onCompleted,
+  onComplete,
   onError,
 }) => {
   const [isReady, setIsReady] = useState<boolean>(false);
@@ -68,7 +68,7 @@ const AirWallexGooglePay: FC<AirWallexGooglePayProps> = ({
     };
 
     const handleSuccess = () => {
-      onCompleted?.({});
+      onComplete?.({});
     };
 
     const handleError = (event: CustomEvent) => {

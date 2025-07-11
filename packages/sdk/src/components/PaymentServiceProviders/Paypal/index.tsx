@@ -2,25 +2,28 @@ import type { FC } from "react";
 import { PayPalScriptProvider } from "@paypal/react-paypal-js";
 import PaymentMethodCard from "@/components/PaymentMethodCard";
 import PaypalElement from "./Element";
+import type { ConsultPayPalSSD } from "@/types";
 
 interface PaypalProps {
+  config: ConsultPayPalSSD;
   onPaymentMethodSelected?: (paymentMethod: string) => void;
   onSubmit?: (payment: any) => Promise<any>;
-  onCompleted?: (payment: any) => Promise<any>;
+  onComplete?: (payment: any) => Promise<any>;
   onError?: (error: Error) => void;
 }
 
 const Paypal: FC<PaypalProps> = ({
+  config,
   onPaymentMethodSelected,
   onSubmit,
-  onCompleted,
+  onComplete,
   onError,
 }) => {
   return (
     <PayPalScriptProvider
       options={{
-        // 需要接口获取
-        clientId: "test",
+        clientId: config.merchantConfiguration.clientId,
+        environment: config.merchantConfiguration.environment,
         components: "buttons",
         intent: "capture",
         vault: false,
@@ -32,7 +35,7 @@ const Paypal: FC<PaypalProps> = ({
       <PaymentMethodCard id="paypal" onSelect={onPaymentMethodSelected}>
         <PaypalElement
           onSubmit={onSubmit}
-          onCompleted={onCompleted}
+          onComplete={onComplete}
           onError={onError}
         />
       </PaymentMethodCard>

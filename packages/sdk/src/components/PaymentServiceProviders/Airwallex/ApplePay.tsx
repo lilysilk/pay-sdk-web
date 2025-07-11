@@ -22,8 +22,8 @@ export interface AirWallexApplePayConfig {
 interface AirWallexApplePayProps {
   initAirwallexPromise: ReturnType<typeof init>;
   config: AirWallexApplePayConfig;
-  onSubmit?: (payment: any) => void;
-  onCompleted?: (payment: any) => void;
+  onSubmit?: (payment: any) => Promise<any>;
+  onComplet?: (payment: any) => Promise<any>;
   onError?: (error: Error) => void;
 }
 
@@ -31,7 +31,7 @@ const AirWallexApplePay: FC<AirWallexApplePayProps> = ({
   initAirwallexPromise,
   config,
   onSubmit,
-  onCompleted,
+  onComplet: onCompleted,
   onError,
 }) => {
   const [isReady, setIsReady] = useState<boolean>(false);

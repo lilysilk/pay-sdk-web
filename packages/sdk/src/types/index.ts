@@ -3,12 +3,8 @@ import type { Payment } from "@airwallex/components-sdk";
 export interface Response<T> {
   code: number;
   data: T;
-  msg: string | Record<string, string>;
   message: string;
   success: boolean;
-  errMsg?: string;
-  errCode?: string;
-  i18nErrCode?: string;
 }
 
 export type Environment = "dev" | "beta" | "pre" | "prod";
@@ -73,4 +69,77 @@ export interface ConsultAirWallexSSD {
     storedPaymentMethods: unknown[];
   };
   type: "AIRWALLEX";
+}
+
+export interface ConsultAdyenSSD {
+  id: number;
+  merchantConfiguration: {
+    environment: string;
+    payEnvironment: string;
+    clientKey: string;
+  };
+  paymentConfiguration: {
+    paymentMethods: (ConsultPaymentMethodSSD & {
+      configuration: { merchantId: string; merchantName: string };
+    })[];
+  };
+  type: "ADYEN";
+}
+
+export interface ConsultNuveiSSD {
+  id: number;
+  merchantConfiguration: {
+    merchantId: string;
+    merchantSiteId: string;
+    payEnvironment: string;
+    sessionToken: string;
+  };
+  paymentConfiguration: {
+    paymentMethods: ConsultPaymentMethodSSD[];
+  };
+  type: "NUVEI";
+}
+
+export interface ConsultPayPalSSD {
+  id: number;
+  merchantConfiguration: {
+    environment: string;
+    clientId: string;
+  };
+  paymentConfiguration: {
+    paymentMethods: ConsultPaymentMethodSSD[];
+  };
+  type: "PAYPAL";
+}
+
+export interface ConsultKlarnaSSD {
+  id: number;
+  authMeta: {
+    token: string;
+  };
+  paymentConfiguration: {
+    paymentMethods: ConsultPaymentMethodSSD[];
+  };
+  type: "KLARNA";
+}
+
+export interface CounsultPCICardSSD {
+  id: number;
+
+  type: "PCICARD";
+}
+
+export interface ConsultPaymentParams {}
+
+export type ConsultPaymentItemSSD =
+  | ConsultCheckoutSSD
+  | ConsultAirWallexSSD
+  | ConsultAdyenSSD
+  | ConsultNuveiSSD
+  | ConsultPayPalSSD
+  | ConsultKlarnaSSD
+  | CounsultPCICardSSD;
+
+export interface ConsultPaymentSSD {
+  paymentServiceProviders: ConsultPaymentItemSSD[];
 }

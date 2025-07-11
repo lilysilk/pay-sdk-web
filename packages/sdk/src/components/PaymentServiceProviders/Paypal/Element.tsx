@@ -5,13 +5,13 @@ import Loading from "@/components/Loading";
 interface PaypalElementProps {
   fundingSource?: "paypal" | "paylater";
   onSubmit?: (payment: any) => Promise<any>;
-  onCompleted?: (payment: any) => Promise<any>;
+  onComplete?: (payment: any) => Promise<any>;
   onError?: (error: Error) => void;
 }
 
 const PaypalElement: FC<PaypalElementProps> = ({
   onSubmit,
-  onCompleted,
+  onComplete,
   onError,
 }) => {
   const [{ isPending, isRejected }] = usePayPalScriptReducer();
@@ -29,7 +29,7 @@ const PaypalElement: FC<PaypalElementProps> = ({
         return order;
       }}
       onApprove={async () => {
-        const payment = await onCompleted?.({});
+        const payment = await onComplete?.({});
         return payment;
       }}
       onError={(error) => {

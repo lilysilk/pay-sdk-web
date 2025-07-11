@@ -10,8 +10,8 @@ interface AirwallexProps {
   countryCode: string;
   config: ConsultAirWallexSSD;
   onPaymentMethodSelected?: (paymentMethod: string) => void;
-  onSubmit?: (payment: any) => void;
-  onCompleted?: (payment: any) => void;
+  onSubmit?: (payment: any) => Promise<any>;
+  onComplete?: (payment: any) => Promise<any>;
   onError?: (error: Error) => void;
 }
 
@@ -22,7 +22,7 @@ const Airwallex: FC<AirwallexProps> = ({
   config,
   onPaymentMethodSelected,
   onSubmit,
-  onCompleted,
+  onComplete,
   onError,
 }) => {
   if (initAirwallexPromise === null) {
@@ -55,7 +55,7 @@ const Airwallex: FC<AirwallexProps> = ({
             billing: config.authMeta?.billing,
           }}
           onSubmit={onSubmit}
-          onCompleted={onCompleted}
+          onComplet={onComplete}
           onError={onError}
         />
       </PaymentMethodCard>
@@ -70,7 +70,7 @@ const Airwallex: FC<AirwallexProps> = ({
             merchantName: config.merchantConfiguration?.googleMerchantName,
           }}
           onSubmit={onSubmit}
-          onCompleted={onCompleted}
+          onComplete={onComplete}
           onError={onError}
         />
       </PaymentMethodCard>

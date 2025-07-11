@@ -7,16 +7,16 @@ import Container from "./Container";
 import CombinedPayments from "./CombinedPayments";
 
 interface MainProps {
-  onComplete?: (orderId: string, paymentMethod: string) => void;
-  onError?: (error: Error) => void;
   onPaymentMethodSelected?: (paymentMethod: string) => void;
   onSubmit?: (orderId: string, paymentMethod: string) => void;
+  onCompleted?: (orderId: string, paymentMethod: string) => void;
+  onError?: (error: Error) => void;
 }
 
 const Main: FC<MainProps> = ({
   onError,
   onPaymentMethodSelected,
-  onComplete,
+  onCompleted,
   onSubmit,
 }) => {
   const {
@@ -42,22 +42,22 @@ const Main: FC<MainProps> = ({
     },
   });
 
-  const { mutate: completePaymentMutate } = useMutation({
+  const { mutateAsync: completePaymentMutateAsync } = useMutation({
     mutationFn: async (payment: any) => {
       const res = await completePayment("123");
       return res;
     },
     onSuccess(data) {
       console.log(data);
-      onComplete?.("123", "123");
+      onCompleted?.("123", "123");
     },
     onError(error) {
       onError?.(error);
     },
   });
 
-  const handleConfirm = useMemoizedFn((payment: any) => {
-    completePaymentMutate(payment);
+  const handleComlete = useMemoizedFn(async (payment: any) => {
+    return completePaymentMutateAsync(payment);
   });
 
   const handleError = useMemoizedFn((error: Error) => {
@@ -80,8 +80,8 @@ const Main: FC<MainProps> = ({
           <div>Loading...</div>
         ) : (
           <CombinedPayments
-            paymentMethodsConfig={[]}
-            onConfirm={handleConfirm}
+            paymentServiceProviders={[]}
+            onComplete={handleComlete}
             onPaymentMethodSelected={onPaymentMethodSelected}
             onError={handleError}
             onSubmit={onSubmit}
