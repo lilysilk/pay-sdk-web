@@ -55,7 +55,7 @@ const Airwallex: FC<AirwallexProps> = ({
             billing: config.authMeta?.billing,
           }}
           onSubmit={onSubmit}
-          onComplet={onComplete}
+          onComplete={onComplete}
           onError={onError}
         />
       </PaymentMethodCard>
