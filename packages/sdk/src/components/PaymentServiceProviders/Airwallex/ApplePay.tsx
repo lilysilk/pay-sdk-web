@@ -23,7 +23,7 @@ interface AirWallexApplePayProps {
   initAirwallexPromise: ReturnType<typeof init>;
   config: AirWallexApplePayConfig;
   onSubmit?: (payment: any) => Promise<any>;
-  onComplet?: (payment: any) => Promise<any>;
+  onComplete?: (payment: any) => Promise<any>;
   onError?: (error: Error) => void;
 }
 
@@ -31,7 +31,7 @@ const AirWallexApplePay: FC<AirWallexApplePayProps> = ({
   initAirwallexPromise,
   config,
   onSubmit,
-  onComplet: onCompleted,
+  onComplete,
   onError,
 }) => {
   const [isReady, setIsReady] = useState<boolean>(false);
@@ -79,7 +79,7 @@ const AirWallexApplePay: FC<AirWallexApplePayProps> = ({
       setIsReady(true);
     };
     const handleSuccess = () => {
-      onCompleted?.({});
+      onComplete?.({});
     };
     const handleError = (event: CustomEvent) => {
       onError?.(new Error(event.detail));

@@ -23,7 +23,9 @@ const Paypal: FC<PaypalProps> = ({
     <PayPalScriptProvider
       options={{
         clientId: config.merchantConfiguration.clientId,
-        environment: config.merchantConfiguration.environment,
+        environment: config.merchantConfiguration.environment as
+          | "production"
+          | "sandbox",
         components: "buttons",
         intent: "capture",
         vault: false,

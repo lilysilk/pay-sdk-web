@@ -17,12 +17,18 @@ const Adyen: FC<AdyenProps> = ({
   config,
   onPaymentMethodSelected,
   onSubmit,
-  onComplete: onCompleted,
+  onComplete,
   onError,
 }) => {
   const initAdyenPromiseRef = useRef(
     AdyenCheckout({
-      environment: config.merchantConfiguration.payEnvironment,
+      environment: config.merchantConfiguration.payEnvironment as
+        | "test"
+        | "live"
+        | "live-us"
+        | "live-au"
+        | "live-apse"
+        | "live-in",
       clientKey: config.merchantConfiguration.clientKey,
       locale: "en",
       countryCode: "US",
@@ -35,7 +41,7 @@ const Adyen: FC<AdyenProps> = ({
       <PaymentMethodCard id="adyen" onSelect={onPaymentMethodSelected}>
         <AdyenDropIn
           onSubmit={onSubmit}
-          onComplete={onCompleted}
+          onComplete={onComplete}
           onError={onError}
         />
       </PaymentMethodCard>

@@ -46,7 +46,7 @@ const Checkout: FC<CheckoutProps> = ({
         extraOptions={extraOptions}
         initCheckoutPromise={initCheckoutPromiseRef.current!}
         onSubmit={onSubmit}
-        onCompleted={onComplete}
+        onComplete={onComplete}
         onError={onError}
       />
     );

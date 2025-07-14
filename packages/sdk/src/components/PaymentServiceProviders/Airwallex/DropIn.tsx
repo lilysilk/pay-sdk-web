@@ -1,9 +1,5 @@
 import type { FC } from "react";
-import {
-  init,
-  createElement,
-  type SwitchMethodEvent,
-} from "@airwallex/components-sdk";
+import { init, createElement, Payment } from "@airwallex/components-sdk";
 import {} from "@airwallex/components-sdk";
 import { useEffect, useRef } from "react";
 import { useMemoizedFn } from "@/hooks";
@@ -68,7 +64,7 @@ const AirWallexDropIn: FC<AirWallexDropInProps> = ({
     const onClickConfirmButton = (event: Event) => {
       console.log("onClickConfirmButton", event);
     };
-    const onSwitchMethod = (event: SwitchMethodEvent) => {
+    const onSwitchMethod = (event: any) => {
       console.log("onSwitchMethod", event);
     };
     containerRef.current?.addEventListener("onReady", onReady as EventListener);

@@ -128,7 +128,7 @@ interface CheckoutElementPropss<T extends ComponentNameUnion> {
   name: T;
   extraOptions?: Partial<ComponentOptionsByComponentName[T]>;
   onSubmit?: (payment: any) => Promise<any>;
-  onCompleted?: (payment: any) => Promise<any>;
+  onComplete?: (payment: any) => Promise<any>;
   onError?: (error: Error) => void;
 }
 
@@ -138,7 +138,7 @@ const CheckoutElement = <T extends ComponentNameUnion>({
   extraOptions,
   onError,
   onSubmit,
-  onCompleted,
+  onComplete,
 }: CheckoutElementPropss<T>) => {
   const containerRef = useRef<HTMLDivElement>(null);
   const elementRef = useRef<Component>();
@@ -161,7 +161,7 @@ const CheckoutElement = <T extends ComponentNameUnion>({
         },
         onPaymentCompleted(component, payment) {
           // 支付完成 需要调用complete
-          onCompleted?.(payment);
+          onComplete?.(payment);
         },
       },
       ...extraOptions,

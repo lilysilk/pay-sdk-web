@@ -10,7 +10,7 @@ interface AdyenDropInProps {
 
 const AdyenDropIn: FC<AdyenDropInProps> = ({
   onSubmit,
-  onComplete: onCompleted,
+  onComplete,
   onError,
 }) => {
   const containerRef = useRef<HTMLDivElement>(null);
@@ -37,7 +37,7 @@ const AdyenDropIn: FC<AdyenDropInProps> = ({
       },
       onPaymentCompleted: (result) => {
         console.log(result);
-        onCompleted?.({});
+        onComplete?.({});
       },
       onPaymentFailed: (error) => {
         console.log(error);

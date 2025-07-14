@@ -6,13 +6,13 @@ import PaypalElement from "./Element";
 
 interface QuickPaypalProps {
   onSubmit?: (payment: any) => Promise<any>;
-  onCompleted?: (payment: any) => Promise<any>;
+  onComplete?: (payment: any) => Promise<any>;
   onError?: (error: Error) => void;
 }
 
 const QuickPaypal: FC<QuickPaypalProps> = ({
   onSubmit,
-  onCompleted,
+  onComplete,
   onError,
 }) => {
   return (
@@ -30,7 +30,7 @@ const QuickPaypal: FC<QuickPaypalProps> = ({
     >
       <PaypalElement
         onSubmit={onSubmit}
-        onCompleted={onCompleted}
+        onComplete={onComplete}
         onError={onError}
       />
     </PayPalScriptProvider>
