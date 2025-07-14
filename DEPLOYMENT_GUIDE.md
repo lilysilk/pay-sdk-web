@@ -159,6 +159,14 @@ A: 如果遇到 `ERR_PNPM_NO_LOCKFILE` 或 lockfile 版本不兼容错误：
 - 本地使用 pnpm 10+ 时，GitHub Actions 也应使用 pnpm 10+
 - 可以运行 `pnpm install --no-frozen-lockfile` 来绕过 lockfile 检查（不推荐生产环境）
 
+### Q: TypeScript 找不到 workspace 包的类型？
+
+A: 如果遇到 `Cannot find module 'lilysilk-pay-sdk-web'` 错误：
+
+- ✅ 已配置 TypeScript 项目引用（project references）
+- 使用 `pnpm type-check` 而不是各包单独的类型检查
+- TypeScript 会自动管理 monorepo 中的依赖顺序
+
 ### Q: 如何撤回发布？
 
 A: 在 GitHub Releases 页面删除对应的 Release，但建议发布新版本而不是撤回。

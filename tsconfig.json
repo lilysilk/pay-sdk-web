@@ -1,5 +1,9 @@
 {
-  "files": [],
+  "extends": "./tsconfig.base.json",
+  "compilerOptions": {
+    "composite": true,
+    "declaration": true
+  },
   "references": [
     {
       "path": "./packages/sdk"
@@ -7,5 +11,7 @@
     {
       "path": "./packages/example"
     }
-  ]
+  ],
+  "files": [],
+  "exclude": ["node_modules", "dist"]
 }

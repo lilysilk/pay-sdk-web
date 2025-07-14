@@ -48,13 +48,13 @@ jobs:
       - name: Setup Pages
         uses: actions/configure-pages@v4
 
-      - name: Install dependencies
+            - name: Install dependencies
         run: pnpm install --frozen-lockfile
-
-      - name: Type check
+        
+      - name: Type check (with project references)
         run: pnpm type-check
-
-      - name: Build SDK first
+        
+      - name: Build SDK
         run: pnpm sdk:build
 
       - name: Build Example
