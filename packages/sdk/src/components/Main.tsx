@@ -1,5 +1,5 @@
 import { useEffect, useContext, type FC } from "react";
-import { Provider } from "jotai";
+import { Provider as JotaiProvider } from "jotai";
 import { useMutation } from "@tanstack/react-query";
 import { useMemoizedFn } from "@/hooks";
 import { EnvironmentContext } from "./EnvironmentContext";
@@ -32,7 +32,17 @@ const Main: FC<MainProps> = ({
   } = useMutation({
     mutationFn: async () => {
       // const statusRes = await getPaymentStatuss("123");
-      const consultRes = await consultPayment("123");
+      const consultRes = await consultPayment({
+        req_id: "web",
+        paymentOrderId: "123",
+        countryCode: countryCode,
+        website: "us",
+        paymentGroup: "wallet",
+        metadata: {
+          returnUrl:
+            "https://shop.dev-shop.lilysilk.com/us/checkout?checkout-order-id=1151238690131984&unique-code=M8fcgrx0NalazpOU0su1bE5Co8ANYNK6rPsB00ehF5Y%3D&sps-id=1151236977159300",
+        },
+      });
       return {
         status: true,
         consult: consultRes,
@@ -74,7 +84,7 @@ const Main: FC<MainProps> = ({
 
   return (
     <Container>
-      <Provider>
+      <JotaiProvider>
         {error ? (
           <div>
             {error.message}
@@ -92,7 +102,7 @@ const Main: FC<MainProps> = ({
             onSubmit={onSubmit}
           />
         )}
-      </Provider>
+      </JotaiProvider>
     </Container>
   );
 };

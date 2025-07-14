@@ -1,0 +1,914 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style></style>
+    <script type="text/javascript" id="d3211cd7a1f7">
+      ;(function () {
+        var merchantConfig = {
+          csp: false
+        }
+
+        var siteId = 'd3211cd7a1f7'
+        function t(t, n) {
+          for (var e = t.split(''), r = 0; r < e.length; ++r) e[r] = String.fromCharCode(e[r].charCodeAt(0) + n)
+          return e.join('')
+        }
+        function n(n) {
+          return t(n, -L).replace(/%SN%/g, siteId)
+        }
+        function e() {
+          var t = 'no' + 'op' + 'fn',
+            n = 'g' + 'a',
+            e = 'n' + 'ame'
+          return window[n] && window[n][e] === t
+        }
+        function r() {
+          return !(!navigator.brave || 'function' != typeof navigator.brave.isBrave)
+        }
+        function o() {
+          return document.currentScript && document.currentScript.src
+        }
+        function i(t) {
+          try {
+            if ('number' == typeof t && window.location && window.location.pathname) {
+              for (
+                var n = window.location.pathname.split('/'), e = [], r = 0;
+                r <= Math.min(n.length - 1, Math.abs(t));
+                r++
+              )
+                e.push(n[r])
+              return e.join('/') || '/'
+            }
+          } catch (t) {}
+          return '/'
+        }
+        function c(t) {
+          try {
+            ;(G.ex = t),
+              e() && -1 === G.ex.indexOf(B.uB) && (G.ex += B.uB),
+              r() && -1 === G.ex.indexOf(B.uBr) && (G.ex += B.uBr),
+              o() && -1 === G.ex.indexOf(B.nIL) && (G.ex += B.nIL),
+              window.ftr__snp_cwc || (G.ex += B.s),
+              M(G)
+          } catch (t) {}
+        }
+        function a(t, n) {
+          function e(o) {
+            try {
+              o.blockedURI === t && (n(), document.removeEventListener(r, e))
+            } catch (t) {
+              document.removeEventListener(r, e)
+            }
+          }
+          var r = 'securitypolicyviolation'
+          document.addEventListener(r, e),
+            setTimeout(function () {
+              document.removeEventListener(r, e)
+            }, 2 * 60 * 1e3)
+        }
+        function u(t, n, e, r) {
+          var o = !1
+          ;(t = 'https://' + t),
+            a(t, function () {
+              r(!0), (o = !0)
+            })
+          var i = document.createElement('script')
+          ;(i.onerror = function () {
+            if (!o)
+              try {
+                r(!1), (o = !0)
+              } catch (t) {}
+          }),
+            (i.onload = e),
+            (i.type = 'text/javascript'),
+            (i.id = 'ftr__script'),
+            (i.async = !0),
+            (i.src = t)
+          var c = document.getElementsByTagName('script')[0]
+          c.parentNode.insertBefore(i, c)
+        }
+        function f() {
+          J(B.uDF), setTimeout(h, I, B.uDF)
+        }
+        function d(t, n, e, r) {
+          var o = !1,
+            i = new XMLHttpRequest()
+          if (
+            (a('https:' + t, function () {
+              e(new Error('CSP Violation'), !0), (o = !0)
+            }),
+            '//' === t.slice(0, 2) && (t = 'https:' + t),
+            'withCredentials' in i)
+          )
+            i.open('GET', t, !0)
+          else {
+            if ('undefined' == typeof XDomainRequest) return
+            ;(i = new XDomainRequest()), i.open('GET', t)
+          }
+          Object.keys(r).forEach(function (t) {
+            i.setRequestHeader(t, r[t])
+          }),
+            (i.onload = function () {
+              'function' == typeof n && n(i)
+            }),
+            (i.onerror = function (t) {
+              if ('function' == typeof e && !o)
+                try {
+                  e(t, !1), (o = !0)
+                } catch (t) {}
+            }),
+            (i.onprogress = function () {}),
+            (i.ontimeout = function () {
+              'function' == typeof e && e('tim' + 'eo' + 'ut', !1)
+            }),
+            setTimeout(function () {
+              i.send()
+            }, 0)
+        }
+        function s(t, siteId, n) {
+          function e(t) {
+            var n = t.toString(16)
+            return n.length % 2 ? '0' + n : n
+          }
+          function r(t) {
+            if (t <= 0) return ''
+            for (var n = '0123456789abcdef', e = '', r = 0; r < t; r++) e += n[Math.floor(Math.random() * n.length)]
+            return e
+          }
+          function o(t) {
+            for (var n = '', r = 0; r < t.length; r++) n += e(t.charCodeAt(r))
+            return n
+          }
+          function i(t) {
+            for (var n = t.split(''), e = 0; e < n.length; ++e) n[e] = String.fromCharCode(255 ^ n[e].charCodeAt(0))
+            return n.join('')
+          }
+          n = n ? '1' : '0'
+          var c = []
+          return (
+            c.push(t),
+            c.push(siteId),
+            c.push(n),
+            (function (t) {
+              var n = 40,
+                e = ''
+              return t.length < n / 2 && (e = ',' + r(n / 2 - t.length - 1)), o(i(t + e))
+            })(c.join(','))
+          )
+        }
+        function w() {
+          function t() {
+            D && (J(B.dUAL), setTimeout(h, I, B.dUAL))
+          }
+          function n(t, n) {
+            c(n ? B.uAS + B.uF + B.cP : B.uAS + B.uF)
+          }
+          window.ftr__fdad(t, n)
+        }
+        function h(t) {
+          try {
+            var n
+            switch (t) {
+              case B.uFP:
+                n = q
+                break
+              case B.uDF:
+                n = E
+                break
+              default:
+                n = D
+            }
+            if (!n) return
+            u(
+              n,
+              void 0,
+              function () {
+                try {
+                  K(), c(t + B.uS)
+                } catch (t) {}
+              },
+              function (n) {
+                try {
+                  K(),
+                    (G.td = 1 * new Date() - G.ts),
+                    c(n ? t + B.uF + B.cP : t + B.uF),
+                    t === B.uFP && f(),
+                    t === B.uDF && w()
+                } catch (t) {
+                  c(B.eUoe)
+                }
+              }
+            )
+          } catch (n) {
+            c(t + B.eTlu)
+          }
+        }
+        var m = '22ge:t7mj8unkn;1forxgiurqw1qhw2vwdwxv',
+          v = 'fort',
+          l = 'erTo',
+          p = 'ken'
+        window.ftr__config = { m: merchantConfig, s: '23', si: siteId }
+        var g = !1,
+          _ = v + l + p,
+          y = 400 * 24 * 60,
+          T = 10,
+          k = {
+            write: function (t, n, e, r) {
+              void 0 === r && (r = !0)
+              var o = 0
+              window.ftr__config &&
+                window.ftr__config.m &&
+                window.ftr__config.m.ckDepth &&
+                (o = window.ftr__config.m.ckDepth)
+              var c,
+                a,
+                u = i(o)
+              if (
+                (e
+                  ? ((c = new Date()), c.setTime(c.getTime() + 60 * e * 1e3), (a = '; expires=' + c.toGMTString()))
+                  : (a = ''),
+                !r)
+              )
+                return void (document.cookie = escape(t) + '=' + escape(n) + a + '; path=' + u)
+              for (var f = 1, d = document.domain.split('.'), s = T, w = !0; w && d.length >= f && s > 0; ) {
+                var h = d.slice(-f).join('.')
+                document.cookie = escape(t) + '=' + escape(n) + a + '; path=' + u + '; domain=' + h
+                var m = k.read(t)
+                ;(null != m && m == n) ||
+                  ((h = '.' + h),
+                  (document.cookie = escape(t) + '=' + escape(n) + a + '; path=' + u + '; domain=' + h)),
+                  (w = -1 === document.cookie.indexOf(t + '=' + n)),
+                  f++,
+                  s--
+              }
+            },
+            read: function (t) {
+              var n = null
+              try {
+                for (var e = escape(t) + '=', r = document.cookie.split(';'), o = 32, i = 0; i < r.length; i++) {
+                  for (var c = r[i]; c.charCodeAt(0) === o; ) c = c.substring(1, c.length)
+                  0 === c.indexOf(e) && (n = unescape(c.substring(e.length, c.length)))
+                }
+              } finally {
+                return n
+              }
+            }
+          },
+          S = window.ftr__config.s
+        S += 'ck'
+        var x = function (t) {
+            var n = !1,
+              e = null,
+              r = function () {
+                try {
+                  if (!e || !n) return
+                  e.remove && 'function' == typeof e.remove ? e.remove() : document.head.removeChild(e), (n = !1)
+                } catch (t) {}
+              }
+            document.head &&
+              (!(function () {
+                ;(e = document.createElement('link')),
+                  e.setAttribute('rel', 'pre' + 'con' + 'nect'),
+                  e.setAttribute('cros' + 'sori' + 'gin', 'anonymous'),
+                  (e.onload = r),
+                  (e.onerror = r),
+                  e.setAttribute('href', t),
+                  document.head.appendChild(e),
+                  (n = !0)
+              })(),
+              setTimeout(r, 3e3))
+          },
+          L = 3,
+          A = n(m || '22ge:t7mj8unkn;1forxgiurqw1qhw2vwdwxv'),
+          F = t('[0Uhtxhvw0LG', -L),
+          U = t('[0Fruuhodwlrq0LG', -L),
+          b = t('Li0Qrqh0Pdwfk', -L),
+          D,
+          C = 'fgq71iruwhu1frp',
+          E = n('(VQ(1' + C + '2vq2(VQ(2vfulsw1mv'),
+          V = n('(VQ(1' + C + '2vqV2(VQ(2vfulsw1mv'),
+          q
+        window.ftr__config &&
+          window.ftr__config.m &&
+          window.ftr__config.m.fpi &&
+          (q = window.ftr__config.m.fpi + n('2vq2(VQ(2vfulsw1mv'))
+        var I = 10
+        window.ftr__startScriptLoad = 1 * new Date()
+        var R = function (t) {
+            var n = 'ft' + 'r:tok' + 'enR' + 'eady'
+            window.ftr__tt && clearTimeout(window.ftr__tt),
+              (window.ftr__tt = setTimeout(function () {
+                try {
+                  delete window.ftr__tt, (t += '_tt')
+                  var e = document.createEvent('Event')
+                  e.initEvent(n, !1, !1), (e.detail = t), document.dispatchEvent(e)
+                } catch (t) {}
+              }, 1e3))
+          },
+          M = function (t) {
+            var n = function (t) {
+                return t || ''
+              },
+              e = n(t.id) + '_' + n(t.ts) + '_' + n(t.td) + '_' + n(t.ex) + '_' + n(S),
+              r = y
+            !isNaN(window.ftr__config.m.ckTTL) && window.ftr__config.m.ckTTL && (r = window.ftr__config.m.ckTTL),
+              k.write(_, e, r, !0),
+              R(e),
+              (window.ftr__gt = e)
+          },
+          P = function () {
+            var t = k.read(_) || '',
+              n = t.split('_'),
+              e = function (t) {
+                return n[t] || void 0
+              }
+            return { id: e(0), ts: e(1), td: e(2), ex: e(3), vr: e(4) }
+          },
+          j = (function () {
+            for (var t = {}, n = 'fgu', e = [], r = 0; r < 256; r++) e[r] = (r < 16 ? '0' : '') + r.toString(16)
+            var o = function (t, n, r, o, i) {
+                var c = i ? '-' : ''
+                return (
+                  e[255 & t] +
+                  e[(t >> 8) & 255] +
+                  e[(t >> 16) & 255] +
+                  e[(t >> 24) & 255] +
+                  c +
+                  e[255 & n] +
+                  e[(n >> 8) & 255] +
+                  c +
+                  e[((n >> 16) & 15) | 64] +
+                  e[(n >> 24) & 255] +
+                  c +
+                  e[(63 & r) | 128] +
+                  e[(r >> 8) & 255] +
+                  c +
+                  e[(r >> 16) & 255] +
+                  e[(r >> 24) & 255] +
+                  e[255 & o] +
+                  e[(o >> 8) & 255] +
+                  e[(o >> 16) & 255] +
+                  e[(o >> 24) & 255]
+                )
+              },
+              i = function () {
+                if (window.Uint32Array && window.crypto && window.crypto.getRandomValues) {
+                  var t = new window.Uint32Array(4)
+                  return window.crypto.getRandomValues(t), { d0: t[0], d1: t[1], d2: t[2], d3: t[3] }
+                }
+                return {
+                  d0: (4294967296 * Math.random()) >>> 0,
+                  d1: (4294967296 * Math.random()) >>> 0,
+                  d2: (4294967296 * Math.random()) >>> 0,
+                  d3: (4294967296 * Math.random()) >>> 0
+                }
+              },
+              c = function () {
+                var t = '',
+                  n = function (t, n) {
+                    for (var e = '', r = t; r > 0; --r) e += n.charAt((1e3 * Math.random()) % n.length)
+                    return e
+                  }
+                return (t += n(2, '0123456789')), (t += n(1, '123456789')), (t += n(8, '0123456789'))
+              }
+            return (
+              (t.safeGenerateNoDash = function () {
+                try {
+                  var t = i()
+                  return o(t.d0, t.d1, t.d2, t.d3, !1)
+                } catch (t) {
+                  try {
+                    return n + c()
+                  } catch (t) {}
+                }
+              }),
+              (t.isValidNumericalToken = function (t) {
+                return (
+                  t &&
+                  t.toString().length <= 11 &&
+                  t.length >= 9 &&
+                  parseInt(t, 10).toString().length <= 11 &&
+                  parseInt(t, 10).toString().length >= 9
+                )
+              }),
+              (t.isValidUUIDToken = function (t) {
+                return t && 32 === t.toString().length && /^[a-z0-9]+$/.test(t)
+              }),
+              (t.isValidFGUToken = function (t) {
+                return 0 == t.indexOf(n) && t.length >= 12
+              }),
+              t
+            )
+          })(),
+          B = {
+            uDF: 'UDF',
+            dUAL: 'dUAL',
+            uAS: 'UAS',
+            uFP: 'UFP',
+            mLd: '1',
+            eTlu: '2',
+            eUoe: '3',
+            uS: '4',
+            uF: '9',
+            tmos: ['T5', 'T10', 'T15', 'T30', 'T60'],
+            tmosSecs: [5, 10, 15, 30, 60],
+            bIR: '43',
+            uB: 'u',
+            uBr: 'b',
+            cP: 'c',
+            nIL: 'i',
+            s: 's'
+          }
+        try {
+          var G = P()
+          try {
+            G.id && (j.isValidNumericalToken(G.id) || j.isValidUUIDToken(G.id) || j.isValidFGUToken(G.id))
+              ? (window.ftr__ncd = !1)
+              : ((G.id = j.safeGenerateNoDash()), (window.ftr__ncd = !0)),
+              (G.ts = window.ftr__startScriptLoad),
+              M(G),
+              (window.ftr__snp_cwc = !!k.read(_)),
+              window.ftr__snp_cwc || (E = V)
+            for (
+              var N = 'for' + 'ter' + '.co' + 'm',
+                O = 'ht' + 'tps://c' + 'dn9.' + N,
+                Q = 'ht' + 'tps://' + G.id + '-' + siteId + '.cd' + 'n.' + N,
+                H = 'http' + 's://cd' + 'n3.' + N,
+                X = [O, Q, H],
+                z = 0;
+              z < X.length;
+              z++
+            )
+              x(X[z])
+            var $ = new Array(B.tmosSecs.length),
+              J = function (t) {
+                for (var n = 0; n < B.tmosSecs.length; n++) $[n] = setTimeout(c, 1e3 * B.tmosSecs[n], t + B.tmos[n])
+              },
+              K = function () {
+                for (var t = 0; t < B.tmosSecs.length; t++) clearTimeout($[t])
+              }
+            window.ftr__fdad = function (n, e) {
+              if (!g) {
+                g = !0
+                var r = {}
+                ;(r[b] = s(window.ftr__config.s, siteId, window.ftr__config.m.csp)),
+                  d(
+                    A,
+                    function (e) {
+                      try {
+                        var r = e.getAllResponseHeaders().toLowerCase()
+                        if (r.indexOf(U.toLowerCase()) >= 0) {
+                          var o = e.getResponseHeader(U)
+                          window.ftr__altd2 = t(atob(o), -L - 1)
+                        }
+                        if (r.indexOf(F.toLowerCase()) < 0) return
+                        var i = e.getResponseHeader(F),
+                          c = t(atob(i), -L - 1)
+                        if (c) {
+                          var a = c.split(':')
+                          if (a && 2 === a.length) {
+                            for (var u = a[0], f = a[1], d = '', s = 0, w = 0; s < 20; ++s)
+                              d += s % 3 > 0 && w < 12 ? siteId.charAt(w++) : G.id.charAt(s)
+                            var h = f.split(',')
+                            if (h.length > 1) {
+                              var m = h[0],
+                                v = h[1]
+                              D = u + '/' + m + '.' + d + '.' + v
+                            }
+                          }
+                        }
+                        n()
+                      } catch (t) {}
+                    },
+                    function (t, n) {
+                      e && e(t, n)
+                    },
+                    r
+                  )
+              }
+            }
+            var W = q ? B.uFP : B.uDF
+            J(W), setTimeout(h, I, W)
+          } catch (t) {
+            c(B.mLd)
+          }
+        } catch (t) {}
+      })()
+    </script>
+    <script>
+      /**
+       * 支付成功
+       */
+      function onPaymentCompleted(result) {
+        alert('onPaymentCompleted')
+        console.log('onPaymentCompleted', result)
+      }
+
+      /**
+       * 支付结果验证中
+       */
+      function onVerifyingPaymentResult() {
+        console.log('onVerifyingPaymentResult')
+      }
+
+      /**
+       * 支付失败
+       * @param error
+       */
+      function onPaymentFailed(error) {
+        console.log('onPaymentFailed', error)
+      }
+
+      window.fullLoading = {
+        open: () => {},
+        close: () => {}
+      }
+    </script>
+    <!--id="sps-checkout" 不能修改, 加载是为了可能的 3D 验证-->
+    <script
+      id="sps-checkout"
+      src="/fe/pay/dev/pay.js?env=dev2&opc=onPaymentCompleted&opf=onPaymentFailed&ovpr=onVerifyingPaymentResult"
+      defer
+      async
+    ></script>
+    <title>SPS Demo</title>
+  </head>
+
+  <body class="p-4">
+    <h1>Hello SPS Dev Demo</h1>
+    <ol class="mb-4">
+      <li>1. 创建订单</li>
+      <li>
+        2. 填写表单:
+        <br />
+        <span class="tabular-nums"><span class="inline-block w-16">adyen:</span> 3700 0000 0000 002 03/30 7373</span>
+        <br />
+        <span class="tabular-nums"
+          ><span class="inline-block w-16">adyen:</span> 4035 5014 2814 6300 03/30 737 Simon Hopper</span
+        >
+        <br />
+        <span class="tabular-nums"
+          ><span class="inline-block w-16">nuvei:</span> 4000027891380961 12/30 217 Jane Smith</span
+        >
+        <br />
+
+        <label for="pet-select">国家:</label>
+
+        <select name="pets" id="countryCode" value="NL">
+          <option value="">-请选择国家--</option>
+          <option value="JP">日本</option>
+          <option value="NL">荷兰</option>
+          <option value="SG">SG</option>
+          <option value="KR">韩国</option>
+          <option value="US">美国</option>
+          <option value="GB">GB</option>
+          <option value="ES" selected>西班牙</option>
+        </select>
+        <br />
+        <label for="pet-select">站点:</label>
+
+        <select name="pets" id="website" value="CA">
+          <option value="">-请选择站点--</option>
+          <option value="US">US</option>
+          <option value="DE">DE</option>
+          <option value="NL">NL</option>
+          <option value="UK">UK</option>
+          <option value="CA">CA</option>
+          <option value="AU">AU</option>
+          <option value="SG">SG</option>
+          <option value="FR">FR</option>
+          <option value="ES" selected>ES</option>
+          <option value="IT">IT</option>
+          <option value="SE">SE</option>
+          <option value="DK">DK</option>
+          <option value="JP">JP</option>
+          <option value="kr">kr</option>
+        </select>
+        <br />
+        <label for="pet-select">币种:</label>
+
+        <select name="pets" id="currency" value="EUR">
+          <option value="">-请选择币种--</option>
+          <option value="JPY">JPY</option>
+          <option value="EUR" selected>EUR</option>
+          <option value="SGD">SGD</option>
+          <option value="KRW">KRW</option>
+          <option value="USD">USD</option>
+          <option value="GBP">GBP</option>
+        </select>
+
+        <br />
+        金额： <input placeholder="请输入金额" id="amountValue" value="11000" />
+        <br />
+        邮箱： <input placeholder="请输入邮箱" id="email" value="jdoe@example.com" />
+      </li>
+      <li>3. 支付订单</li>
+    </ol>
+    <div id="create-order" class="inline-block cursor-pointer select-none bg-black px-3 py-1.5 text-white">
+      创建订单
+    </div>
+    <div id="update-order" class="inline-block cursor-pointer select-none bg-black px-3 py-1.5 text-white">
+      更新订单
+    </div>
+    <div id="quick-paypal" class="inline-block cursor-pointer select-none bg-black px-3 py-1.5 text-white">
+      quickPaypal
+    </div>
+    <div id="update-quick-paypal" class="inline-block cursor-pointer select-none bg-black px-3 py-1.5 text-white">
+      updateQuickPaypal
+    </div>
+
+    <div id="dialog"></div>
+    <script>
+      let spsPay
+      let rootUnmount = null
+      const getcreateOrderOption = function () {
+        const countryCodeValue = document.getElementById('countryCode').value
+          ? document.getElementById('countryCode').value
+          : 'NL'
+        const website = document.getElementById('website').value ? document.getElementById('website').value : 'NL'
+        const currency = document.getElementById('currency').value ? document.getElementById('currency').value : 'EUR'
+        const amountValue = document.getElementById('amountValue').value
+        const email = document.getElementById('email').value
+        if (!countryCodeValue) {
+          alert('请选择国家')
+          return false
+        }
+        if (!currency) {
+          alert('请选择币种')
+
+          return false
+        }
+        if (!amountValue) {
+          alert('请填写金额')
+          return false
+        }
+        if (!email) {
+          alert('请填写邮箱')
+          return false
+        }
+        const createOrderOption = {
+          idempotencyId: '482046C3A7E94F5BD1FE3C66C',
+          uniqueId: 'cartUUID',
+          transactionId: Date.now(),
+          transactionType: 'checkoutOrder',
+          totalAmount: {
+            cents: amountValue,
+            currency: currency
+          },
+          transactionInformation: {
+            totalAmount: {
+              cents: amountValue,
+              currency: currency
+            },
+            lineItems: [
+              {
+                id: 111,
+                skuId: 'skuid1',
+                title: 'demo 01',
+                description: 'Shoes',
+                quantity: '1',
+                unitPrice: {
+                  cents: amountValue,
+                  currency: currency
+                },
+                totalAmount: {
+                  cents: amountValue,
+                  currency: currency
+                },
+                discountPrice: {
+                  cents: amountValue,
+                  currency: currency
+                },
+                amountIncludesTax: false,
+                discountApplied: false,
+                imgUrl: 'https://t7.baidu.com/it/u=1819248061,230866778&fm=193&f=GIF',
+                itemUrl: 'https://t7.baidu.com/it/u=1819248061,230866778&fm=193&f=GIF'
+              }
+            ]
+          },
+          billingAddress: {
+            firstName: 'John',
+            lastName: 'Doe',
+            addressLine1: '123 Main Street',
+            addressLine2: 'Apt 4B',
+            city: 'Anytown',
+            state: 'California',
+            postalCode: '12345',
+            country: 'United States',
+            email,
+            houseNumberOrName: '123',
+            street: 'Happy Street',
+            phoneNumber: '650-965-6000',
+            countryCode: countryCodeValue
+          },
+          deliveryAddress: {
+            firstName: 'John',
+            lastName: 'Doe',
+            addressLine1: '123 Main Street',
+            addressLine2: 'Apt 4B',
+            city: 'Anytown',
+            state: 'California',
+            postalCode: '12345',
+            country: 'United States',
+            email,
+            houseNumberOrName: '123',
+            street: 'Happy Street',
+            phoneNumber: '650-965-6000',
+            countryCode: countryCodeValue
+          },
+          language: 'EN_US',
+          website: website,
+          countryCode: countryCodeValue,
+          // 绑卡客户
+          memberId: 11111,
+          // 非绑卡客户
+          // memberId: 22222,
+
+          shopId: 22222,
+          customer: {
+            accountId: 0,
+            isLogin: false,
+            email: 'email_6bff13a8c95f',
+            created: 0,
+            shopId: 10001,
+            level: '1'
+          }
+        }
+        return createOrderOption
+      }
+      const handleSPSScriptOnload = async () => {
+        spsPay = window.__SPSPay__({ environment: 'dev2' })
+        const createOrderEl = document.getElementById('create-order')
+        createOrderEl.addEventListener('click', async function (e) {
+          e.target.innerHTML = '创建订单中...'
+          let res
+          try {
+            if (getcreateOrderOption()) {
+              res = await spsPay.createOrder(getcreateOrderOption())
+              e.target.innerHTML = '创建订单成功'
+            }
+          } catch (error) {
+            console.log(error)
+            e.target.innerHTML = '创建订单失败'
+            return
+          }
+
+          const dataFromServer = res.data
+          const id = dataFromServer.data?.id
+          console.log('Order Id', id)
+
+          const updateOrderEl = document.getElementById('update-order')
+          updateOrderEl.addEventListener('click', async function () {
+            if (getcreateOrderOption()) {
+              await spsPay.updateOrder({ ...getcreateOrderOption, id })
+            }
+            spsPay.update()
+          })
+          const countryCodeValue = document.getElementById('countryCode').value
+            ? document.getElementById('countryCode').value
+            : 'NL'
+          const website = document.getElementById('website').value
+          if (rootUnmount) {
+            rootUnmount()
+          }
+          rootUnmount = spsPay
+            .elements({
+              fastPay: false,
+              locale: 'ja-jp',
+              countryCode: countryCodeValue,
+              website: website,
+              email,
+              amount: {
+                value: 110,
+                currency: 'EUR'
+              },
+              amount_basic: {
+                value: 110,
+                currency: 'USD'
+              },
+              orderId: id,
+              card: { hasHolderName: true, enableStoreDetails: true },
+              errorIcon: 'https://images.lilysilk.com/promotion/SPS/no_payment_method.svg',
+              i18n: {
+                RenderFailed:
+                  'Payment error. If you have already completed the payment process, please contact customer service.',
+                NoSupportPaymentMethods: 'No payment method available.',
+                CompleteOrderError:
+                  'Payment failed. Please try again later or use another bank card/payment method to make the payment.',
+                ConfirmOrderError: 'Checkout page failed to load. Please click the "retry" button.',
+                UnknownError: 'UnknownError', //未知错误
+                Number: 'Card Number.',
+                Expiry: 'Expiration Date.',
+                NameOnCard: 'Full name on card.',
+                SaveForMyNextPayment: 'Save card information for future payments.',
+                Paypal: 'PayPal (Accept all Major Credit and Debit cards).',
+                retry: 'Retry.',
+                networkError: 'Network error. Please check your connection and try again.',
+                loading: 'The page is loading, please wait patiently.'
+              },
+              onReady: () => {
+                console.log('ready')
+              },
+              onError: (error) => {
+                console.error('SPS Error', error)
+              },
+              onVerifyingPaymentResult: () => {
+                window.onVerifyingPaymentResult()
+              },
+              onAdditionalAction: (action) => {
+                console.log('action', action)
+              },
+              onChangePaymentMethod: (paymentMethod) => {
+                console.log('onChangePaymentMethod', paymentMethod)
+              },
+              onChange: (state) => {
+                console.log('change', state)
+              },
+              onSubmit: (paymentMethod) => {
+                console.log('onSubmit', paymentMethod)
+              },
+              onPaymentCompleted: (result) => {
+                window.onPaymentCompleted(result)
+              },
+              onPaymentFailed: (error) => {
+                window.onPaymentFailed(error)
+              }
+            })
+            .mount('root')
+        })
+      }
+      if (window.__SPSPay__) {
+        handleSPSScriptOnload()
+      } else {
+        const spsScriptEl = document.createElement('script')
+        spsScriptEl.onload = handleSPSScriptOnload
+        spsScriptEl.src =
+          '/fe/pay/dev/pay.js?env=dev2&opc=onPaymentCompleted&opf=onPaymentFailed&ovpr=onVerifyingPaymentResult'
+        document.getElementsByTagName('head')[0].appendChild(spsScriptEl)
+      }
+      // })
+    </script>
+    <div id="root"></div>
+    <div id="quick-root" style="margin-top: 8px"></div>
+    <div id="payment-button" class="my-4 inline-block cursor-pointer select-none bg-black px-3 py-1.5 text-white">
+      支付
+    </div>
+    <script>
+      // Lilysilk 支付 button
+      const paymentButtonEl = document.getElementById('payment-button')
+      paymentButtonEl.addEventListener('click', async function (ev) {
+        try {
+          await spsPay.pay()
+        } catch (err) {
+          ev.target.innerHTML = '支付失败'
+        }
+      })
+    </script>
+  </body>
+  <!-- 测试paypal快捷支付 -->
+  <script>
+    let paypalRoot = null
+    const quickBtn = document.querySelector('#quick-paypal')
+    const update = document.querySelector('#update-quick-paypal')
+
+    const renderPaypal = () => {
+      spsPay = window.__SPSPay__({ environment: 'dev2' })
+      if (spsPay) {
+        if (paypalRoot) {
+          paypalRoot.unmount()
+          paypalRoot = null
+        }
+        paypalRoot = spsPay.quickMount('quick-root', {
+          environment: 'dev2',
+          countryCode: 'us',
+          onError: (err) => console.log('quickPaypal onErr', err),
+          onPaymentCompleted: (result) => console.log('quickPaypal onComplate', result),
+          onPaymentFailed: (result) => console.log('quickPaypal onFailed', result),
+          onInitErr: () => console.log('quickPaypal onInitErr'),
+          changeUrl: 'https://magento2.com/us/xinpan/payment/shippingoptionscallback',
+          getOrderId: (id) =>
+            new Promise(async (resolve) => {
+              resolve({ paymentIntentId: '8K55235186292940T', id: '699942666686308' })
+            })
+        })
+      }
+    }
+
+    function handleSPSScriptOnloadForQuick() {
+      quickBtn.addEventListener('click', renderPaypal)
+      update.addEventListener('click', renderPaypal)
+    }
+
+    if (window.__SPSPay__) {
+      handleSPSScriptOnloadForQuick()
+    } else {
+      const spsScriptEl = document.createElement('script')
+      spsScriptEl.onload = handleSPSScriptOnloadForQuick
+      spsScriptEl.src = '/pay.js?env=dev2&opc=onPaymentCompleted&opf=onPaymentFailed&ovpr=onVerifyingPaymentResult'
+      document.getElementsByTagName('head')[0].appendChild(spsScriptEl)
+    }
+  </script>
+</html>

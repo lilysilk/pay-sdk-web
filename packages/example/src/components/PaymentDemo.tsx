@@ -277,7 +277,12 @@ const PaymentDemo: React.FC = () => {
               minHeight: "200px",
             }}
           >
-            <LilyPaySDK />
+            <LilyPaySDK
+              countryCode="US"
+              env="dev"
+              orderId="123"
+              onPaymentMethodSelected={() => {}}
+            />
           </div>
         </div>
       </div>

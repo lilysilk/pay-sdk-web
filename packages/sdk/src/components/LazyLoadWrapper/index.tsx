@@ -1,16 +1,14 @@
 import type { FC } from "react";
 import React, { Suspense, useEffect } from "react";
 import { ErrorBoundary } from "react-error-boundary";
+import { RenderStatus } from "@/types";
 import { useMemoizedFn } from "@/hooks";
-
-// 组件状态类型
-export type ComponentStatus = "loading" | "success" | "error";
 
 // 成功状态追踪器
 const ComponentSuccessTracker: FC<{
   children: React.ReactNode;
   name: string;
-  onSuccess: (name: string, status: ComponentStatus) => void;
+  onSuccess: (name: string, status: RenderStatus) => void;
 }> = ({ children, name, onSuccess }) => {
   const handleOnSuccess = useMemoizedFn(onSuccess);
 
@@ -26,14 +24,8 @@ const ComponentSuccessTracker: FC<{
 const LazyLoadWrapper: FC<{
   children: React.ReactNode;
   name: string;
-  onStatusChange: (name: string, status: ComponentStatus) => void;
+  onStatusChange: (name: string, status: RenderStatus) => void;
 }> = ({ children, name, onStatusChange }) => {
-  const handleStatusChange = useMemoizedFn(onStatusChange);
-  // 初始化为loading状态
-  useEffect(() => {
-    handleStatusChange(name, "loading");
-  }, [name]);
-
   return (
     <ErrorBoundary
       fallback={null} // 静默失败，什么都不显示

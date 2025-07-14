@@ -17,6 +17,13 @@ const apiBaseByEnvMap: Record<Environment, string> = {
   prod: "https://api.dev-sps-pci.lilysilk.com",
 };
 
+const authTokenByEnvMap: Record<Environment, string> = {
+  dev: "bNAMv6hG8FgEFPCDpDXPrbHKH7MIzAg8",
+  beta: "bNAMv6hG8FgEFPCDpDXPrbHKH7MIzAg8",
+  pre: "bNAMv6hG8FgEFPCDpDXPrbHKH7MIzAg8",
+  prod: "bNAMv6hG8FgEFPCDpDXPrbHKH7MIzAg8",
+};
+
 export interface FeedbackAlertConfig {
   id: number;
   type: "success" | "error";
@@ -52,10 +59,13 @@ export const EnvironmentProvider: FC<EnviromentProviderProps> = ({
       credentials: "include",
       timeout: 30000,
       retry: 1,
+      headers: {
+        Authorization: `Bearer ${authTokenByEnvMap[env]}`,
+      },
     })
   );
 
-  const dispatch = useMemo(
+  const envcContext = useMemo(
     () => ({
       env,
       consultPayment: async (params: ConsultPaymentParams) => {
@@ -94,7 +104,7 @@ export const EnvironmentProvider: FC<EnviromentProviderProps> = ({
   );
 
   return (
-    <EnvironmentContext.Provider value={dispatch}>
+    <EnvironmentContext.Provider value={envcContext}>
       {children}
     </EnvironmentContext.Provider>
   );

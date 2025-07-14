@@ -9,6 +9,8 @@ export interface Response<T> {
 
 export type Environment = "dev" | "beta" | "pre" | "prod";
 
+export type RenderStatus = "success" | "error";
+
 export interface ConsultMerchantConfigurationSSD {
   autoCapture: string;
   clientId: string;
@@ -129,7 +131,16 @@ export interface CounsultPCICardSSD {
   type: "PCICARD";
 }
 
-export interface ConsultPaymentParams {}
+export interface ConsultPaymentParams {
+  req_id: string;
+  paymentOrderId: string;
+  countryCode: string;
+  website: string;
+  paymentGroup: string;
+  metadata: {
+    returnUrl: string;
+  };
+}
 
 export type ConsultPaymentItemSSD =
   | ConsultCheckoutSSD
