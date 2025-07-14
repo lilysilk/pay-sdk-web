@@ -12,7 +12,12 @@
     "sdk:dev": "pnpm --filter lilysilk-pay-sdk-web dev",
     "example:dev": "pnpm --filter @lilysilk/example dev",
     "example:build": "pnpm --filter @lilysilk/example build",
-    "dev:all": "pnpm --parallel --filter lilysilk-pay-sdk-web --filter @lilysilk/example dev"
+    "dev:all": "pnpm --parallel --filter lilysilk-pay-sdk-web --filter @lilysilk/example dev",
+    "release:patch": "cd packages/sdk && npm version patch && cd ../.. && git add . && git commit -m 'chore: release sdk patch version' && git tag v$(node -p 'require(\"./packages/sdk/package.json\").version')",
+    "release:minor": "cd packages/sdk && npm version minor && cd ../.. && git add . && git commit -m 'chore: release sdk minor version' && git tag v$(node -p 'require(\"./packages/sdk/package.json\").version')",
+    "release:major": "cd packages/sdk && npm version major && cd ../.. && git add . && git commit -m 'chore: release sdk major version' && git tag v$(node -p 'require(\"./packages/sdk/package.json\").version')",
+    "publish:sdk": "git push origin main && git push --tags",
+    "deploy:pages": "git push origin main"
   },
   "keywords": [
     "monorepo",

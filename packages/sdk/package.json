@@ -6,13 +6,15 @@
   "module": "dist/index.mjs",
   "types": "dist/index.d.ts",
   "files": [
-    "dist"
+    "dist",
+    "README.md"
   ],
   "scripts": {
     "build": "tsup",
     "dev": "tsup --watch",
     "clean": "rm -rf dist",
-    "type-check": "tsc --noEmit"
+    "type-check": "tsc --noEmit",
+    "prepublishOnly": "pnpm run clean && pnpm run build"
   },
   "keywords": [
     "payment",
@@ -21,6 +23,17 @@
   ],
   "author": "",
   "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/lilysilk/pay-sdk-web.git"
+  },
+  "homepage": "https://github.com/lilysilk/pay-sdk-web/",
+  "bugs": {
+    "url": "https://github.com/lilysilk/pay-sdk-web/issues"
+  },
+  "publishConfig": {
+    "access": "restricted"
+  },
   "devDependencies": {
     "@types/lodash-es": "^4.17.12",
     "@types/react": "^18.0.0",
