@@ -75,13 +75,13 @@ pnpm deploy:pages
 
 ```bash
 # 安装最新版本
-npm install git+https://github.com/your-username/lilysilk-pay-sdk-web.git
+npm install git+https://github.com/lilysilk/pay-sdk-web.git
 
 # 安装特定版本
-npm install git+https://github.com/your-username/lilysilk-pay-sdk-web.git#v0.0.1
+npm install git+https://github.com/lilysilk/pay-sdk-web.git#v0.0.2
 
 # 使用 pnpm
-pnpm add git+https://github.com/your-username/lilysilk-pay-sdk-web.git#v0.0.1
+pnpm add git+https://github.com/lilysilk/pay-sdk-web.git#v0.0.2
 ```
 
 ### 2. 在 package.json 中声明
@@ -89,7 +89,7 @@ pnpm add git+https://github.com/your-username/lilysilk-pay-sdk-web.git#v0.0.1
 ```json
 {
   "dependencies": {
-    "lilysilk-pay-sdk-web": "git+https://github.com/your-username/lilysilk-pay-sdk-web.git#v0.0.1"
+    "lilysilk-pay-sdk-web": "git+https://github.com/lilysilk/pay-sdk-web.git#v0.0.2"
   }
 }
 ```
@@ -100,10 +100,10 @@ pnpm add git+https://github.com/your-username/lilysilk-pay-sdk-web.git#v0.0.1
 
 ```bash
 # 使用 SSH
-npm install git+ssh://git@github.com/your-username/lilysilk-pay-sdk-web.git#v0.0.1
+npm install git+ssh://git@github.com/lilysilk/pay-sdk-web.git#v0.0.2
 
 # 使用 Personal Access Token
-npm install git+https://username:token@github.com/your-username/lilysilk-pay-sdk-web.git#v0.0.1
+npm install git+https://username:token@github.com/lilysilk/pay-sdk-web.git#v0.0.2
 ```
 
 ## 工作流程说明
@@ -151,6 +151,14 @@ A: 检查 GitHub Actions 日志，常见问题：
 - TypeScript 类型错误
 - 构建配置问题
 
+### Q: pnpm lockfile 兼容性错误？
+
+A: 如果遇到 `ERR_PNPM_NO_LOCKFILE` 或 lockfile 版本不兼容错误：
+
+- 确保 GitHub Actions 中的 pnpm 版本与本地版本兼容
+- 本地使用 pnpm 10+ 时，GitHub Actions 也应使用 pnpm 10+
+- 可以运行 `pnpm install --no-frozen-lockfile` 来绕过 lockfile 检查（不推荐生产环境）
+
 ### Q: 如何撤回发布？
 
 A: 在 GitHub Releases 页面删除对应的 Release，但建议发布新版本而不是撤回。
@@ -165,8 +173,8 @@ A: 确认：
 
 ## 下一步
 
-1. 将 `your-username` 替换为实际的 GitHub 用户名/组织名
-2. 根据需要调整 base 路径和 repository URL
+1. ✅ 已更新为正确的 GitHub 仓库地址 `lilysilk/pay-sdk-web`
+2. ✅ 已调整 base 路径和 repository URL
 3. 测试完整的发布流程
 4. 文档化 API 使用方法
 
