@@ -1,12 +1,13 @@
-import { useEffect, type FC } from "react";
+import { useEffect, useContext, type FC } from "react";
 import { Provider } from "jotai";
 import { useMutation } from "@tanstack/react-query";
 import { useMemoizedFn } from "@/hooks";
-import { getPaymentStatuss, consultPayment, completePayment } from "@/api";
+import { EnvironmentContext } from "./EnvironmentContext";
 import Container from "./Container";
 import CombinedPayments from "./CombinedPayments";
 
 interface MainProps {
+  countryCode: string;
   onPaymentMethodSelected?: (paymentMethod: string) => void;
   onSubmit?: (orderId: string, paymentMethod: string) => void;
   onCompleted?: (orderId: string, paymentMethod: string) => void;
@@ -14,11 +15,14 @@ interface MainProps {
 }
 
 const Main: FC<MainProps> = ({
+  countryCode,
   onError,
   onPaymentMethodSelected,
   onCompleted,
   onSubmit,
 }) => {
+  const { consultPayment, completePayment, getPaymentStatuss } =
+    useContext(EnvironmentContext)!;
   const {
     data,
     mutate: initPayment,
@@ -27,10 +31,10 @@ const Main: FC<MainProps> = ({
     reset,
   } = useMutation({
     mutationFn: async () => {
-      const statusRes = await getPaymentStatuss("123");
+      // const statusRes = await getPaymentStatuss("123");
       const consultRes = await consultPayment("123");
       return {
-        status: statusRes,
+        status: true,
         consult: consultRes,
       };
     },
@@ -80,6 +84,7 @@ const Main: FC<MainProps> = ({
           <div>Loading...</div>
         ) : (
           <CombinedPayments
+            countryCode={countryCode}
             paymentServiceProviders={[]}
             onComplete={handleComlete}
             onPaymentMethodSelected={onPaymentMethodSelected}

@@ -1,5 +1,6 @@
 import { atom, type Atom } from "jotai";
 import { atomWithStorage } from "jotai/utils";
+import { Environment } from "../types";
 
 const LAST_SELECTED_PAYMENT_METHOD_KEY =
   "___LILYSILK_PAY_SDK_WEB_LAST_SELECTED_PAYMENT_METHOD___";
@@ -21,3 +22,5 @@ export const getAccordionIsSelectedAtom = (id: string) => {
   }
   return accordionIsSelecteWithIdMap.get(id)!;
 };
+
+export const envAtom = atom<Environment>();

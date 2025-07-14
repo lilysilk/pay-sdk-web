@@ -1,12 +1,13 @@
 import type { FC } from "react";
 import type { Environment } from "@/types";
-import QueryClientProviderr from "./components/QueryClientProviderr";
+import { EnvironmentProvider } from "./components/EnvironmentContext";
+import QueryClientProvider from "./components/QueryClientProvider";
 import Main from "./components/Main";
 
 // 导出主SDK组件
 interface LilyPaySDKProps {
   locale?: string;
-  countryCode?: string;
+  countryCode: string;
   env: Environment;
   orderId: string;
   onPaymentMethodSelected?: (paymentMethod: string) => void;
@@ -23,9 +24,14 @@ const LilyPaySDK: FC<LilyPaySDKProps> = ({
   onPaymentMethodSelected,
 }) => {
   return (
-    <QueryClientProviderr>
-      <Main onPaymentMethodSelected={onPaymentMethodSelected} />
-    </QueryClientProviderr>
+    <QueryClientProvider>
+      <EnvironmentProvider key={env} env={env}>
+        <Main
+          countryCode={countryCode}
+          onPaymentMethodSelected={onPaymentMethodSelected}
+        />
+      </EnvironmentProvider>
+    </QueryClientProvider>
   );
 };
 

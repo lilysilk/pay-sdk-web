@@ -1,5 +1,6 @@
-import { useEffect } from "react";
-import { getServerTime } from "@/api";
+import { useContext, useEffect } from "react";
+import { Response } from "@/types";
+import { EnvironmentContext } from "@/components/EnvironmentContext";
 
 // timeSync.js
 // 存储时间差值（服务器时间 - 本地时间）
@@ -13,7 +14,10 @@ let isSyncing = false;
  * 同步服务器时间
  * @returns {Promise<void>}
  */
-const syncServerTime = async (orderId: string) => {
+const syncServerTime = async (
+  getServerTime: () => Promise<Response<number>>,
+  orderId: string
+) => {
   // 如果已经同步过或正在同步，则不再同步
   if (isSynced || isSyncing) return;
 
@@ -66,10 +70,14 @@ const syncServerTime = async (orderId: string) => {
  * 获取当前的服务器时间戳（毫秒）
  * @returns {number} 当前的服务器时间戳
  */
-export const getCurrentTimestamp = (orderId: string, triggerSync = true) => {
+export const getCurrentTimestamp = (
+  getServerTime: () => Promise<Response<number>>,
+  orderId: string,
+  triggerSync = true
+) => {
   // 如果未同步，尝试同步（不等待结果）
   if (triggerSync && !isSynced && !isSyncing) {
-    syncServerTime(orderId).catch(console.error);
+    syncServerTime(getServerTime, orderId).catch(console.error);
   }
 
   // 返回经过修正的时间戳
@@ -81,15 +89,17 @@ export const getCurrentTimestamp = (orderId: string, triggerSync = true) => {
  * @returns {number} 当前服务器时间戳
  */
 const useCurrentTime = (orderId: string, triggerSync = true) => {
+  const { getServerTime } = useContext(EnvironmentContext)!;
+
   // 在组件挂载时尝试同步
   useEffect(() => {
     if (triggerSync && !isSynced && !isSyncing) {
-      syncServerTime(orderId).catch(console.error);
+      syncServerTime(getServerTime, orderId).catch(console.error);
     }
   }, []);
 
   // 直接返回当前的服务器时间戳
-  return () => getCurrentTimestamp(orderId, triggerSync);
+  return () => getCurrentTimestamp(getServerTime, orderId, triggerSync);
 };
 
 export default useCurrentTime;

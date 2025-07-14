@@ -1,9 +1,9 @@
 import type { FC } from "react";
-import { lazy, useState, useCallback, useMemo } from "react";
+import { lazy, useState, useCallback, useMemo, useContext } from "react";
 import { useMutation } from "@tanstack/react-query";
 import { useMemoizedFn } from "@/hooks";
 import type { ConsultPaymentItemSSD } from "@/types";
-import { confirmPayment } from "@/api";
+import { EnvironmentContext } from "@/components/EnvironmentContext";
 import LazyLoadWrapper, {
   type ComponentStatus,
 } from "@/components/LazyLoadWrapper";
@@ -28,6 +28,7 @@ const Paypal = lazy(
 );
 
 interface CombinedPaymentsProps {
+  countryCode: string;
   paymentServiceProviders: ConsultPaymentItemSSD[];
   onPaymentMethodSelected?: (paymentMethod: string) => void;
   onSubmit?: (orderId: string, paymentMethod: string) => void;
@@ -36,12 +37,14 @@ interface CombinedPaymentsProps {
 }
 
 const CombinedPayments: FC<CombinedPaymentsProps> = ({
+  countryCode,
   paymentServiceProviders,
   onComplete,
   onPaymentMethodSelected,
   onError,
   onSubmit,
 }) => {
+  const { confirmPayment } = useContext(EnvironmentContext)!;
   // 组件状态管理
   const [componentStates, setComponentStates] = useState<
     Record<string, ComponentStatus>
@@ -153,6 +156,7 @@ const CombinedPayments: FC<CombinedPaymentsProps> = ({
     if (item.type === "AIRWALLEX") {
       return (
         <Airwallex
+          countryCode={countryCode}
           config={item}
           onPaymentMethodSelected={onPaymentMethodSelected}
           onSubmit={handleSubmit}
