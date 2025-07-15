@@ -176,6 +176,16 @@ A: 如果遇到 `You have an error in your yaml syntax` 错误：
 - 使用 `python3 -c "import yaml; yaml.safe_load(open('file.yml'))"` 验证语法
 - ✅ 已修复 deploy-pages.yml 第 51 行的缩进错误
 
+### Q: SDK 构建配置优化？
+
+A: 当前使用的最佳配置：
+
+- ✅ 使用 `pnpm pack` 替代 `npm pack`（pnpm 项目的标准做法）
+- ✅ 分离构建方式：`tsup` 生成 JS 文件，`tsc` 生成类型文件
+- ✅ TypeScript 项目引用配置：支持 monorepo 的智能依赖管理
+- ✅ 专门的 `tsconfig.build.json`：避免与项目引用冲突
+- ✅ 正确的构建顺序：先构建 SDK，再进行类型检查
+
 ### Q: 如何撤回发布？
 
 A: 在 GitHub Releases 页面删除对应的 Release，但建议发布新版本而不是撤回。

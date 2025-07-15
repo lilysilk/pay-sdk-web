@@ -3,7 +3,18 @@ import { defineConfig } from "tsup";
 export default defineConfig({
   entry: ["src/index.tsx"],
   format: ["esm", "cjs"],
-  dts: false,
+  dts: {
+    compilerOptions: {
+      baseUrl: ".",
+      paths: {
+        "@/*": ["./src/*"],
+      },
+      jsxImportSource: "@emotion/react",
+      composite: false,
+      declaration: true,
+      declarationMap: true,
+    },
+  },
   clean: true,
   sourcemap: true,
   minify: false,

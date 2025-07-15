@@ -10,7 +10,7 @@
     "README.md"
   ],
   "scripts": {
-    "build": "tsup && tsc --project tsconfig.build.json --emitDeclarationOnly",
+    "build": "tsup",
     "dev": "tsup --watch",
     "clean": "rm -rf dist",
     "type-check": "tsc --noEmit",
