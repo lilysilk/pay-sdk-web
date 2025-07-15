@@ -8,6 +8,7 @@ function App() {
   const [currency, setCurrency] = useState("EUR");
   const [amountValue, setAmountValue] = useState("11000");
   const [email, setEmail] = useState("jdoe@example.com");
+  const [locale, setLocale] = useState("en");
 
   // UI state
   const [createOrderStatus, setCreateOrderStatus] = useState("创建订单");
@@ -532,11 +533,26 @@ function App() {
       >
         {orderId ? (
           <LilyPaySDK
-            countryCode={countryCode}
             env="dev"
+            locale={locale}
+            countryCode={countryCode}
+            website={website}
+            currency={currency}
+            amount={parseInt(amountValue) || 0}
             orderId={orderId}
             onPaymentMethodSelected={(method: any) => {
               console.log("Payment method selected:", method);
+            }}
+            onSubmit={(orderId: string, paymentMethod: string) => {
+              console.log("Payment submitted:", { orderId, paymentMethod });
+            }}
+            onComplete={(orderId: string, paymentMethod: string) => {
+              console.log("Payment completed:", { orderId, paymentMethod });
+              onPaymentCompleted({ orderId, paymentMethod });
+            }}
+            onError={(error: Error) => {
+              console.error("Payment error:", error);
+              onPaymentFailed(error);
             }}
           />
         ) : (

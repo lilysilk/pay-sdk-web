@@ -2,14 +2,8 @@
   "extends": "../../tsconfig.base.json",
   "compilerOptions": {
     "baseUrl": ".",
-    "noEmit": true,
-    "composite": true
+    "noEmit": true
   },
   "include": ["src/**/*"],
-  "exclude": ["dist", "node_modules"],
-  "references": [
-    {
-      "path": "../sdk"
-    }
-  ]
+  "exclude": ["dist", "node_modules"]
 }

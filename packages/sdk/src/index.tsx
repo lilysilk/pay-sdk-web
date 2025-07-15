@@ -6,9 +6,12 @@ import Main from "./components/Main";
 
 // 导出主SDK组件
 interface LilyPaySDKProps {
-  locale?: string;
-  countryCode: string;
   env: Environment;
+  locale: string;
+  countryCode: string;
+  website: string;
+  currency: string;
+  amount: number;
   orderId: string;
   onPaymentMethodSelected?: (paymentMethod: string) => void;
   onSubmit?: (orderId: string, paymentMethod: string) => void;
@@ -17,9 +20,12 @@ interface LilyPaySDKProps {
 }
 
 const LilyPaySDK: FC<LilyPaySDKProps> = ({
+  env,
   locale,
   countryCode,
-  env,
+  website,
+  currency,
+  amount,
   orderId,
   onPaymentMethodSelected,
 }) => {
@@ -27,7 +33,13 @@ const LilyPaySDK: FC<LilyPaySDKProps> = ({
     <QueryClientProvider>
       <EnvironmentProvider key={env} env={env}>
         <Main
+          key={orderId}
+          locale={locale}
+          currency={currency}
+          amount={amount}
+          website={website}
           countryCode={countryCode}
+          orderId={orderId}
           onPaymentMethodSelected={onPaymentMethodSelected}
         />
       </EnvironmentProvider>

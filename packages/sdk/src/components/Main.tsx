@@ -8,6 +8,11 @@ import CombinedPayments from "./CombinedPayments";
 
 interface MainProps {
   countryCode: string;
+  website: string;
+  locale: string;
+  currency: string;
+  amount: number;
+  orderId: string;
   onPaymentMethodSelected?: (paymentMethod: string) => void;
   onSubmit?: (orderId: string, paymentMethod: string) => void;
   onCompleted?: (orderId: string, paymentMethod: string) => void;
@@ -15,7 +20,12 @@ interface MainProps {
 }
 
 const Main: FC<MainProps> = ({
+  locale,
   countryCode,
+  website,
+  currency,
+  amount,
+  orderId,
   onError,
   onPaymentMethodSelected,
   onCompleted,
@@ -34,9 +44,9 @@ const Main: FC<MainProps> = ({
       // const statusRes = await getPaymentStatuss("123");
       const consultRes = await consultPayment({
         req_id: "web",
-        paymentOrderId: "123",
+        paymentOrderId: orderId,
         countryCode: countryCode,
-        website: "us",
+        website: website,
         paymentGroup: "wallet",
         metadata: {
           returnUrl:
@@ -95,7 +105,9 @@ const Main: FC<MainProps> = ({
         ) : (
           <CombinedPayments
             countryCode={countryCode}
-            paymentServiceProviders={[]}
+            paymentServiceProviders={
+              data?.consult?.data?.paymentServiceProviders || []
+            }
             onComplete={handleComlete}
             onPaymentMethodSelected={onPaymentMethodSelected}
             onError={handleError}
