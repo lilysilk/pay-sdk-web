@@ -18,10 +18,10 @@ const apiBaseByEnvMap: Record<Environment, string> = {
 };
 
 const authTokenByEnvMap: Record<Environment, string> = {
-  dev: "bNAMv6hG8FgEFPCDpDXPrbHKH7MIzAg8",
-  beta: "bNAMv6hG8FgEFPCDpDXPrbHKH7MIzAg8",
-  pre: "bNAMv6hG8FgEFPCDpDXPrbHKH7MIzAg8",
-  prod: "bNAMv6hG8FgEFPCDpDXPrbHKH7MIzAg8",
+  dev: "d61NANYHeGkH95p0Qtbydhc204zk4Ax4",
+  beta: "d61NANYHeGkH95p0Qtbydhc204zk4Ax4",
+  pre: "d61NANYHeGkH95p0Qtbydhc204zk4Ax4",
+  prod: "d61NANYHeGkH95p0Qtbydhc204zk4Ax4",
 };
 
 export interface FeedbackAlertConfig {

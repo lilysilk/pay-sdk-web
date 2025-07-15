@@ -61,7 +61,7 @@ function App() {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          Authorization: "Bearer bNAMv6hG8FgEFPCDpDXPrbHKH7MIzAg8",
+          Authorization: "Bearer d61NANYHeGkH95p0Qtbydhc204zk4Ax4",
         },
         credentials: "include", // Include cookies
         body: JSON.stringify(orderData),

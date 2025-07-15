@@ -167,6 +167,15 @@ A: 如果遇到 `Cannot find module 'lilysilk-pay-sdk-web'` 错误：
 - 使用 `pnpm type-check` 而不是各包单独的类型检查
 - TypeScript 会自动管理 monorepo 中的依赖顺序
 
+### Q: GitHub Actions YAML 语法错误？
+
+A: 如果遇到 `You have an error in your yaml syntax` 错误：
+
+- 检查步骤的缩进是否正确对齐
+- 确保所有 `- name:` 步骤都在同一缩进级别
+- 使用 `python3 -c "import yaml; yaml.safe_load(open('file.yml'))"` 验证语法
+- ✅ 已修复 deploy-pages.yml 第 51 行的缩进错误
+
 ### Q: 如何撤回发布？
 
 A: 在 GitHub Releases 页面删除对应的 Release，但建议发布新版本而不是撤回。
