@@ -1,6 +1,6 @@
 {
   "name": "lilysilk-pay-sdk-web",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "description": "Lilysilk Pay SDK for Web",
   "main": "dist/index.js",
   "module": "dist/index.mjs",
