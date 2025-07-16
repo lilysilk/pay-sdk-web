@@ -346,6 +346,7 @@ function App() {
               <option value="US">美国</option>
               <option value="GB">GB</option>
               <option value="ES">西班牙</option>
+              <option value="AL">AL</option>
             </select>
           </div>
 
