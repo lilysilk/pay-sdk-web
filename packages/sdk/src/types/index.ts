@@ -73,6 +73,14 @@ export interface ConsultAirWallexSSD {
   type: "AIRWALLEX";
 }
 
+export type ConsultAdyenPaymentMethodSSD = ConsultPaymentMethodSSD & {
+  configuration: {
+    merchantId: string;
+    merchantName: string;
+    gatewayMerchantId: string;
+  };
+};
+
 export interface ConsultAdyenSSD {
   id: number;
   merchantConfiguration: {
@@ -81,9 +89,7 @@ export interface ConsultAdyenSSD {
     clientKey: string;
   };
   paymentConfiguration: {
-    paymentMethods: (ConsultPaymentMethodSSD & {
-      configuration: { merchantId: string; merchantName: string };
-    })[];
+    paymentMethods: ConsultAdyenPaymentMethodSSD[];
   };
   type: "ADYEN";
 }

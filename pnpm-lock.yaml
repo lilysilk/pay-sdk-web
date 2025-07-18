@@ -43,8 +43,8 @@ importers:
   packages/sdk:
     dependencies:
       '@adyen/adyen-web':
-        specifier: ^6.18.0
-        version: 6.18.0
+        specifier: ^6.19.0
+        version: 6.19.0
       '@airwallex/components-sdk':
         specifier: ^1.22.0
         version: 1.22.0
@@ -97,8 +97,8 @@ importers:
 
 packages:
 
-  '@adyen/adyen-web@6.18.0':
-    resolution: {integrity: sha512-Hu2lawlvPkULSdDyClliBH9uoFmgF/9BkL1FZwz38qn/BF4jZAilcA6tzlU3hyArr1HmoO2X79eGATXx1HGY+Q==}
+  '@adyen/adyen-web@6.19.0':
+    resolution: {integrity: sha512-BsOgZHF5AAc6hRjr1dENV181ch+ry7avKABedStX21cxFGrUwDfia+1nlxO4zm6pKX6CBqSrtAvdTJQ3PQCLAw==}
 
   '@airwallex/airtracker@1.2.0':
     resolution: {integrity: sha512-T6u4QnWEhT9jomVwo6FCVK63AOxRVjonUOn1mj16L/xbqhNCnl/kTBP2khFjFJBJ7wKcb7Yb2KrUg803Uu5zcw==}
@@ -1316,7 +1316,7 @@ packages:
 
 snapshots:
 
-  '@adyen/adyen-web@6.18.0':
+  '@adyen/adyen-web@6.19.0':
     dependencies:
       '@types/applepayjs': 14.0.9
       '@types/googlepay': 0.7.6

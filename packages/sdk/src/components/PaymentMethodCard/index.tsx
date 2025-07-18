@@ -80,7 +80,7 @@ const PaymentMethodCard: FC<PaymentMethodCardProps> = ({
             checked={isSelected}
             css={{ flex: "none" }}
           />
-          <div css={titleStyles}>{id}</div>
+          <div css={titleStyles}>{title || id}</div>
         </div>
       </div>
       {isSelected && <div css={contentStyles}>{children}</div>}

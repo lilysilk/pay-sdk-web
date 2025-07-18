@@ -28,7 +28,7 @@ const Checkout: FC<CheckoutProps> = ({
       paymentSession: config.authMeta,
       publicKey: config.merchantConfiguration.publicKey,
       environment: "sandbox",
-      locale: "en",
+      locale: "en-US",
     })
   );
 

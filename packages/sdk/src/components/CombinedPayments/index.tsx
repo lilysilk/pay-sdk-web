@@ -123,6 +123,7 @@ const CombinedPayments: FC<CombinedPaymentsProps> = ({
     if (item.type === "ADYEN") {
       return (
         <Adyen
+          countryCode={countryCode}
           config={item}
           onPaymentMethodSelected={onPaymentMethodSelected}
           onSubmit={handleSubmit}
@@ -194,7 +195,11 @@ const CombinedPayments: FC<CombinedPaymentsProps> = ({
     <>
       {paymentServiceProviders.map((item) => {
         return (
-          <LazyLoadWrapper name={item.type} onStatusChange={handleStatusChange}>
+          <LazyLoadWrapper
+            key={item.type}
+            name={item.type}
+            onStatusChange={handleStatusChange}
+          >
             {renderPaymentServiceProvider(item)}
           </LazyLoadWrapper>
         );

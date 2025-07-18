@@ -47,16 +47,23 @@ const Klarna: FC<KlarnaProps> = ({
   );
 
   return (
-    <div>
-      <PaymentMethodCard id="klarna" onSelect={onPaymentMethodSelected}>
-        <KlarnaElement
-          initKlarnaPromise={initKlarnaPromiseRef.current}
-          onSubmit={onSubmit}
-          onComplete={onComplete}
-          onError={onError}
-        />
-      </PaymentMethodCard>
-    </div>
+    <>
+      {config.paymentConfiguration.paymentMethods.map((item: any) => (
+        <PaymentMethodCard
+          key={item.type}
+          id={item.name}
+          onSelect={onPaymentMethodSelected}
+        >
+          <KlarnaElement
+            category={item.metadata.identifier}
+            initKlarnaPromise={initKlarnaPromiseRef.current}
+            onSubmit={onSubmit}
+            onComplete={onComplete}
+            onError={onError}
+          />
+        </PaymentMethodCard>
+      ))}
+    </>
   );
 };
 

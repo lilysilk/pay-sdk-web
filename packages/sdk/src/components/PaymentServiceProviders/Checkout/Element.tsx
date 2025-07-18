@@ -168,11 +168,15 @@ const CheckoutElement = <T extends ComponentNameUnion>({
     });
     if (!isUnmountedRef.current) {
       elementRef.current = element;
-      element.mount(containerRef.current!);
+      const isAvailable = await element.isAvailable();
+      if (isAvailable) {
+        element.mount(containerRef.current!);
+      }
     }
   });
 
   useEffect(() => {
+    isUnmountedRef.current = false;
     initElement();
 
     return () => {

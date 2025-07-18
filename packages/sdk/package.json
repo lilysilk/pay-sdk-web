@@ -46,7 +46,7 @@
     "react-dom": ">=18.2.0"
   },
   "dependencies": {
-    "@adyen/adyen-web": "^6.18.0",
+    "@adyen/adyen-web": "^6.19.0",
     "@airwallex/components-sdk": "^1.22.0",
     "@checkout.com/checkout-web-components": "^1.0.0",
     "@emotion/react": "^11.13.3",

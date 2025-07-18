@@ -1,7 +1,9 @@
 import { useEffect, useRef, useState, type FC } from "react";
 import { useMemoizedFn } from "@/hooks";
+import Button from "@/components/Button";
 
 interface KlarnaElementProps {
+  category: string;
   initKlarnaPromise: Promise<any>;
   onSubmit?: (payment: any) => Promise<any>;
   onComplete?: (payment: any) => Promise<any>;
@@ -9,6 +11,7 @@ interface KlarnaElementProps {
 }
 
 const KlarnaElement: FC<KlarnaElementProps> = ({
+  category,
   initKlarnaPromise,
   onSubmit,
   onComplete,
@@ -21,12 +24,13 @@ const KlarnaElement: FC<KlarnaElementProps> = ({
 
   const initElement = useMemoizedFn(async () => {
     await initKlarnaPromise;
+
     if (!isUnmountedRef.current) {
       window?.Klarna?.Payments?.load(
         {
           container: containerRef.current!,
           // 需要根据api返回的数据来填充
-          payment_method_category: "pay_later",
+          payment_method_category: category,
         },
         ({ show_form, error }: { show_form: boolean; error: unknown }) => {
           if (show_form) {
@@ -39,13 +43,14 @@ const KlarnaElement: FC<KlarnaElementProps> = ({
     }
   });
 
-  const handleSubmit = useMemoizedFn(() => {
+  const handleSubmit = useMemoizedFn(async () => {
     try {
       setIsLoading(true);
+      await initKlarnaPromise;
       window?.Klarna?.Payments?.authorize(
         {
           // 需要根据api返回的数据来填充
-          payment_method_category: "pay_later",
+          payment_method_category: category,
         },
         ({
           approved,
@@ -76,6 +81,7 @@ const KlarnaElement: FC<KlarnaElementProps> = ({
   });
 
   useEffect(() => {
+    isUnmountedRef.current = false;
     initElement();
     return () => {
       isUnmountedRef.current = true;
@@ -85,9 +91,7 @@ const KlarnaElement: FC<KlarnaElementProps> = ({
   return (
     <>
       <div ref={containerRef} />
-      <button onClick={handleSubmit} disabled={isLoading}>
-        Submit
-      </button>
+      <Button onClick={handleSubmit} disable={isLoading} text="PLACE ORDER" />
     </>
   );
 };
