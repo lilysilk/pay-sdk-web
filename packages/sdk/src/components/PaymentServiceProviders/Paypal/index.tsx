@@ -32,7 +32,11 @@ const Paypal: FC<PaypalProps> = ({
         commit: false,
       }}
     >
-      <PaymentMethodCard id="paypal" onSelect={onPaymentMethodSelected}>
+      <PaymentMethodCard
+        id="paypal"
+        title="Paypal"
+        onSelect={onPaymentMethodSelected}
+      >
         <PaypalElement
           onSubmit={onSubmit}
           onComplete={onComplete}

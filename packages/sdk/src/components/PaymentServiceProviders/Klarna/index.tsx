@@ -1,4 +1,4 @@
-import { type FC, useRef } from "react";
+import { type FC, useRef, useState, useEffect } from "react";
 import type { ConsultKlarnaSSD } from "@/types";
 import { loadExternalScript } from "@/utils/loadExternalScript";
 import PaymentMethodCard from "@/components/PaymentMethodCard";
@@ -25,45 +25,50 @@ const Klarna: FC<KlarnaProps> = ({
   onComplete,
   onError,
 }) => {
-  const initKlarnaPromiseRef = useRef(
-    (async () => {
-      // 考虑报错的情形
-      const klarnaReadyPromise = new Promise<any>((resolve) => {
-        window.klarnaAsyncCallback = () => {
-          resolve(window.Klarna);
-        };
-      });
+  const [klarna, setKlarna] = useState<any>(null);
 
-      await loadExternalScript(
-        "klarna-sdk",
-        "https://x.klarnacdn.net/kp/lib/v1/api.js"
-      );
-      await klarnaReadyPromise;
-      window?.Klarna?.Payments?.init({
-        client_token: config.authMeta.token,
-      });
-      return window?.Klarna;
-    })()
-  );
+  useEffect(() => {
+    const initKlarna = async () => {
+      try {
+        const klarnaReadyPromise = new Promise<any>((resolve) => {
+          window.klarnaAsyncCallback = () => {
+            resolve(window.Klarna);
+          };
+        });
+
+        await loadExternalScript(
+          "klarna-sdk",
+          "https://x.klarnacdn.net/kp/lib/v1/api.js"
+        );
+        await klarnaReadyPromise;
+        window?.Klarna?.Payments?.init({
+          client_token: config.authMeta.token,
+        });
+        setKlarna(window?.Klarna);
+      } catch (error) {
+        onError?.(error as Error);
+        setKlarna(null);
+      }
+    };
+    initKlarna();
+  }, []);
 
   return (
-    <>
-      {config.paymentConfiguration.paymentMethods.map((item: any) => (
-        <PaymentMethodCard
-          key={item.type}
-          id={item.name}
-          onSelect={onPaymentMethodSelected}
-        >
-          <KlarnaElement
-            category={item.metadata.identifier}
-            initKlarnaPromise={initKlarnaPromiseRef.current}
-            onSubmit={onSubmit}
-            onComplete={onComplete}
-            onError={onError}
-          />
-        </PaymentMethodCard>
-      ))}
-    </>
+    klarna &&
+    config.paymentConfiguration.paymentMethods.map((item: any) => (
+      <PaymentMethodCard
+        key={item.type}
+        id={item.name}
+        onSelect={onPaymentMethodSelected}
+      >
+        <KlarnaElement
+          category={item.metadata.identifier}
+          onSubmit={onSubmit}
+          onComplete={onComplete}
+          onError={onError}
+        />
+      </PaymentMethodCard>
+    ))
   );
 };
 

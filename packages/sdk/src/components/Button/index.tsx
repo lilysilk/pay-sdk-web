@@ -6,7 +6,7 @@ import { css } from "@emotion/react";
 // 颜色常量
 const colors = {
   lilyWhite: "#FCFBF0",
-  lilyGreen: "#868F61", // 这里使用 green4 作为主要绿色
+  lilyGreen: "#3B4021", // 这里使用 green4 作为主要绿色
   green1: "#181C10",
   green2: "#292E18",
   green3: "#545C37",

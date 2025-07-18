@@ -1,10 +1,11 @@
-import { useRef, type FC } from "react";
+import { useState, useEffect, type FC } from "react";
 import {
   loadCheckoutWebComponents,
   type CheckoutWebComponents,
   type ComponentNameUnion,
 } from "@checkout.com/checkout-web-components";
 import { ConsultCheckoutSSD, ConsultPaymentMethodSSD } from "@/types";
+import { isApplePaySupported } from "@/utils";
 import PaymentMethodCard from "@/components/PaymentMethodCard";
 import CheckoutElement from "./Element";
 
@@ -23,16 +24,30 @@ const Checkout: FC<CheckoutProps> = ({
   onComplete,
   onError,
 }) => {
-  const initCheckoutPromiseRef = useRef(
-    loadCheckoutWebComponents({
-      paymentSession: config.authMeta,
-      publicKey: config.merchantConfiguration.publicKey,
-      environment: "sandbox",
-      locale: "en-US",
-    })
-  );
+  const [checkout, setCheckout] = useState<CheckoutWebComponents | null>(null);
 
-  const renderElement = (method: ConsultPaymentMethodSSD) => {
+  useEffect(() => {
+    const initCheckout = async () => {
+      try {
+        const client = await loadCheckoutWebComponents({
+          paymentSession: config.authMeta,
+          publicKey: config.merchantConfiguration.publicKey,
+          environment: "sandbox",
+          locale: "en-US",
+        });
+        setCheckout(client);
+      } catch (error) {
+        onError?.(error as Error);
+        setCheckout(null);
+      }
+    };
+    initCheckout();
+  }, []);
+
+  const renderElement = (
+    method: ConsultPaymentMethodSSD,
+    checkout: CheckoutWebComponents
+  ) => {
     const extraOptions =
       method.type === "googlepay"
         ? {
@@ -44,7 +59,7 @@ const Checkout: FC<CheckoutProps> = ({
       <CheckoutElement
         name={method.type as ComponentNameUnion}
         extraOptions={extraOptions}
-        initCheckoutPromise={initCheckoutPromiseRef.current!}
+        checkout={checkout}
         onSubmit={onSubmit}
         onComplete={onComplete}
         onError={onError}
@@ -53,17 +68,23 @@ const Checkout: FC<CheckoutProps> = ({
   };
 
   return (
-    <>
-      {config.paymentConfiguration.paymentMethods.map((method) => (
+    checkout &&
+    config.paymentConfiguration.paymentMethods.map((method) => {
+      if (method.type === "applepay" && !isApplePaySupported) {
+        return null;
+      }
+
+      return (
         <PaymentMethodCard
-          id={`checkou-${method.type}`}
           key={method.type}
+          id={`checkou-${method.type}`}
+          title={method.name}
           onSelect={onPaymentMethodSelected}
         >
-          {renderElement(method)}
+          {renderElement(method, checkout)}
         </PaymentMethodCard>
-      ))}
-    </>
+      );
+    })
   );
 };
 

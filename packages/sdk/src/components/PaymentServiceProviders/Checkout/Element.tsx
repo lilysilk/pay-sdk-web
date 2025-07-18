@@ -124,7 +124,7 @@ type ComponentOptionsByComponentName = {
 };
 
 interface CheckoutElementPropss<T extends ComponentNameUnion> {
-  initCheckoutPromise: Promise<CheckoutWebComponents>;
+  checkout: CheckoutWebComponents;
   name: T;
   extraOptions?: Partial<ComponentOptionsByComponentName[T]>;
   onSubmit?: (payment: any) => Promise<any>;
@@ -133,7 +133,7 @@ interface CheckoutElementPropss<T extends ComponentNameUnion> {
 }
 
 const CheckoutElement = <T extends ComponentNameUnion>({
-  initCheckoutPromise,
+  checkout,
   name,
   extraOptions,
   onError,
@@ -142,10 +142,10 @@ const CheckoutElement = <T extends ComponentNameUnion>({
 }: CheckoutElementPropss<T>) => {
   const containerRef = useRef<HTMLDivElement>(null);
   const elementRef = useRef<Component>();
-  const isUnmountedRef = useRef(false);
+  const countRef = useRef(0);
 
   const initElement = useMemoizedFn(async () => {
-    const checkout = await initCheckoutPromise;
+    const currentCount = countRef.current;
     const element = checkout.create(name, {
       ...{
         onReady: (component) => {
@@ -166,25 +166,23 @@ const CheckoutElement = <T extends ComponentNameUnion>({
       },
       ...extraOptions,
     });
-    if (!isUnmountedRef.current) {
-      elementRef.current = element;
-      const isAvailable = await element.isAvailable();
-      if (isAvailable) {
-        element.mount(containerRef.current!);
-      }
+    elementRef.current = element;
+    const isAvailable = await element.isAvailable();
+    if (currentCount === countRef.current && isAvailable) {
+      element.mount(containerRef.current!);
     }
   });
 
   useEffect(() => {
-    isUnmountedRef.current = false;
+    countRef.current++;
     initElement();
 
     return () => {
-      isUnmountedRef.current = true;
       elementRef.current?.unmount();
       elementRef.current = undefined;
     };
-  }, []);
+  }, [checkout]);
+
   return <div ref={containerRef} />;
 };
 

@@ -44,54 +44,59 @@ const Adyen: FC<AdyenProps> = ({
   const [adyenCheckout, setAdyenCheckout] = useState<Core | null>(null);
 
   useEffect(() => {
-    const initAdyen = async () => {
-      const client = await AdyenCheckout({
-        environment: "test",
-        clientKey: config.merchantConfiguration.clientKey,
-        locale: "en-US",
-        countryCode,
-        amount: {
-          value: 10000,
-          currency: "EUR",
-        },
-        onSubmit: (state, component, actions) => {
-          console.log(state, component, actions);
-          onSubmit?.({});
-          // actions.resolve({
-          //   resultCode: "Authorised",
-          //   action: "Authorise",
-          //   order: {
-          //     amount: {
-          //       value: 10000,
-          //       currency: "EUR",
-          //     },
-          //   },
-          // });
-        },
-        onPaymentCompleted: (result, component) => {
-          console.info("onPaymentCompleted", result, component);
-        },
-        onPaymentFailed: (result, component) => {
-          console.info("onPaymentFailed", result, component);
-        },
-        onError: (error, component) => {
-          console.error(
-            "onError",
-            error.name,
-            error.message,
-            error.stack,
-            component
-          );
-        },
-      });
-      setAdyenCheckout(client);
+    const initAdyenCheckout = async () => {
+      try {
+        const client = await AdyenCheckout({
+          environment: "test",
+          clientKey: config.merchantConfiguration.clientKey,
+          locale: "en-US",
+          countryCode,
+          amount: {
+            value: 10000,
+            currency: "EUR",
+          },
+          onSubmit: (state, component, actions) => {
+            console.log(state, component, actions);
+            onSubmit?.({});
+            // actions.resolve({
+            //   resultCode: "Authorised",
+            //   action: "Authorise",
+            //   order: {
+            //     amount: {
+            //       value: 10000,
+            //       currency: "EUR",
+            //     },
+            //   },
+            // });
+          },
+          onPaymentCompleted: (result, component) => {
+            console.info("onPaymentCompleted", result, component);
+          },
+          onPaymentFailed: (result, component) => {
+            console.info("onPaymentFailed", result, component);
+          },
+          onError: (error, component) => {
+            console.error(
+              "onError",
+              error.name,
+              error.message,
+              error.stack,
+              component
+            );
+          },
+        });
+        setAdyenCheckout(client);
+      } catch (error) {
+        onError?.(error as Error);
+        setAdyenCheckout(null);
+      }
     };
-    initAdyen();
+    initAdyenCheckout();
   }, []);
 
   config.paymentConfiguration.paymentMethods;
 
-  const renderItem = (
+  const renderMethod = (
     item: ConsultAdyenPaymentMethodSSD,
     adyenCheckout: Core
   ) => {
@@ -176,13 +181,13 @@ const Adyen: FC<AdyenProps> = ({
 
   return (
     adyenCheckout &&
-    config?.paymentConfiguration?.paymentMethods?.map((item) => {
-      const component = renderItem(item, adyenCheckout);
+    config?.paymentConfiguration?.paymentMethods?.map((method) => {
+      const component = renderMethod(method, adyenCheckout);
       return component ? (
         <PaymentMethodCard
-          key={item.type}
-          id={`adyen-${item.type}`}
-          title={item.name}
+          key={method.type}
+          id={`adyen-${method.type}`}
+          title={method.name}
           onSelect={onPaymentMethodSelected}
         >
           {component}
