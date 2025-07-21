@@ -2,9 +2,9 @@ import { useEffect, useRef, useState, type FC } from "react";
 import { css } from "@emotion/react";
 import { useMemoizedFn } from "@/hooks";
 import {
-  init,
   createElement,
   type ElementTypes,
+  type InitResult,
 } from "@airwallex/components-sdk";
 import Loading from "@/components/Loading";
 
@@ -18,7 +18,6 @@ export interface AirWallexGooglePayConfig {
 }
 
 interface AirWallexGooglePayProps {
-  initAirwallexPromise: ReturnType<typeof init>;
   config: AirWallexGooglePayConfig;
   onSubmit?: (payment: any) => Promise<any>;
   onComplete?: (payment: any) => Promise<any>;
@@ -26,7 +25,6 @@ interface AirWallexGooglePayProps {
 }
 
 const AirWallexGooglePay: FC<AirWallexGooglePayProps> = ({
-  initAirwallexPromise,
   config,
   onSubmit,
   onComplete,
@@ -35,10 +33,10 @@ const AirWallexGooglePay: FC<AirWallexGooglePayProps> = ({
   const [isReady, setIsReady] = useState<boolean>(false);
   const containerRef = useRef<HTMLDivElement>(null);
   const elementRef = useRef<ElementTypes["googlePayButton"]>();
-  const isUnmountedRef = useRef(false);
+  const countRef = useRef(0);
 
   const initElement = useMemoizedFn(async () => {
-    await initAirwallexPromise;
+    const currentCount = countRef.current;
     const element = await createElement("googlePayButton", {
       mode: "payment",
       intent_id: config.intent_id,
@@ -54,13 +52,14 @@ const AirWallexGooglePay: FC<AirWallexGooglePayProps> = ({
       buttonSizeMode: "fill",
     });
 
-    if (!isUnmountedRef.current) {
+    if (currentCount === countRef.current) {
       element.mount(containerRef.current!);
       elementRef.current = element;
     }
   });
 
   useEffect(() => {
+    countRef.current++;
     initElement();
 
     const handdleReady = () => {
@@ -125,7 +124,6 @@ const AirWallexGooglePay: FC<AirWallexGooglePayProps> = ({
         "onCancel",
         handleCancel as EventListener
       );
-      isUnmountedRef.current = true;
       elementRef.current?.unmount();
       elementRef.current = undefined;
     };

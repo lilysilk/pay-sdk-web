@@ -46,8 +46,8 @@ importers:
         specifier: ^6.19.0
         version: 6.19.0
       '@airwallex/components-sdk':
-        specifier: ^1.22.0
-        version: 1.22.0
+        specifier: ^1.24.1
+        version: 1.24.1
       '@checkout.com/checkout-web-components':
         specifier: ^1.0.0
         version: 1.0.0
@@ -103,8 +103,8 @@ packages:
   '@airwallex/airtracker@1.2.0':
     resolution: {integrity: sha512-T6u4QnWEhT9jomVwo6FCVK63AOxRVjonUOn1mj16L/xbqhNCnl/kTBP2khFjFJBJ7wKcb7Yb2KrUg803Uu5zcw==}
 
-  '@airwallex/components-sdk@1.22.0':
-    resolution: {integrity: sha512-+LLEAi0Wj482rVqb2Hm/Rudz/zLALOZSuyZiaPssXPhn3hqg+B7Xu38p7vQrtMlS46MqIdZpiLPJ7POxP0+H4A==}
+  '@airwallex/components-sdk@1.24.1':
+    resolution: {integrity: sha512-5TgekgTCbwRAiYcWa/hoEH08CENOeRBbsZhBgNcEmCR27AVNRmjnZi7nKvmaF+7U/Vp2LPfSZn6LkMzsRMD4ag==}
 
   '@ampproject/remapping@2.3.0':
     resolution: {integrity: sha512-30iZtAPgz+LTIYoeivqYo853f02jBYSd5uGnGpkFV0M3xOt9aN73erkgYAmZU43x4VfqcnLxW9Kpg3R5LC4YYw==}
@@ -1327,7 +1327,7 @@ snapshots:
     dependencies:
       web-vitals: 3.5.2
 
-  '@airwallex/components-sdk@1.22.0':
+  '@airwallex/components-sdk@1.24.1':
     dependencies:
       '@airwallex/airtracker': 1.2.0
 

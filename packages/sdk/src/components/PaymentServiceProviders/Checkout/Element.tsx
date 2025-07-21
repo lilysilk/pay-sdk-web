@@ -166,10 +166,10 @@ const CheckoutElement = <T extends ComponentNameUnion>({
       },
       ...extraOptions,
     });
-    elementRef.current = element;
     const isAvailable = await element.isAvailable();
     if (currentCount === countRef.current && isAvailable) {
       element.mount(containerRef.current!);
+      elementRef.current = element;
     }
   });
 

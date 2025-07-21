@@ -1,6 +1,7 @@
-import { type FC } from "react";
-import { init } from "@airwallex/components-sdk";
-import { ConsultAirWallexSSD } from "@/types";
+import { type FC, useEffect, useState } from "react";
+import { init, type InitResult } from "@airwallex/components-sdk";
+import { ConsultAirWallexSSD, ConsultPaymentMethodSSD } from "@/types";
+import { isApplePaySupported } from "@/utils";
 import PaymentMethodCard from "@/components/PaymentMethodCard";
 // import AirWallexDropIn from "./DropIn";
 import AirWallexApplePay from "./ApplePay";
@@ -15,7 +16,8 @@ interface AirwallexProps {
   onError?: (error: Error) => void;
 }
 
-let initAirwallexPromise: ReturnType<typeof init> | null = null;
+// 原来airwallex只能全局初始化一次 看下现在好了没
+// let globalAirwallex: InitResult | null = null;
 
 const Airwallex: FC<AirwallexProps> = ({
   countryCode,
@@ -25,13 +27,29 @@ const Airwallex: FC<AirwallexProps> = ({
   onComplete,
   onError,
 }) => {
-  if (initAirwallexPromise === null) {
-    initAirwallexPromise = init({
-      env: "demo", // Can choose other production environments, 'staging | 'demo' | 'prod'
-      locale: "en",
-      enabledElements: ["payments"],
-    });
-  }
+  const [airwallex, setAirwallex] = useState<InitResult | null>(null);
+
+  useEffect(() => {
+    const initAirwallex = async () => {
+      try {
+        // if (globalAirwallex) {
+        //   setAirwallex(globalAirwallex);
+        //   return;
+        // }
+        const client = await init({
+          env: "demo", // Can choose other production environments, 'staging | 'demo' | 'prod'
+          locale: "en",
+          enabledElements: ["payments"],
+        });
+        // globalAirwallex = client;
+        setAirwallex(client);
+      } catch (error) {
+        onError?.(error as Error);
+        setAirwallex(null);
+      }
+    };
+    initAirwallex();
+  }, []);
 
   const baseConfig = {
     intent_id: config.authMeta?.id,
@@ -41,14 +59,22 @@ const Airwallex: FC<AirwallexProps> = ({
     countryCode: countryCode,
   };
 
-  return (
-    <>
-      <PaymentMethodCard
-        id="airwallex-applePay"
-        onSelect={onPaymentMethodSelected}
-      >
+  const renderMethod = (method: ConsultPaymentMethodSSD) => {
+    if (method.type === "googlepay") {
+      return (
+        <AirWallexGooglePay
+          config={{
+            ...baseConfig,
+            merchantName: config.merchantConfiguration?.googleMerchantName,
+          }}
+          onSubmit={onSubmit}
+          onComplete={onComplete}
+          onError={onError}
+        />
+      );
+    } else if (method.type === "applepay" && isApplePaySupported) {
+      return (
         <AirWallexApplePay
-          initAirwallexPromise={initAirwallexPromise}
           config={{
             ...baseConfig,
             autoCapture: config.merchantConfiguration?.autoCapture === "true",
@@ -58,23 +84,25 @@ const Airwallex: FC<AirwallexProps> = ({
           onComplete={onComplete}
           onError={onError}
         />
-      </PaymentMethodCard>
-      <PaymentMethodCard
-        id="airwallex-googlePay"
-        onSelect={onPaymentMethodSelected}
-      >
-        <AirWallexGooglePay
-          initAirwallexPromise={initAirwallexPromise}
-          config={{
-            ...baseConfig,
-            merchantName: config.merchantConfiguration?.googleMerchantName,
-          }}
-          onSubmit={onSubmit}
-          onComplete={onComplete}
-          onError={onError}
-        />
-      </PaymentMethodCard>
-    </>
+      );
+    }
+  };
+
+  return (
+    airwallex &&
+    config?.paymentConfiguration?.paymentMethods?.map((method) => {
+      const component = renderMethod(method);
+      return component ? (
+        <PaymentMethodCard
+          key={method.type}
+          id={`airwallex-${method.type}`}
+          title={method.name}
+          onSelect={onPaymentMethodSelected}
+        >
+          {component}
+        </PaymentMethodCard>
+      ) : null;
+    })
   );
 };
 

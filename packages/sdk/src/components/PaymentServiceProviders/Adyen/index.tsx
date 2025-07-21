@@ -94,8 +94,6 @@ const Adyen: FC<AdyenProps> = ({
     initAdyenCheckout();
   }, []);
 
-  config.paymentConfiguration.paymentMethods;
-
   const renderMethod = (
     item: ConsultAdyenPaymentMethodSSD,
     adyenCheckout: Core

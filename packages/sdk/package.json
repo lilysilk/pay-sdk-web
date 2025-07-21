@@ -47,7 +47,7 @@
   },
   "dependencies": {
     "@adyen/adyen-web": "^6.19.0",
-    "@airwallex/components-sdk": "^1.22.0",
+    "@airwallex/components-sdk": "^1.24.1",
     "@checkout.com/checkout-web-components": "^1.0.0",
     "@emotion/react": "^11.13.3",
     "@paypal/react-paypal-js": "^8.8.3",
