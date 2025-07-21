@@ -13,6 +13,7 @@ interface LilyPaySDKProps {
   currency: string;
   amount: number;
   orderId: string;
+  forterTokenCookie: string;
   onPaymentMethodSelected?: (paymentMethod: string) => void;
   onSubmit?: (orderId: string, paymentMethod: string) => void;
   onComplete?: (orderId: string, paymentMethod: string) => void;
@@ -27,6 +28,7 @@ const LilyPaySDK: FC<LilyPaySDKProps> = ({
   currency,
   amount,
   orderId,
+  forterTokenCookie,
   onPaymentMethodSelected,
 }) => {
   return (
@@ -40,6 +42,7 @@ const LilyPaySDK: FC<LilyPaySDKProps> = ({
           website={website}
           countryCode={countryCode}
           orderId={orderId}
+          forterTokenCookie={forterTokenCookie}
           onPaymentMethodSelected={onPaymentMethodSelected}
         />
       </EnvironmentProvider>

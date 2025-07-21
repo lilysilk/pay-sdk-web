@@ -55,6 +55,7 @@
     "jotai": "^2.12.5",
     "ky": "^1.8.1",
     "lodash-es": "^4.17.21",
-    "react-error-boundary": "^6.0.0"
+    "react-error-boundary": "^6.0.0",
+    "uuid": "^11.1.0"
   }
 }

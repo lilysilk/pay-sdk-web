@@ -1,8 +1,13 @@
 // 消息事件类型和对应数据的映射
+export interface SuccessData {
+  lpsCardToken: string;
+  lpsCardTokenVersion: string;
+}
+
 interface EventTypeDataMap {
   READY: { instanceId?: string };
   ERROR: { code: string; message: string; details?: any };
-  SUCCESS: { token: string };
+  SUCCESS: { data: SuccessData };
   RESIZE: { width: number; height: number };
 }
 

@@ -1,13 +1,15 @@
 import type { FC } from "react";
 import { lazy, useState, useCallback, useMemo, useContext } from "react";
+import { v4 as uuidv4 } from "uuid";
 import { useMutation } from "@tanstack/react-query";
 import { useAtomValue, useSetAtom } from "jotai";
 import {
   combinedPaymentsRenderStatesAtom,
   combinedPaymentsRenderAllFailedAtom,
 } from "@/atom";
-import { useMemoizedFn } from "@/hooks";
 import type { ConsultPaymentItemSSD, RenderStatus } from "@/types";
+import { getCurrentUrl } from "@/utils";
+import { useMemoizedFn, useCurrentTime } from "@/hooks";
 import { EnvironmentContext } from "@/components/EnvironmentContext";
 import LazyLoadWrapper from "@/components/LazyLoadWrapper";
 
@@ -30,8 +32,28 @@ const Paypal = lazy(
   () => import("@/components/PaymentServiceProviders/Paypal")
 );
 
+interface ConfirmPaymentParams {
+  pspType: string;
+  paymentType: string;
+  pspId?: string;
+  lpsCardToken?: string;
+  lpsCardTokenVersion?: string;
+  walletInfo?: {
+    intentId: string;
+    customerId: string;
+  };
+  cardInfo?: {
+    lpsCardToken: string;
+    lpsCardTokenVersion: string;
+    kmsVersionId: string;
+    isServer: boolean;
+  };
+}
+
 interface CombinedPaymentsProps {
+  orderId: string;
   countryCode: string;
+  forterTokenCookie: string;
   paymentServiceProviders: ConsultPaymentItemSSD[];
   onPaymentMethodSelected?: (paymentMethod: string) => void;
   onSubmit?: (orderId: string, paymentMethod: string) => void;
@@ -40,7 +62,9 @@ interface CombinedPaymentsProps {
 }
 
 const CombinedPayments: FC<CombinedPaymentsProps> = ({
+  orderId,
   countryCode,
+  forterTokenCookie,
   paymentServiceProviders,
   onComplete,
   onPaymentMethodSelected,
@@ -48,6 +72,7 @@ const CombinedPayments: FC<CombinedPaymentsProps> = ({
   onSubmit,
 }) => {
   const { confirmPayment } = useContext(EnvironmentContext)!;
+  const getCurrentTime = useCurrentTime(orderId);
   const combinedPaymentsRenderAllFailed = useAtomValue(
     combinedPaymentsRenderAllFailedAtom
   );
@@ -64,8 +89,29 @@ const CombinedPayments: FC<CombinedPaymentsProps> = ({
   );
 
   const { mutateAsync: confirmPaymentMutateAsync } = useMutation({
-    mutationFn: async (payment: any) => {
-      const res = await confirmPayment("123");
+    mutationFn: async (payment: ConfirmPaymentParams) => {
+      const res = await confirmPayment({
+        idempotencyId: uuidv4(),
+        channel: "Web",
+        pspType: payment.pspType,
+        paymentType: payment.paymentType,
+        paymentOrderId: orderId,
+        returnUrl: getCurrentUrl(),
+        authenticationData: payment.walletInfo,
+        paymentMethod: {
+          ...payment.cardInfo,
+          shopCustomer: {
+            accountId: 11111,
+            isLogin: true,
+            email: "jdoe@example.com",
+            shopId: 10001,
+          },
+        },
+        riskMetadata: {
+          checkoutTime: getCurrentTime(),
+          forterTokenCookie,
+        },
+      });
       return res;
     },
     onSuccess(data) {},
@@ -74,7 +120,7 @@ const CombinedPayments: FC<CombinedPaymentsProps> = ({
     },
   });
 
-  const handleSubmit = useMemoizedFn(async (payment: any) => {
+  const handleSubmit = useMemoizedFn(async (payment: ConfirmPaymentParams) => {
     onSubmit?.("123", "123");
     return confirmPaymentMutateAsync(payment);
   });
@@ -193,6 +239,14 @@ const CombinedPayments: FC<CombinedPaymentsProps> = ({
 
   return (
     <>
+      <LazyLoadWrapper name="PCICARD" onStatusChange={handleStatusChange}>
+        <PCICard
+          onPaymentMethodSelected={onPaymentMethodSelected}
+          onSubmit={handleSubmit}
+          onComplete={onComplete}
+          onError={onError}
+        />
+      </LazyLoadWrapper>
       {paymentServiceProviders.map((item) => {
         return (
           <LazyLoadWrapper

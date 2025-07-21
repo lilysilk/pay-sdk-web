@@ -31,4 +31,13 @@ export const checkApplePaySupport = () => {
   }
 };
 
+export const getCurrentUrl = () => {
+  const currentUrl = new URL(window.location.href);
+
+  // 移除 redirectResult 查询参数（如果存在）
+  currentUrl.searchParams.delete("redirectResult");
+
+  return currentUrl.toString();
+};
+
 export const isApplePaySupported = checkApplePaySupport();

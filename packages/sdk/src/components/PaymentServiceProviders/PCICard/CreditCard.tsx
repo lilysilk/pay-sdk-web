@@ -4,10 +4,11 @@ import {
   isIframeMessage,
   validateMessageOrigin,
   MESSAGE_NAMESPACE,
+  type SuccessData,
 } from "./utils/messageChannel";
 
 interface CreditCardProps {
-  onSubmit?: (payment: any) => Promise<any>;
+  onSubmit?: (data: SuccessData) => Promise<any> | undefined;
   onComplete?: (payment: any) => Promise<any>;
   onError?: (error: Error) => void;
 }
@@ -57,9 +58,9 @@ const CreditCard: FC<CreditCardProps> = ({ onSubmit, onComplete, onError }) => {
           break;
 
         case "SUCCESS":
-          // data.data 的类型是 { token: string; orderId?: string; amount?: number }
-          const { token } = data.data;
-          console.log("Payment success:", { token });
+          const { data: paymentData } = data.data;
+          console.log("Payment success:", paymentData);
+          onSubmit?.(paymentData);
           break;
 
         case "ERROR":

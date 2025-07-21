@@ -13,6 +13,7 @@ interface MainProps {
   currency: string;
   amount: number;
   orderId: string;
+  forterTokenCookie: string;
   onPaymentMethodSelected?: (paymentMethod: string) => void;
   onSubmit?: (orderId: string, paymentMethod: string) => void;
   onCompleted?: (orderId: string, paymentMethod: string) => void;
@@ -330,6 +331,7 @@ const Main: FC<MainProps> = ({
   currency,
   amount,
   orderId,
+  forterTokenCookie,
   onError,
   onPaymentMethodSelected,
   onCompleted,
@@ -410,7 +412,9 @@ const Main: FC<MainProps> = ({
           <div>Loading...</div>
         ) : (
           <CombinedPayments
+            orderId={orderId}
             countryCode={countryCode}
+            forterTokenCookie={forterTokenCookie}
             paymentServiceProviders={
               data?.consult?.data?.paymentServiceProviders || []
             }

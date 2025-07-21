@@ -1,13 +1,21 @@
 import type { FC } from "react";
 import PaymentMethodCard from "@/components/PaymentMethodCard";
 import type { CounsultPCICardSSD } from "@/types";
+import { useMemoizedFn } from "@/hooks";
+import { type SuccessData } from "./utils/messageChannel";
 import CreditCard from "./CreditCard";
 import CreditBind from "./CreditBind";
 
+interface SubmitData extends SuccessData {
+  isServer: boolean;
+  pspType: string;
+  paymentType: string;
+}
+
 interface PCICardProps {
-  config: CounsultPCICardSSD;
+  config?: CounsultPCICardSSD;
   onPaymentMethodSelected?: (paymentMethod: string) => void;
-  onSubmit?: (payment: any) => Promise<any>;
+  onSubmit?: (data: SubmitData) => Promise<any>;
   onComplete?: (payment: any) => Promise<any>;
   onError?: (error: Error) => void;
 }
@@ -19,19 +27,29 @@ const PCICard: FC<PCICardProps> = ({
   onComplete,
   onError,
 }) => {
+  const handleSubmit = useMemoizedFn((data: SuccessData) => {
+    return onSubmit?.({
+      ...data,
+      isServer: true,
+      pspType: "PCICARD",
+      paymentType: "card",
+    });
+  });
+
   return (
     <>
-      <PaymentMethodCard
+      {/* <PaymentMethodCard
         id="pcicard-credit-bind"
         onSelect={onPaymentMethodSelected}
       >
         <CreditBind />
-      </PaymentMethodCard>
+      </PaymentMethodCard> */}
       <PaymentMethodCard
         id="pcicard-credit-card"
+        title="Credit Card"
         onSelect={onPaymentMethodSelected}
       >
-        <CreditCard />
+        <CreditCard onSubmit={handleSubmit} />
       </PaymentMethodCard>
     </>
   );
