@@ -77,14 +77,14 @@ export const EnvironmentProvider: FC<EnviromentProviderProps> = ({
       },
       confirmPayment: async (params: {}) => {
         return requestRef.current
-          .post<Response<any>>(`order/api/v2/order/removeAddress.json`, {
+          .post<Response<any>>(`api/v1/payments/confirm`, {
             json: params,
           })
           .json();
       },
       completePayment: async (params: {}) => {
         return requestRef.current
-          .post<Response<any>>(`order/api/v2/order/removeAddress.json`, {
+          .post<Response<any>>(`api/v1/payments/complete`, {
             json: params,
           })
           .json();
@@ -96,7 +96,7 @@ export const EnvironmentProvider: FC<EnviromentProviderProps> = ({
       },
       getServerTime: async () => {
         return requestRef.current
-          .get<Response<any>>(`order/api/v2/order/getAbConfig.json`)
+          .get<Response<any>>(`api/v1/forter/getTime`)
           .json();
       },
     }),

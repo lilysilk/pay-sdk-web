@@ -3,9 +3,9 @@ import LilyPaySDK from "lilysilk-pay-sdk-web";
 
 function App() {
   // Form state
-  const [countryCode, setCountryCode] = useState("ES");
-  const [website, setWebsite] = useState("ES");
-  const [currency, setCurrency] = useState("EUR");
+  const [countryCode, setCountryCode] = useState("AL");
+  const [website, setWebsite] = useState("us");
+  const [currency, setCurrency] = useState("USD");
   const [amountValue, setAmountValue] = useState("11000");
   const [email, setEmail] = useState("jdoe@example.com");
   const [locale, setLocale] = useState("en");
@@ -190,8 +190,8 @@ function App() {
         setCreateOrderStatus("创建订单失败");
       }
     } catch (error) {
-      console.log(error);
       setCreateOrderStatus("创建订单失败");
+      console.error("Create order error:", error);
     }
   };
 
@@ -371,20 +371,20 @@ function App() {
               }}
             >
               <option value="">-请选择站点--</option>
-              <option value="US">US</option>
-              <option value="DE">DE</option>
-              <option value="NL">NL</option>
-              <option value="UK">UK</option>
-              <option value="CA">CA</option>
-              <option value="AU">AU</option>
-              <option value="SG">SG</option>
-              <option value="FR">FR</option>
-              <option value="ES">ES</option>
-              <option value="IT">IT</option>
-              <option value="SE">SE</option>
-              <option value="DK">DK</option>
-              <option value="JP">JP</option>
-              <option value="kr">kr</option>
+              <option value="us">US</option>
+              <option value="de">DE</option>
+              <option value="nl">NL</option>
+              <option value="uk">UK</option>
+              <option value="ca">CA</option>
+              <option value="au">AU</option>
+              <option value="sg">SG</option>
+              <option value="fr">FR</option>
+              <option value="es">ES</option>
+              <option value="it">IT</option>
+              <option value="se">SE</option>
+              <option value="dk">DK</option>
+              <option value="jp">JP</option>
+              <option value="kr">KR</option>
             </select>
           </div>
 
@@ -535,9 +535,9 @@ function App() {
         {orderId ? (
           <LilyPaySDK
             env="dev"
-            locale={locale}
             countryCode={countryCode}
-            website={website}
+            forterTokenCookie="123"
+            storeCode={website as any}
             currency={currency}
             amount={parseInt(amountValue) || 0}
             orderId={orderId}

@@ -127,8 +127,8 @@ interface CheckoutElementPropss<T extends ComponentNameUnion> {
   checkout: CheckoutWebComponents;
   name: T;
   extraOptions?: Partial<ComponentOptionsByComponentName[T]>;
-  onSubmit?: (payment: any) => Promise<any>;
-  onComplete?: (payment: any) => Promise<any>;
+  onSubmit?: (type: string) => Promise<any>;
+  onComplete?: (type: string) => Promise<any>;
   onError?: (error: Error) => void;
 }
 
@@ -156,12 +156,12 @@ const CheckoutElement = <T extends ComponentNameUnion>({
         },
         onSubmit(component) {
           // 点击按钮发起支付 需要调用confirm
-
-          onSubmit?.({});
+          console.log("++++++++++++++++++++++++++++");
+          onSubmit?.(component.type);
         },
         onPaymentCompleted(component, payment) {
           // 支付完成 需要调用complete
-          onComplete?.(payment);
+          onComplete?.(component.type);
         },
       },
       ...extraOptions,

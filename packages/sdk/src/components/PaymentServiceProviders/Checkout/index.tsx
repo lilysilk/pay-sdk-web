@@ -1,19 +1,34 @@
-import { useState, useEffect, type FC } from "react";
+import { useState, useEffect, useContext, type FC } from "react";
 import {
   loadCheckoutWebComponents,
   type CheckoutWebComponents,
   type ComponentNameUnion,
+  type Component,
 } from "@checkout.com/checkout-web-components";
-import { ConsultCheckoutSSD, ConsultPaymentMethodSSD } from "@/types";
+import {
+  type ConsultCheckoutSSD,
+  type ConsultPaymentMethodSSD,
+  type PSPType,
+  PSP,
+} from "@/types";
 import { isApplePaySupported } from "@/utils";
+import { useMemoizedFn } from "@/hooks";
+import { EnvironmentContext } from "@/components/EnvironmentContext";
 import PaymentMethodCard from "@/components/PaymentMethodCard";
 import CheckoutElement from "./Element";
+
+interface SubmitData {
+  pspType: PSPType;
+  paymentType: string;
+  pspId: string | number;
+  extranal?: Record<string, any>;
+}
 
 interface CheckoutProps {
   config: ConsultCheckoutSSD;
   onPaymentMethodSelected?: (paymentMethod: string) => void;
-  onSubmit?: (payment: any) => Promise<any>;
-  onComplete?: (payment: any) => Promise<any>;
+  onSubmit?: (payment: SubmitData) => Promise<any>;
+  onComplete?: (type: string) => Promise<any>;
   onError?: (error: Error) => void;
 }
 
@@ -24,8 +39,9 @@ const Checkout: FC<CheckoutProps> = ({
   onComplete,
   onError,
 }) => {
+  const { env } = useContext(EnvironmentContext)!;
   const [checkout, setCheckout] = useState<CheckoutWebComponents | null>(null);
-  const checkoutEnv = config.merchantConfiguration.environment || "sandbox";
+  const checkoutEnv = env === "prod" ? "production" : "sandbox";
 
   useEffect(() => {
     const initCheckout = async () => {
@@ -47,6 +63,31 @@ const Checkout: FC<CheckoutProps> = ({
     initCheckout();
   }, [checkoutEnv, config.merchantConfiguration.publicKey]);
 
+  const handleSubmit = useMemoizedFn(async (type: string) => {
+    return onSubmit?.({
+      pspType: PSP.CHECKOUT,
+      paymentType: type,
+      pspId: config.id,
+      extranal: {
+        authenticationData: {
+          ckoPaymentSessionId: config.authMeta?.id,
+        },
+      },
+    });
+  });
+
+  const handleComplete = useMemoizedFn(async (type: string) => {
+    return onComplete?.(type);
+  });
+
+  const handleClick = useMemoizedFn(async (component: Component) => {
+    // 点击事件 埋点可能会需要
+    console.log("************************");
+    return {
+      continue: true,
+    };
+  });
+
   const renderElement = (
     method: ConsultPaymentMethodSSD,
     checkout: CheckoutWebComponents
@@ -55,6 +96,11 @@ const Checkout: FC<CheckoutProps> = ({
       method.type === "googlepay"
         ? {
             buttonType: "fill",
+            handleClick,
+          }
+        : method.type === "applepay"
+        ? {
+            handleClick,
           }
         : {};
 
@@ -63,8 +109,8 @@ const Checkout: FC<CheckoutProps> = ({
         name={method.type as ComponentNameUnion}
         extraOptions={extraOptions}
         checkout={checkout}
-        onSubmit={onSubmit}
-        onComplete={onComplete}
+        onSubmit={handleSubmit}
+        onComplete={handleComplete}
         onError={onError}
       />
     );

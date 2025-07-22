@@ -74,7 +74,7 @@ const Adyen: FC<AdyenProps> = ({
       paymentType: state.data.paymentMethod.type,
       pspId: config.id,
       extranal: {
-        ...state,
+        ...state.data,
       },
     });
   });
