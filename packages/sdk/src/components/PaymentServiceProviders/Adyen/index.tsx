@@ -1,9 +1,20 @@
-import { useEffect, useState, type FC } from "react";
+import { useEffect, useState, useContext, type FC } from "react";
 import { includes } from "lodash-es";
-import { AdyenCheckout, type Core } from "@adyen/adyen-web";
+import {
+  AdyenCheckout,
+  type Core,
+  type SubmitData as AdyenSubmitData,
+} from "@adyen/adyen-web";
 import "@adyen/adyen-web/styles/adyen.css";
-import type { ConsultAdyenSSD, ConsultAdyenPaymentMethodSSD } from "@/types";
+import {
+  PSP,
+  type ConsultAdyenSSD,
+  type ConsultAdyenPaymentMethodSSD,
+  type PSPType,
+} from "@/types";
 import { isApplePaySupported } from "@/utils";
+import { useMemoizedFn } from "@/hooks";
+import { EnvironmentContext } from "@/components/EnvironmentContext";
 import PaymentMethodCard from "@/components/PaymentMethodCard";
 import AdyenKlarna from "./Klarna";
 import AdyenGooglePay from "./GooglePay";
@@ -24,17 +35,28 @@ import AdyenOnlineBankingSK from "./OnlineBankingSK";
 import AdyenMolPayEBankingMY from "./MolPayEBankingMY";
 import AdyenMolPayEBankingTH from "./MolPayEBankingTH";
 
+interface SubmitData {
+  pspType: PSPType;
+  paymentType: string;
+  pspId: string | number;
+  extranal?: Record<string, any>;
+}
+
 interface AdyenProps {
   countryCode: string;
+  amount: number;
+  currency: string;
   config: ConsultAdyenSSD;
   onPaymentMethodSelected?: (paymentMethod: string) => void;
-  onSubmit?: (payment: any) => Promise<any>;
+  onSubmit?: (payment: SubmitData) => Promise<any>;
   onComplete?: (payment: any) => Promise<any>;
   onError?: (error: Error) => void;
 }
 
 const Adyen: FC<AdyenProps> = ({
   countryCode,
+  amount,
+  currency,
   config,
   onPaymentMethodSelected,
   onSubmit,
@@ -42,22 +64,45 @@ const Adyen: FC<AdyenProps> = ({
   onError,
 }) => {
   const [adyenCheckout, setAdyenCheckout] = useState<Core | null>(null);
+  const { env } = useContext(EnvironmentContext)!;
+  const adyenEnv =
+    env === "prod" ? "test" : config.merchantConfiguration.payEnvironment;
+
+  const handleSubmit = useMemoizedFn(async (state: AdyenSubmitData) => {
+    return onSubmit?.({
+      pspType: PSP.ADYEN,
+      paymentType: state.data.paymentMethod.type,
+      pspId: config.id,
+      extranal: {
+        ...state,
+      },
+    });
+  });
+
+  const handleComplete = useMemoizedFn(async () => {
+    return onComplete?.({});
+  });
+
+  const handleError = useMemoizedFn((error: Error) => {
+    onError?.(error);
+  });
 
   useEffect(() => {
     const initAdyenCheckout = async () => {
       try {
         const client = await AdyenCheckout({
-          environment: "test",
+          environment: adyenEnv,
           clientKey: config.merchantConfiguration.clientKey,
+          // 需要根据storeCode或者当前浏览器语言来确定
           locale: "en-US",
           countryCode,
           amount: {
-            value: 10000,
-            currency: "EUR",
+            value: amount,
+            currency: currency,
           },
-          onSubmit: (state, component, actions) => {
+          onSubmit: async (state, component, actions) => {
             console.log(state, component, actions);
-            onSubmit?.({});
+            const result = await handleSubmit(state);
             // actions.resolve({
             //   resultCode: "Authorised",
             //   action: "Authorise",
@@ -71,6 +116,7 @@ const Adyen: FC<AdyenProps> = ({
           },
           onPaymentCompleted: (result, component) => {
             console.info("onPaymentCompleted", result, component);
+            handleComplete();
           },
           onPaymentFailed: (result, component) => {
             console.info("onPaymentFailed", result, component);
@@ -87,12 +133,12 @@ const Adyen: FC<AdyenProps> = ({
         });
         setAdyenCheckout(client);
       } catch (error) {
-        onError?.(error as Error);
+        handleError(error as Error);
         setAdyenCheckout(null);
       }
     };
     initAdyenCheckout();
-  }, []);
+  }, [adyenEnv, amount, currency]);
 
   const renderMethod = (
     item: ConsultAdyenPaymentMethodSSD,

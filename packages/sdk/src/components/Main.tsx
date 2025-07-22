@@ -1,6 +1,7 @@
 import { useEffect, useContext, type FC } from "react";
 import { Provider as JotaiProvider } from "jotai";
 import { useMutation } from "@tanstack/react-query";
+import type { StoreCode } from "@/types";
 import { useMemoizedFn } from "@/hooks";
 import { EnvironmentContext } from "./EnvironmentContext";
 import Container from "./Container";
@@ -8,8 +9,7 @@ import CombinedPayments from "./CombinedPayments";
 
 interface MainProps {
   countryCode: string;
-  website: string;
-  locale: string;
+  storeCode: StoreCode;
   currency: string;
   amount: number;
   orderId: string;
@@ -325,9 +325,8 @@ const testData = {
 };
 
 const Main: FC<MainProps> = ({
-  locale,
   countryCode,
-  website,
+  storeCode,
   currency,
   amount,
   orderId,
@@ -413,6 +412,8 @@ const Main: FC<MainProps> = ({
         ) : (
           <CombinedPayments
             orderId={orderId}
+            amount={amount}
+            currency={currency}
             countryCode={countryCode}
             forterTokenCookie={forterTokenCookie}
             paymentServiceProviders={

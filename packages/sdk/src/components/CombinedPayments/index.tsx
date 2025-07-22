@@ -7,7 +7,7 @@ import {
   combinedPaymentsRenderStatesAtom,
   combinedPaymentsRenderAllFailedAtom,
 } from "@/atom";
-import type { ConsultPaymentItemSSD, RenderStatus } from "@/types";
+import type { PSPType, ConsultPaymentItemSSD, RenderStatus } from "@/types";
 import { getCurrentUrl } from "@/utils";
 import { useMemoizedFn, useCurrentTime } from "@/hooks";
 import { EnvironmentContext } from "@/components/EnvironmentContext";
@@ -33,14 +33,13 @@ const Paypal = lazy(
 );
 
 interface ConfirmPaymentParams {
-  pspType: string;
+  pspType: PSPType;
   paymentType: string;
-  pspId?: string;
+  pspId?: string | number;
   lpsCardToken?: string;
   lpsCardTokenVersion?: string;
-  walletInfo?: {
-    intentId: string;
-    customerId: string;
+  external?: {
+    [key: string]: any;
   };
   cardInfo?: {
     lpsCardToken: string;
@@ -53,6 +52,8 @@ interface ConfirmPaymentParams {
 interface CombinedPaymentsProps {
   orderId: string;
   countryCode: string;
+  amount: number;
+  currency: string;
   forterTokenCookie: string;
   paymentServiceProviders: ConsultPaymentItemSSD[];
   onPaymentMethodSelected?: (paymentMethod: string) => void;
@@ -63,6 +64,8 @@ interface CombinedPaymentsProps {
 
 const CombinedPayments: FC<CombinedPaymentsProps> = ({
   orderId,
+  amount,
+  currency,
   countryCode,
   forterTokenCookie,
   paymentServiceProviders,
@@ -97,7 +100,6 @@ const CombinedPayments: FC<CombinedPaymentsProps> = ({
         paymentType: payment.paymentType,
         paymentOrderId: orderId,
         returnUrl: getCurrentUrl(),
-        authenticationData: payment.walletInfo,
         paymentMethod: {
           ...payment.cardInfo,
           shopCustomer: {
@@ -111,6 +113,7 @@ const CombinedPayments: FC<CombinedPaymentsProps> = ({
           checkoutTime: getCurrentTime(),
           forterTokenCookie,
         },
+        ...payment.external,
       });
       return res;
     },
@@ -170,6 +173,8 @@ const CombinedPayments: FC<CombinedPaymentsProps> = ({
       return (
         <Adyen
           countryCode={countryCode}
+          amount={amount}
+          currency={currency}
           config={item}
           onPaymentMethodSelected={onPaymentMethodSelected}
           onSubmit={handleSubmit}
@@ -226,6 +231,7 @@ const CombinedPayments: FC<CombinedPaymentsProps> = ({
     if (item.type === "PAYPAL") {
       return (
         <Paypal
+          currency={currency}
           config={item}
           onPaymentMethodSelected={onPaymentMethodSelected}
           onSubmit={handleSubmit}

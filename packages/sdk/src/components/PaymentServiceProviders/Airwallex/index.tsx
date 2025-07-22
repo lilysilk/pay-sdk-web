@@ -28,6 +28,7 @@ const Airwallex: FC<AirwallexProps> = ({
   onError,
 }) => {
   const [airwallex, setAirwallex] = useState<InitResult | null>(null);
+  const airwallexEnv = config.merchantConfiguration.environment || "demo";
 
   useEffect(() => {
     const initAirwallex = async () => {
@@ -37,7 +38,8 @@ const Airwallex: FC<AirwallexProps> = ({
         //   return;
         // }
         const client = await init({
-          env: "demo", // Can choose other production environments, 'staging | 'demo' | 'prod'
+          env: airwallexEnv, // Can choose other production environments, 'staging | 'demo' | 'prod'
+          // 需要根据storeCode或者当前浏览器语言来确定
           locale: "en",
           enabledElements: ["payments"],
         });
@@ -49,7 +51,7 @@ const Airwallex: FC<AirwallexProps> = ({
       }
     };
     initAirwallex();
-  }, []);
+  }, [airwallexEnv]);
 
   const baseConfig = {
     intent_id: config.authMeta?.id,

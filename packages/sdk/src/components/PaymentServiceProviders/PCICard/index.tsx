@@ -1,6 +1,6 @@
 import type { FC } from "react";
 import PaymentMethodCard from "@/components/PaymentMethodCard";
-import type { CounsultPCICardSSD } from "@/types";
+import { PSP, type CounsultPCICardSSD, type PSPType } from "@/types";
 import { useMemoizedFn } from "@/hooks";
 import { type SuccessData } from "./utils/messageChannel";
 import CreditCard from "./CreditCard";
@@ -8,7 +8,7 @@ import CreditBind from "./CreditBind";
 
 interface SubmitData extends SuccessData {
   isServer: boolean;
-  pspType: string;
+  pspType: PSPType;
   paymentType: string;
 }
 
@@ -31,7 +31,7 @@ const PCICard: FC<PCICardProps> = ({
     return onSubmit?.({
       ...data,
       isServer: true,
-      pspType: "PCICARD",
+      pspType: PSP.PCICARD,
       paymentType: "card",
     });
   });

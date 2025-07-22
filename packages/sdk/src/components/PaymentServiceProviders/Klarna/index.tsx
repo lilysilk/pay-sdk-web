@@ -51,7 +51,7 @@ const Klarna: FC<KlarnaProps> = ({
       }
     };
     initKlarna();
-  }, []);
+  }, [config.authMeta.token]);
 
   return (
     klarna &&

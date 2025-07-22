@@ -25,14 +25,17 @@ const Checkout: FC<CheckoutProps> = ({
   onError,
 }) => {
   const [checkout, setCheckout] = useState<CheckoutWebComponents | null>(null);
+  const checkoutEnv = config.merchantConfiguration.environment || "sandbox";
 
   useEffect(() => {
     const initCheckout = async () => {
       try {
         const client = await loadCheckoutWebComponents({
+          // 看下需不需要加到依赖数组
           paymentSession: config.authMeta,
           publicKey: config.merchantConfiguration.publicKey,
-          environment: "sandbox",
+          environment: checkoutEnv,
+          // 需要根据storeCode或者当前浏览器语言来确定
           locale: "en-US",
         });
         setCheckout(client);
@@ -42,7 +45,7 @@ const Checkout: FC<CheckoutProps> = ({
       }
     };
     initCheckout();
-  }, []);
+  }, [checkoutEnv, config.merchantConfiguration.publicKey]);
 
   const renderElement = (
     method: ConsultPaymentMethodSSD,

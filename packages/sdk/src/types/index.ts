@@ -1,4 +1,5 @@
-import type { Payment } from "@airwallex/components-sdk";
+import type { Payment, Env } from "@airwallex/components-sdk";
+import type { EnvironmentUnion } from "@checkout.com/checkout-web-components";
 
 export interface Response<T> {
   code: number;
@@ -7,9 +8,46 @@ export interface Response<T> {
   success: boolean;
 }
 
+export type StoreCode =
+  | "us"
+  | "de"
+  | "nl"
+  | "uk"
+  | "ca"
+  | "au"
+  | "sg"
+  | "fr"
+  | "es"
+  | "it"
+  | "se"
+  | "dk"
+  | "jp"
+  | "kr"
+  | "ch";
+
 export type Environment = "dev" | "beta" | "pre" | "prod";
 
+export type AdyenEnvironment =
+  | "test"
+  | "live"
+  | "live-us"
+  | "live-au"
+  | "live-apse"
+  | "live-in";
+
 export type RenderStatus = "success" | "error";
+
+export const PSP = {
+  ADYEN: "ADYEN",
+  AIRWALLEX: "AIRWALLEX",
+  CHECKOUT: "CHECKOUT",
+  KLARNA: "KLARNA",
+  NUVEI: "NUVEI",
+  PAYPAL: "PAYPAL",
+  PCICARD: "PCICARD",
+} as const;
+
+export type PSPType = (typeof PSP)[keyof typeof PSP];
 
 export interface ConsultMerchantConfigurationSSD {
   autoCapture: string;
@@ -37,6 +75,7 @@ export interface ConsultCheckoutSSD {
   };
   merchantConfiguration: ConsultMerchantConfigurationSSD & {
     publicKey: string;
+    environment: EnvironmentUnion;
   };
   paymentConfiguration: {
     paymentMethods: ConsultPaymentMethodSSD[];
@@ -65,6 +104,7 @@ export interface ConsultAirWallexSSD {
   authMeta: ConsultAirWallexAuthMetaSSD;
   merchantConfiguration: ConsultMerchantConfigurationSSD & {
     googleMerchantName: string;
+    environment: Env;
   };
   paymentConfiguration: {
     paymentMethods: ConsultPaymentMethodSSD[];
@@ -85,7 +125,7 @@ export interface ConsultAdyenSSD {
   id: number;
   merchantConfiguration: {
     environment: string;
-    payEnvironment: string;
+    payEnvironment: AdyenEnvironment;
     clientKey: string;
   };
   paymentConfiguration: {

@@ -5,6 +5,7 @@ import PaypalElement from "./Element";
 import type { ConsultPayPalSSD } from "@/types";
 
 interface PaypalProps {
+  currency: string;
   config: ConsultPayPalSSD;
   onPaymentMethodSelected?: (paymentMethod: string) => void;
   onSubmit?: (payment: any) => Promise<any>;
@@ -13,6 +14,7 @@ interface PaypalProps {
 }
 
 const Paypal: FC<PaypalProps> = ({
+  currency,
   config,
   onPaymentMethodSelected,
   onSubmit,
@@ -28,7 +30,7 @@ const Paypal: FC<PaypalProps> = ({
         intent: "capture",
         vault: false,
         // 需要动态传入
-        currency: "USD",
+        currency,
         commit: false,
       }}
     >

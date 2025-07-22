@@ -14,7 +14,7 @@ const AdyenKlarna: FC<AdyenKlarnaProps> = ({ type, adyenCheckout }) => {
   const initElement = useMemoizedFn(async () => {
     const element = new Klarna(adyenCheckout, {
       type,
-      useKlarnaWidget: false,
+      useKlarnaWidget: true,
     });
     elementRef.current = element;
     element.mount(containerRef.current!);

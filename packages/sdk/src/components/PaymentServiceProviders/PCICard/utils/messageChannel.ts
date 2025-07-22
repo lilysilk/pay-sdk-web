@@ -6,7 +6,7 @@ export interface SuccessData {
 
 interface EventTypeDataMap {
   READY: { instanceId?: string };
-  ERROR: { code: string; message: string; details?: any };
+  ERROR: { code: string; message: string };
   SUCCESS: { data: SuccessData };
   RESIZE: { width: number; height: number };
 }

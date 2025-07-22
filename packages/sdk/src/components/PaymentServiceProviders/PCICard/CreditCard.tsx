@@ -20,7 +20,7 @@ const CreditCard: FC<CreditCardProps> = ({ onSubmit, onComplete, onError }) => {
   const [iframeHeight, setIframeHeight] = useState(0);
 
   useEffect(() => {
-    const handleMessage = (event: MessageEvent) => {
+    const handleMessage = async (event: MessageEvent) => {
       const { origin, data } = event;
 
       // 验证消息来源
@@ -60,13 +60,18 @@ const CreditCard: FC<CreditCardProps> = ({ onSubmit, onComplete, onError }) => {
         case "SUCCESS":
           const { data: paymentData } = data.data;
           console.log("Payment success:", paymentData);
-          onSubmit?.(paymentData);
+          try {
+            const result = await onSubmit?.(paymentData);
+            onComplete?.(paymentData);
+          } catch (error) {
+            console.error("Payment error:", error);
+          }
           break;
 
         case "ERROR":
           // data.data 的类型是 { code: string; message: string; details?: any }
-          const { code, message, details } = data.data;
-          console.error("Payment error:", { code, message, details });
+          const { code, message } = data.data;
+          console.error("Payment error:", { code, message });
           break;
 
         default:
