@@ -24,11 +24,16 @@ interface SubmitData {
   extranal?: Record<string, any>;
 }
 
+interface CompleteData {
+  pspType: PSPType;
+  paymentType: string;
+}
+
 interface CheckoutProps {
   config: ConsultCheckoutSSD;
   onPaymentMethodSelected?: (paymentMethod: string) => void;
   onSubmit?: (payment: SubmitData) => Promise<any>;
-  onComplete?: (type: string) => Promise<any>;
+  onComplete?: (payment: CompleteData) => Promise<any>;
   onError?: (error: Error) => void;
 }
 
@@ -77,11 +82,14 @@ const Checkout: FC<CheckoutProps> = ({
   });
 
   const handleComplete = useMemoizedFn(async (type: string) => {
-    return onComplete?.(type);
+    onComplete?.({
+      pspType: PSP.CHECKOUT,
+      paymentType: type,
+    });
   });
 
   const handleClick = useMemoizedFn(async (component: Component) => {
-    // 点击事件 埋点可能会需要
+    // 点击时触发的事件事件 埋点可能会需要 可能不需要再onSubmit里触发confirm
     console.log("************************");
     return {
       continue: true,

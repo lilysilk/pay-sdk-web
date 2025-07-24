@@ -1,8 +1,8 @@
 import { type FC, useRef, useState, useEffect } from "react";
-import type { ConsultKlarnaSSD } from "@/types";
+import { PSP, type PSPType, type ConsultKlarnaSSD } from "@/types";
 import { loadExternalScript } from "@/utils/loadExternalScript";
 import PaymentMethodCard from "@/components/PaymentMethodCard";
-import KlarnaElement from "./Element";
+import KlarnaElement, { type SubmitData as ElementSubmitData } from "./Element";
 
 declare global {
   interface Window {
@@ -10,11 +10,23 @@ declare global {
   }
 }
 
+interface SubmitData {
+  pspType: PSPType;
+  paymentType: string;
+  pspId: string | number;
+  extranal?: Record<string, any>;
+}
+
+interface CompleteData {
+  pspType: PSPType;
+  paymentType: string;
+}
+
 interface KlarnaProps {
   config: ConsultKlarnaSSD;
   onPaymentMethodSelected?: (paymentMethod: string) => void;
-  onSubmit?: (payment: any) => Promise<any>;
-  onComplete?: (payment: any) => Promise<any>;
+  onSubmit?: (payment: SubmitData) => Promise<any>;
+  onComplete?: (payment: CompleteData) => Promise<any>;
   onError?: (error: Error) => void;
 }
 
@@ -26,6 +38,34 @@ const Klarna: FC<KlarnaProps> = ({
   onError,
 }) => {
   const [klarna, setKlarna] = useState<any>(null);
+
+  const handleSubmit = async (payment: ElementSubmitData) => {
+    const result = await onSubmit?.({
+      pspType: PSP.KLARNA,
+      paymentType: payment.type,
+      pspId: config.id,
+      extranal: {
+        authenticationData: { authorizationToken: payment.authorization_token },
+        browserInfo: {
+          colorDepth: screen?.colorDepth,
+          javaEnabled: navigator?.javaEnabled,
+          screenHeight: window?.screen?.height,
+          screenWidth: screen?.width,
+          timeZoneOffset: new Date().getTimezoneOffset(),
+          userAgent: navigator?.userAgent,
+        },
+      },
+    });
+    return result;
+  };
+
+  const handleComplete = async (type: string) => {
+    const result = await onComplete?.({
+      pspType: PSP.KLARNA,
+      paymentType: type,
+    });
+    return result;
+  };
 
   useEffect(() => {
     const initKlarna = async () => {
@@ -62,9 +102,9 @@ const Klarna: FC<KlarnaProps> = ({
         onSelect={onPaymentMethodSelected}
       >
         <KlarnaElement
-          category={item.metadata.identifier}
-          onSubmit={onSubmit}
-          onComplete={onComplete}
+          category={item.type}
+          onSubmit={handleSubmit}
+          onComplete={handleComplete}
           onError={onError}
         />
       </PaymentMethodCard>

@@ -2,10 +2,15 @@ import { useEffect, useRef, useState, type FC } from "react";
 import { useMemoizedFn } from "@/hooks";
 import Button from "@/components/Button";
 
+export interface SubmitData {
+  type: string;
+  authorization_token: string;
+}
+
 interface KlarnaElementProps {
   category: string;
-  onSubmit?: (payment: any) => Promise<any>;
-  onComplete?: (payment: any) => Promise<any>;
+  onSubmit?: (payment: SubmitData) => Promise<any>;
+  onComplete?: (type: string) => Promise<any>;
   onError?: (error: Error) => void;
 }
 
@@ -44,7 +49,7 @@ const KlarnaElement: FC<KlarnaElementProps> = ({
           // 需要根据api返回的数据来填充
           payment_method_category: category,
         },
-        ({
+        async ({
           approved,
           show_form,
           authorization_token,
@@ -56,9 +61,15 @@ const KlarnaElement: FC<KlarnaElementProps> = ({
           error: unknown;
         }) => {
           if (approved) {
-            onSubmit?.({
-              authorization_token,
-            });
+            try {
+              const result = await onSubmit?.({
+                type: category,
+                authorization_token,
+              });
+              await onComplete?.(category);
+            } catch (error) {
+              onError?.(error as Error);
+            }
           } else if (error) {
             // 根据需求看是否需要处理错误 看文档如何处理
             // onError?.(error as Error);

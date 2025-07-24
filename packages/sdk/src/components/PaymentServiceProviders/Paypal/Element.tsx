@@ -4,8 +4,8 @@ import Loading from "@/components/Loading";
 
 interface PaypalElementProps {
   fundingSource?: "paypal" | "paylater";
-  onSubmit?: (payment: any) => Promise<any>;
-  onComplete?: (payment: any) => Promise<any>;
+  onSubmit?: () => Promise<any>;
+  onComplete?: () => Promise<any>;
   onError?: (error: Error) => void;
 }
 
@@ -25,11 +25,11 @@ const PaypalElement: FC<PaypalElementProps> = ({
       style={{ label: "paypal", layout: "vertical", tagline: false }}
       disabled={false}
       createOrder={async () => {
-        const order = await onSubmit?.({});
+        const order = await onSubmit?.();
         return order;
       }}
       onApprove={async () => {
-        const payment = await onComplete?.({});
+        const payment = await onComplete?.();
         return payment;
       }}
       onError={(error) => {

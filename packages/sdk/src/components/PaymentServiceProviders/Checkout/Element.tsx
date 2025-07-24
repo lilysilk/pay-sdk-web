@@ -144,6 +144,18 @@ const CheckoutElement = <T extends ComponentNameUnion>({
   const elementRef = useRef<Component>();
   const countRef = useRef(0);
 
+  const handleSubmit = useMemoizedFn(async (type: string) => {
+    onSubmit?.(type);
+  });
+
+  const handleComplete = useMemoizedFn(async (type: string) => {
+    onComplete?.(type);
+  });
+
+  const handleError = useMemoizedFn(async (error: Error) => {
+    onError?.(error);
+  });
+
   const initElement = useMemoizedFn(async () => {
     const currentCount = countRef.current;
     const element = checkout.create(name, {
@@ -152,16 +164,15 @@ const CheckoutElement = <T extends ComponentNameUnion>({
           // 可以做loading展示
         },
         onError(component, error) {
-          onError?.(error);
+          handleError(error);
         },
         onSubmit(component) {
           // 点击按钮发起支付 需要调用confirm
-          console.log("++++++++++++++++++++++++++++");
-          onSubmit?.(component.type);
+          handleSubmit(component.type);
         },
         onPaymentCompleted(component, payment) {
           // 支付完成 需要调用complete
-          onComplete?.(component.type);
+          handleComplete(component.type);
         },
       },
       ...extraOptions,

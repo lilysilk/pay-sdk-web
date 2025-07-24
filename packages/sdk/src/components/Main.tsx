@@ -5,7 +5,7 @@ import type { StoreCode } from "@/types";
 import { useMemoizedFn } from "@/hooks";
 import { EnvironmentContext } from "./EnvironmentContext";
 import Container from "./Container";
-import CombinedPayments from "./CombinedPayments";
+import CombinedPayments, { type CompleteData } from "./CombinedPayments";
 import { testData } from "./testData";
 
 interface MainProps {
@@ -71,7 +71,7 @@ const Main: FC<MainProps> = ({
   });
 
   const { mutateAsync: completePaymentMutateAsync } = useMutation({
-    mutationFn: async (payment: any) => {
+    mutationFn: async (payment: CompleteData) => {
       const res = await completePayment("123");
       return res;
     },
@@ -84,7 +84,7 @@ const Main: FC<MainProps> = ({
     },
   });
 
-  const handleComlete = useMemoizedFn(async (payment: any) => {
+  const handleComlete = useMemoizedFn(async (payment: CompleteData) => {
     return completePaymentMutateAsync(payment);
   });
 

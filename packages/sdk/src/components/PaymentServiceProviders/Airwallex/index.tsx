@@ -1,18 +1,36 @@
 import { type FC, useEffect, useState } from "react";
 import { init, type InitResult } from "@airwallex/components-sdk";
-import { ConsultAirWallexSSD, ConsultPaymentMethodSSD } from "@/types";
+import {
+  type ConsultAirWallexSSD,
+  type ConsultPaymentMethodSSD,
+  type PSPType,
+  PSP,
+} from "@/types";
 import { isApplePaySupported } from "@/utils";
+import { useMemoizedFn } from "@/hooks";
 import PaymentMethodCard from "@/components/PaymentMethodCard";
 // import AirWallexDropIn from "./DropIn";
 import AirWallexApplePay from "./ApplePay";
 import AirWallexGooglePay from "./GooglePay";
 
+interface SubmitData {
+  pspType: PSPType;
+  paymentType: string;
+  pspId: string | number;
+  extranal?: Record<string, any>;
+}
+
+interface CompleteData {
+  pspType: PSPType;
+  paymentType: string;
+}
+
 interface AirwallexProps {
   countryCode: string;
   config: ConsultAirWallexSSD;
   onPaymentMethodSelected?: (paymentMethod: string) => void;
-  onSubmit?: (payment: any) => Promise<any>;
-  onComplete?: (payment: any) => Promise<any>;
+  onSubmit?: (payment: SubmitData) => Promise<any>;
+  onComplete?: (payment: CompleteData) => Promise<any>;
   onError?: (error: Error) => void;
 }
 
@@ -29,6 +47,14 @@ const Airwallex: FC<AirwallexProps> = ({
 }) => {
   const [airwallex, setAirwallex] = useState<InitResult | null>(null);
   const airwallexEnv = config.merchantConfiguration.environment || "demo";
+
+  const baseConfig = {
+    intent_id: config.authMeta?.id,
+    client_secret: config.authMeta?.client_secret,
+    currency: config.authMeta?.currency,
+    amount: config.authMeta?.amount,
+    countryCode: countryCode,
+  };
 
   useEffect(() => {
     const initAirwallex = async () => {
@@ -53,13 +79,25 @@ const Airwallex: FC<AirwallexProps> = ({
     initAirwallex();
   }, [airwallexEnv]);
 
-  const baseConfig = {
-    intent_id: config.authMeta?.id,
-    client_secret: config.authMeta?.client_secret,
-    currency: config.authMeta?.currency,
-    amount: config.authMeta?.amount,
-    countryCode: countryCode,
-  };
+  const handleSubmit = useMemoizedFn(async (type: string) => {
+    onSubmit?.({
+      pspType: PSP.AIRWALLEX,
+      paymentType: type,
+      pspId: config.id,
+      extranal: {
+        authenticationData: {
+          intentId: config.authMeta.id,
+        },
+      },
+    });
+  });
+
+  const handleComplete = useMemoizedFn(async (type: string) => {
+    onComplete?.({
+      pspType: PSP.AIRWALLEX,
+      paymentType: type,
+    });
+  });
 
   const renderMethod = (method: ConsultPaymentMethodSSD) => {
     if (method.type === "googlepay") {
@@ -69,8 +107,8 @@ const Airwallex: FC<AirwallexProps> = ({
             ...baseConfig,
             merchantName: config.merchantConfiguration?.googleMerchantName,
           }}
-          onSubmit={onSubmit}
-          onComplete={onComplete}
+          onSubmit={handleSubmit}
+          onComplete={handleComplete}
           onError={onError}
         />
       );
@@ -82,8 +120,8 @@ const Airwallex: FC<AirwallexProps> = ({
             autoCapture: config.merchantConfiguration?.autoCapture === "true",
             billing: config.authMeta?.billing,
           }}
-          onSubmit={onSubmit}
-          onComplete={onComplete}
+          onSubmit={handleSubmit}
+          onComplete={handleComplete}
           onError={onError}
         />
       );

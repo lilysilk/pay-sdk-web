@@ -1,15 +1,28 @@
-import type { FC } from "react";
+import { useContext, type FC } from "react";
 import { PayPalScriptProvider } from "@paypal/react-paypal-js";
+import { PSP, type ConsultPayPalSSD, type PSPType } from "@/types";
+import { EnvironmentContext } from "@/components/EnvironmentContext";
 import PaymentMethodCard from "@/components/PaymentMethodCard";
 import PaypalElement from "./Element";
-import type { ConsultPayPalSSD } from "@/types";
+
+interface SubmitData {
+  pspType: PSPType;
+  paymentType: string;
+  pspId: string | number;
+  extranal?: Record<string, any>;
+}
+
+interface CompleteData {
+  pspType: PSPType;
+  paymentType: string;
+}
 
 interface PaypalProps {
   currency: string;
   config: ConsultPayPalSSD;
   onPaymentMethodSelected?: (paymentMethod: string) => void;
-  onSubmit?: (payment: any) => Promise<any>;
-  onComplete?: (payment: any) => Promise<any>;
+  onSubmit?: (payment: SubmitData) => Promise<any>;
+  onComplete?: (payment: CompleteData) => Promise<any>;
   onError?: (error: Error) => void;
 }
 
@@ -21,11 +34,41 @@ const Paypal: FC<PaypalProps> = ({
   onComplete,
   onError,
 }) => {
+  const { env } = useContext(EnvironmentContext)!;
+  const paypalEnv = env === "prod" ? "production" : "sandbox";
+
+  const handleSubmit = async () => {
+    const result = await onSubmit?.({
+      pspType: PSP.PAYPAL,
+      paymentType: "wallet",
+      pspId: config.merchantConfiguration.clientId,
+      extranal: {
+        browserInfo: {
+          colorDepth: screen?.colorDepth,
+          javaEnabled: navigator?.javaEnabled,
+          screenHeight: window?.screen?.height,
+          screenWidth: screen?.width,
+          timeZoneOffset: new Date().getTimezoneOffset(),
+          userAgent: navigator?.userAgent,
+        },
+      },
+    });
+    return result;
+  };
+
+  const handleComplete = async () => {
+    const result = await onComplete?.({
+      pspType: PSP.PAYPAL,
+      paymentType: "wallet",
+    });
+    return result;
+  };
+
   return (
     <PayPalScriptProvider
       options={{
         clientId: config.merchantConfiguration.clientId,
-        environment: "sandbox",
+        environment: paypalEnv,
         components: "buttons",
         intent: "capture",
         vault: false,
@@ -40,8 +83,8 @@ const Paypal: FC<PaypalProps> = ({
         onSelect={onPaymentMethodSelected}
       >
         <PaypalElement
-          onSubmit={onSubmit}
-          onComplete={onComplete}
+          onSubmit={handleSubmit}
+          onComplete={handleComplete}
           onError={onError}
         />
       </PaymentMethodCard>

@@ -6,10 +6,15 @@ import { type SuccessData } from "./utils/messageChannel";
 import CreditCard from "./CreditCard";
 import CreditBind from "./CreditBind";
 
-interface SubmitData extends SuccessData {
-  isServer: boolean;
+export interface SubmitData {
   pspType: PSPType;
   paymentType: string;
+  cardInfo: {
+    lpsCardToken: string;
+    lpsCardTokenVersion: string;
+    kmsVersionId: string;
+    isServer: boolean;
+  };
 }
 
 interface PCICardProps {
@@ -30,9 +35,14 @@ const PCICard: FC<PCICardProps> = ({
   const handleSubmit = useMemoizedFn((data: SuccessData) => {
     return onSubmit?.({
       ...data,
-      isServer: true,
       pspType: PSP.PCICARD,
       paymentType: "card",
+      cardInfo: {
+        lpsCardToken: data.lpsCardToken,
+        lpsCardTokenVersion: data.version,
+        kmsVersionId: "lhd",
+        isServer: true,
+      },
     });
   });
 

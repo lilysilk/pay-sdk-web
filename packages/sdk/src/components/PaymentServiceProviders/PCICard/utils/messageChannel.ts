@@ -1,7 +1,7 @@
 // 消息事件类型和对应数据的映射
 export interface SuccessData {
   lpsCardToken: string;
-  lpsCardTokenVersion: string;
+  version: string;
 }
 
 interface EventTypeDataMap {

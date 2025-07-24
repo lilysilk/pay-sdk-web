@@ -10,20 +10,30 @@ interface GooglePayConfiguration {
 interface AdyenGooglePayProps {
   configuration: GooglePayConfiguration;
   adyenCheckout: Core;
+  onClick: (type: string) => void;
 }
 
 const AdyenGooglePay: FC<AdyenGooglePayProps> = ({
   configuration,
   adyenCheckout,
+  onClick,
 }) => {
   const containerRef = useRef<HTMLDivElement>(null);
   const elementRef = useRef<GooglePay>();
+
+  const handleClick = useMemoizedFn((type: string) => {
+    onClick?.(type);
+  });
 
   const initElement = useMemoizedFn(async () => {
     const element = new GooglePay(adyenCheckout, {
       configuration: {
         gatewayMerchantId: configuration.gatewayMerchantId,
         merchantId: configuration.merchantId,
+      },
+      onClick: (resolve, reject) => {
+        resolve();
+        handleClick?.("googlepay");
       },
       buttonSizeMode: "fill",
     });

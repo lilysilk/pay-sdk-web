@@ -42,6 +42,11 @@ interface SubmitData {
   extranal?: Record<string, any>;
 }
 
+interface CompleteData {
+  pspType: PSPType;
+  paymentType: string;
+}
+
 interface AdyenProps {
   countryCode: string;
   amount: number;
@@ -49,7 +54,7 @@ interface AdyenProps {
   config: ConsultAdyenSSD;
   onPaymentMethodSelected?: (paymentMethod: string) => void;
   onSubmit?: (payment: SubmitData) => Promise<any>;
-  onComplete?: (payment: any) => Promise<any>;
+  onComplete?: (payment: CompleteData) => Promise<any>;
   onError?: (error: Error) => void;
 }
 
@@ -66,7 +71,7 @@ const Adyen: FC<AdyenProps> = ({
   const [adyenCheckout, setAdyenCheckout] = useState<Core | null>(null);
   const { env } = useContext(EnvironmentContext)!;
   const adyenEnv =
-    env === "prod" ? "test" : config.merchantConfiguration.payEnvironment;
+    env === "prod" ? config.merchantConfiguration.payEnvironment : "test";
 
   const handleSubmit = useMemoizedFn(async (state: AdyenSubmitData) => {
     return onSubmit?.({
@@ -79,12 +84,20 @@ const Adyen: FC<AdyenProps> = ({
     });
   });
 
-  const handleComplete = useMemoizedFn(async () => {
-    return onComplete?.({});
+  const handleComplete = useMemoizedFn(async (type: string) => {
+    onComplete?.({
+      pspType: PSP.ADYEN,
+      paymentType: type,
+    });
   });
 
   const handleError = useMemoizedFn((error: Error) => {
     onError?.(error);
+  });
+
+  const handleClick = useMemoizedFn((type: string) => {
+    // applepay和googlepay的点击事件 用作埋点？
+    console.log("+++++++++++++++++", type);
   });
 
   useEffect(() => {
@@ -116,18 +129,17 @@ const Adyen: FC<AdyenProps> = ({
           },
           onPaymentCompleted: (result, component) => {
             console.info("onPaymentCompleted", result, component);
-            handleComplete();
+            handleComplete(component?.data.paymentMethod.type);
           },
           onPaymentFailed: (result, component) => {
             console.info("onPaymentFailed", result, component);
           },
           onError: (error, component) => {
-            console.error(
+            // 用户Cancel就不报错了  error.name为CANCEL
+            console.log(
               "onError",
               error.name,
-              error.message,
-              error.stack,
-              component
+              (error.cause as Object).toString()
             );
           },
         });
@@ -149,6 +161,7 @@ const Adyen: FC<AdyenProps> = ({
         <AdyenGooglePay
           configuration={item.configuration}
           adyenCheckout={adyenCheckout}
+          onClick={handleClick}
         />
       );
     } else if (item.type === "applepay" && isApplePaySupported) {
@@ -156,6 +169,7 @@ const Adyen: FC<AdyenProps> = ({
         <AdyenApplePay
           configuration={item.configuration}
           adyenCheckout={adyenCheckout}
+          onClick={handleClick}
         />
       );
     } else if (
@@ -175,7 +189,8 @@ const Adyen: FC<AdyenProps> = ({
           "clearpay",
           "ideal",
           "kakaopay",
-          "naverpay",
+          "kcp_naverpay",
+          "kcp_payco",
           "paypay",
           "mobilepay",
           "grabpay_SG",

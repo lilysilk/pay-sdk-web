@@ -32,6 +32,11 @@ const Paypal = lazy(
   () => import("@/components/PaymentServiceProviders/Paypal")
 );
 
+export interface CompleteData {
+  pspType: PSPType;
+  paymentType: string;
+}
+
 interface ConfirmPaymentParams {
   pspType: PSPType;
   paymentType: string;
@@ -58,7 +63,7 @@ interface CombinedPaymentsProps {
   paymentServiceProviders: ConsultPaymentItemSSD[];
   onPaymentMethodSelected?: (paymentMethod: string) => void;
   onSubmit?: (orderId: string, paymentMethod: string) => void;
-  onComplete?: (payment: any) => Promise<any>;
+  onComplete?: (payment: CompleteData) => Promise<any>;
   onError?: (error: Error) => void;
 }
 
@@ -75,7 +80,7 @@ const CombinedPayments: FC<CombinedPaymentsProps> = ({
   onSubmit,
 }) => {
   const { confirmPayment } = useContext(EnvironmentContext)!;
-  const getCurrentTime = useCurrentTime(orderId);
+  // const getCurrentTime = useCurrentTime(orderId);
   const combinedPaymentsRenderAllFailed = useAtomValue(
     combinedPaymentsRenderAllFailedAtom
   );
@@ -110,7 +115,8 @@ const CombinedPayments: FC<CombinedPaymentsProps> = ({
           },
         },
         riskMetadata: {
-          checkoutTime: getCurrentTime(),
+          // checkoutTime: getCurrentTime(),
+          checkoutTime: "need to be fixed",
           forterTokenCookie,
         },
         ...payment.external,
@@ -125,6 +131,8 @@ const CombinedPayments: FC<CombinedPaymentsProps> = ({
 
   const handleSubmit = useMemoizedFn(async (payment: ConfirmPaymentParams) => {
     onSubmit?.("123", "123");
+
+    console.log("handleSubmit", payment);
     return confirmPaymentMutateAsync(payment);
   });
 
