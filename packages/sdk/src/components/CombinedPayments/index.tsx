@@ -7,16 +7,19 @@ import {
   combinedPaymentsRenderStatesAtom,
   combinedPaymentsRenderAllFailedAtom,
 } from "@/atom";
-import type { PSPType, ConsultPaymentItemSSD, RenderStatus } from "@/types";
+import {
+  type PSPType,
+  type ConsultPaymentItemSSD,
+  type RenderStatus,
+  PSP,
+} from "@/types";
 import { getCurrentUrl } from "@/utils";
 import { useMemoizedFn, useCurrentTime } from "@/hooks";
 import { EnvironmentContext } from "@/components/EnvironmentContext";
 import LazyLoadWrapper from "@/components/LazyLoadWrapper";
 
 // 懒加载所有支付组件
-const PCICard = lazy(
-  () => import("@/components/PaymentServiceProviders/PCICard")
-);
+const PCICard = lazy(() => import("@/components/PaymentServiceProviders/Card"));
 const Adyen = lazy(() => import("@/components/PaymentServiceProviders/Adyen"));
 const Airwallex = lazy(
   () => import("@/components/PaymentServiceProviders/Airwallex")
@@ -40,7 +43,7 @@ export interface CompleteData {
 interface ConfirmPaymentParams {
   pspType: PSPType;
   paymentType: string;
-  pspId?: string | number;
+  pspId: string | number;
   lpsCardToken?: string;
   lpsCardTokenVersion?: string;
   external?: {
@@ -49,7 +52,7 @@ interface ConfirmPaymentParams {
   cardInfo?: {
     lpsCardToken: string;
     lpsCardTokenVersion: string;
-    kmsVersionId: string;
+    // kmsVersionId: string;
     isServer: boolean;
   };
 }
@@ -103,6 +106,7 @@ const CombinedPayments: FC<CombinedPaymentsProps> = ({
         channel: "Web",
         pspType: payment.pspType,
         paymentType: payment.paymentType,
+        pspId: payment.pspId,
         paymentOrderId: orderId,
         returnUrl: getCurrentUrl(),
         paymentMethod: {
@@ -166,9 +170,10 @@ const CombinedPayments: FC<CombinedPaymentsProps> = ({
   }
 
   const renderPaymentServiceProvider = (item: ConsultPaymentItemSSD) => {
-    if (item.type === "PCICARD") {
+    if (item.type === PSP.CARD) {
       return (
         <PCICard
+          orderId={orderId}
           config={item}
           onPaymentMethodSelected={onPaymentMethodSelected}
           onSubmit={handleSubmit}
@@ -177,7 +182,7 @@ const CombinedPayments: FC<CombinedPaymentsProps> = ({
         />
       );
     }
-    if (item.type === "ADYEN") {
+    if (item.type === PSP.ADYEN) {
       return (
         <Adyen
           countryCode={countryCode}
@@ -191,7 +196,7 @@ const CombinedPayments: FC<CombinedPaymentsProps> = ({
         />
       );
     }
-    if (item.type === "AIRWALLEX") {
+    if (item.type === PSP.AIRWALLEX) {
       return (
         <Airwallex
           countryCode={countryCode}
@@ -203,7 +208,7 @@ const CombinedPayments: FC<CombinedPaymentsProps> = ({
         />
       );
     }
-    if (item.type === "CHECKOUT") {
+    if (item.type === PSP.CHECKOUT) {
       return (
         <Checkout
           config={item}
@@ -214,7 +219,7 @@ const CombinedPayments: FC<CombinedPaymentsProps> = ({
         />
       );
     }
-    if (item.type === "KLARNA") {
+    if (item.type === PSP.KLARNA) {
       return (
         <Klarna
           config={item}
@@ -225,7 +230,7 @@ const CombinedPayments: FC<CombinedPaymentsProps> = ({
         />
       );
     }
-    if (item.type === "NUVEI") {
+    if (item.type === PSP.NUVEI) {
       return (
         <Nuvei
           config={item}
@@ -236,7 +241,7 @@ const CombinedPayments: FC<CombinedPaymentsProps> = ({
         />
       );
     }
-    if (item.type === "PAYPAL") {
+    if (item.type === PSP.PAYPAL) {
       return (
         <Paypal
           currency={currency}
@@ -251,29 +256,17 @@ const CombinedPayments: FC<CombinedPaymentsProps> = ({
     return null;
   };
 
-  return (
-    <>
-      <LazyLoadWrapper name="PCICARD" onStatusChange={handleStatusChange}>
-        <PCICard
-          onPaymentMethodSelected={onPaymentMethodSelected}
-          onSubmit={handleSubmit}
-          onComplete={onComplete}
-          onError={onError}
-        />
+  return paymentServiceProviders.map((item) => {
+    return (
+      <LazyLoadWrapper
+        key={item.type}
+        name={item.type}
+        onStatusChange={handleStatusChange}
+      >
+        {renderPaymentServiceProvider(item)}
       </LazyLoadWrapper>
-      {paymentServiceProviders.map((item) => {
-        return (
-          <LazyLoadWrapper
-            key={item.type}
-            name={item.type}
-            onStatusChange={handleStatusChange}
-          >
-            {renderPaymentServiceProvider(item)}
-          </LazyLoadWrapper>
-        );
-      })}
-    </>
-  );
+    );
+  });
 };
 
 export default CombinedPayments;

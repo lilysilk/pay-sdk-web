@@ -1,5 +1,6 @@
 import type { FC } from "react";
 import { useEffect, useRef, useState } from "react";
+import { v4 as uuidv4 } from "uuid";
 import {
   isIframeMessage,
   validateMessageOrigin,
@@ -7,17 +8,30 @@ import {
   type SuccessData,
 } from "./utils/messageChannel";
 
-interface CreditCardProps {
+interface CardElementProps {
+  type: "card" | "bind";
+  orderId: string;
+  allowSave?: boolean;
   onSubmit?: (data: SuccessData) => Promise<any> | undefined;
   onComplete?: (payment: any) => Promise<any>;
   onError?: (error: Error) => void;
 }
 
-const CreditCard: FC<CreditCardProps> = ({ onSubmit, onComplete, onError }) => {
+const CardElement: FC<CardElementProps> = ({
+  type,
+  orderId,
+  allowSave = false,
+  onSubmit,
+  onComplete,
+  onError,
+}) => {
   const iframeRef = useRef<HTMLIFrameElement>(null);
   const redirectUrl = useRef<string>();
+  const instanceIdRef = useRef<string>(uuidv4());
   const [showThreeDS, setShowThreeDS] = useState(false);
   const [iframeHeight, setIframeHeight] = useState(0);
+
+  const bindMode = type === "bind";
 
   useEffect(() => {
     const handleMessage = async (event: MessageEvent) => {
@@ -34,8 +48,11 @@ const CreditCard: FC<CreditCardProps> = ({ onSubmit, onComplete, onError }) => {
         return;
       }
 
-      // 验证命名空间
-      if (data.namespace !== MESSAGE_NAMESPACE) {
+      // 验证命名空间和实例ID(确保iframe和当前的sdk实例ID一致)
+      if (
+        data.namespace !== MESSAGE_NAMESPACE ||
+        data.instanceId !== instanceIdRef.current
+      ) {
         return;
       }
 
@@ -92,7 +109,7 @@ const CreditCard: FC<CreditCardProps> = ({ onSubmit, onComplete, onError }) => {
       <iframe
         ref={iframeRef}
         // src="https://static-dev.lilysilk.com/fe/card/v0.1.0-dev.19/index.html"
-        src="http://localhost:3001/"
+        src={`http://localhost:3001/?orderId=${orderId}&instanceId=${instanceIdRef.current}&allowSave=${allowSave}&bindMode=${bindMode}`}
         title="PCIPay"
         width="100%"
         height={iframeHeight}
@@ -143,4 +160,4 @@ const CreditCard: FC<CreditCardProps> = ({ onSubmit, onComplete, onError }) => {
   );
 };
 
-export default CreditCard;
+export default CardElement;

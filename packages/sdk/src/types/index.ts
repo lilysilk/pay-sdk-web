@@ -44,7 +44,7 @@ export const PSP = {
   KLARNA: "KLARNA",
   NUVEI: "NUVEI",
   PAYPAL: "PAYPAL",
-  PCICARD: "PCICARD",
+  CARD: "CARD",
 } as const;
 
 export type PSPType = (typeof PSP)[keyof typeof PSP];
@@ -173,8 +173,10 @@ export interface ConsultKlarnaSSD {
 
 export interface CounsultPCICardSSD {
   id: number;
-
-  type: "PCICARD";
+  paymentConfiguration: {
+    paymentMethods: ConsultPaymentMethodSSD[];
+  };
+  type: "CARD";
 }
 
 export interface ConsultPaymentParams {

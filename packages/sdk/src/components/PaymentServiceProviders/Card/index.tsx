@@ -3,29 +3,31 @@ import PaymentMethodCard from "@/components/PaymentMethodCard";
 import { PSP, type CounsultPCICardSSD, type PSPType } from "@/types";
 import { useMemoizedFn } from "@/hooks";
 import { type SuccessData } from "./utils/messageChannel";
-import CreditCard from "./CreditCard";
-import CreditBind from "./CreditBind";
+import CardElement from "./Element";
 
 export interface SubmitData {
   pspType: PSPType;
   paymentType: string;
+  pspId: string | number;
   cardInfo: {
     lpsCardToken: string;
     lpsCardTokenVersion: string;
-    kmsVersionId: string;
+    // kmsVersionId: string;
     isServer: boolean;
   };
 }
 
-interface PCICardProps {
-  config?: CounsultPCICardSSD;
+interface CardProps {
+  orderId: string;
+  config: CounsultPCICardSSD;
   onPaymentMethodSelected?: (paymentMethod: string) => void;
   onSubmit?: (data: SubmitData) => Promise<any>;
   onComplete?: (payment: any) => Promise<any>;
   onError?: (error: Error) => void;
 }
 
-const PCICard: FC<PCICardProps> = ({
+const Card: FC<CardProps> = ({
+  orderId,
   config,
   onPaymentMethodSelected,
   onSubmit,
@@ -34,13 +36,13 @@ const PCICard: FC<PCICardProps> = ({
 }) => {
   const handleSubmit = useMemoizedFn((data: SuccessData) => {
     return onSubmit?.({
-      ...data,
-      pspType: PSP.PCICARD,
+      pspType: PSP.CARD,
       paymentType: "card",
+      pspId: config.id,
       cardInfo: {
         lpsCardToken: data.lpsCardToken,
         lpsCardTokenVersion: data.version,
-        kmsVersionId: "lhd",
+        // kmsVersionId: "lhd",
         isServer: true,
       },
     });
@@ -59,10 +61,10 @@ const PCICard: FC<PCICardProps> = ({
         title="Credit Card"
         onSelect={onPaymentMethodSelected}
       >
-        <CreditCard onSubmit={handleSubmit} />
+        <CardElement orderId={orderId} onSubmit={handleSubmit} type="card" />
       </PaymentMethodCard>
     </>
   );
 };
 
-export default PCICard;
+export default Card;
