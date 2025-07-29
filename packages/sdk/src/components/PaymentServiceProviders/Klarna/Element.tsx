@@ -38,7 +38,6 @@ const KlarnaElement: FC<KlarnaElementProps> = ({
         }
       }
     );
-    // window.aaa = aaa;
   });
 
   const handleSubmit = useMemoizedFn(async () => {

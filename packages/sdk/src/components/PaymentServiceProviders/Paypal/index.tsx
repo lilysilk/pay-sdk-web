@@ -1,6 +1,7 @@
 import { useContext, type FC } from "react";
 import { PayPalScriptProvider } from "@paypal/react-paypal-js";
 import { PSP, type ConsultPayPalSSD, type PSPType } from "@/types";
+import { useMemoizedFn } from "@/hooks";
 import { EnvironmentContext } from "@/components/EnvironmentContext";
 import PaymentMethodCard from "@/components/PaymentMethodCard";
 import PaypalElement from "./Element";
@@ -37,7 +38,7 @@ const Paypal: FC<PaypalProps> = ({
   const { env } = useContext(EnvironmentContext)!;
   const paypalEnv = env === "prod" ? "production" : "sandbox";
 
-  const handleSubmit = async () => {
+  const handleSubmit = useMemoizedFn(async () => {
     const result = await onSubmit?.({
       pspType: PSP.PAYPAL,
       paymentType: "wallet",
@@ -54,15 +55,19 @@ const Paypal: FC<PaypalProps> = ({
       },
     });
     return result;
-  };
+  });
 
-  const handleComplete = async () => {
+  const handleComplete = useMemoizedFn(async () => {
     const result = await onComplete?.({
       pspType: PSP.PAYPAL,
       paymentType: "wallet",
     });
     return result;
-  };
+  });
+
+  const handleError = useMemoizedFn((error: Error) => {
+    onError?.(error);
+  });
 
   return (
     <PayPalScriptProvider
@@ -85,7 +90,7 @@ const Paypal: FC<PaypalProps> = ({
         <PaypalElement
           onSubmit={handleSubmit}
           onComplete={handleComplete}
-          onError={onError}
+          onError={handleError}
         />
       </PaymentMethodCard>
     </PayPalScriptProvider>

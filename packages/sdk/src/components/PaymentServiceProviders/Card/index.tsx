@@ -1,6 +1,7 @@
 import type { FC } from "react";
+import { size } from "lodash-es";
 import PaymentMethodCard from "@/components/PaymentMethodCard";
-import { PSP, type CounsultPCICardSSD, type PSPType } from "@/types";
+import { PSP, type CounsultCardSSD, type PSPType } from "@/types";
 import { useMemoizedFn } from "@/hooks";
 import { type SuccessData } from "./utils/messageChannel";
 import CardElement from "./Element";
@@ -17,14 +18,21 @@ export interface SubmitData {
   };
 }
 
+interface CompleteData {
+  pspType: PSPType;
+  paymentType: string;
+}
+
 interface CardProps {
   orderId: string;
-  config: CounsultPCICardSSD;
+  config: CounsultCardSSD;
   onPaymentMethodSelected?: (paymentMethod: string) => void;
   onSubmit?: (data: SubmitData) => Promise<any>;
-  onComplete?: (payment: any) => Promise<any>;
+  onComplete?: (data: CompleteData) => Promise<any>;
   onError?: (error: Error) => void;
 }
+
+const MAX_STORED_PAYMENT_METHODS = 5;
 
 const Card: FC<CardProps> = ({
   orderId,
@@ -34,8 +42,11 @@ const Card: FC<CardProps> = ({
   onComplete,
   onError,
 }) => {
-  const handleSubmit = useMemoizedFn((data: SuccessData) => {
-    return onSubmit?.({
+  const storedPaymentMethods = config.paymentConfiguration.storedPaymentMethods;
+  const allowSave = size(storedPaymentMethods) <= MAX_STORED_PAYMENT_METHODS;
+
+  const handleSubmit = useMemoizedFn(async (data: SuccessData) => {
+    await onSubmit?.({
       pspType: PSP.CARD,
       paymentType: "card",
       pspId: config.id,
@@ -46,22 +57,53 @@ const Card: FC<CardProps> = ({
         isServer: true,
       },
     });
+    await onComplete?.({
+      pspType: PSP.CARD,
+      paymentType: "card",
+    });
+  });
+
+  const handleError = useMemoizedFn((error: Error) => {
+    onError?.(error);
   });
 
   return (
     <>
       {/* <PaymentMethodCard
-        id="pcicard-credit-bind"
+        id="card-credit-bind"
         onSelect={onPaymentMethodSelected}
       >
         <CreditBind />
       </PaymentMethodCard> */}
+      {storedPaymentMethods.map((item) => {
+        return (
+          <PaymentMethodCard
+            key={item.id}
+            id={`card-${item.id}`}
+            title={`${item.brand} **** **** **** ${item.lastFour}`}
+            onSelect={onPaymentMethodSelected}
+          >
+            <CardElement
+              type="bind"
+              orderId={orderId}
+              onSubmit={handleSubmit}
+              onError={handleError}
+            />
+          </PaymentMethodCard>
+        );
+      })}
       <PaymentMethodCard
-        id="pcicard-credit-card"
+        id="card-card"
         title="Credit Card"
         onSelect={onPaymentMethodSelected}
       >
-        <CardElement orderId={orderId} onSubmit={handleSubmit} type="card" />
+        <CardElement
+          type="card"
+          allowSave={allowSave}
+          orderId={orderId}
+          onSubmit={handleSubmit}
+          onError={handleError}
+        />
       </PaymentMethodCard>
     </>
   );

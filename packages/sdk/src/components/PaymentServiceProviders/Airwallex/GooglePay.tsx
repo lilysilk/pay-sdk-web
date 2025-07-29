@@ -36,25 +36,30 @@ const AirWallexGooglePay: FC<AirWallexGooglePayProps> = ({
   const countRef = useRef(0);
 
   const initElement = useMemoizedFn(async () => {
-    const currentCount = countRef.current;
-    const element = await createElement("googlePayButton", {
-      mode: "payment",
-      intent_id: config.intent_id,
-      client_secret: config.client_secret,
-      amount: {
-        value: config.amount,
-        currency: config.currency,
-      },
-      countryCode: config.countryCode,
-      merchantInfo: {
-        merchantName: config.merchantName,
-      },
-      buttonSizeMode: "fill",
-    });
+    try {
+      const currentCount = countRef.current;
+      const element = await createElement("googlePayButton", {
+        mode: "payment",
+        intent_id: config.intent_id,
+        client_secret: config.client_secret,
+        amount: {
+          value: config.amount,
+          currency: config.currency,
+        },
+        countryCode: config.countryCode,
+        merchantInfo: {
+          merchantName: config.merchantName,
+        },
+        buttonSizeMode: "fill",
+      });
 
-    if (currentCount === countRef.current) {
-      element.mount(containerRef.current!);
-      elementRef.current = element;
+      if (currentCount === countRef.current) {
+        element.mount(containerRef.current!);
+        elementRef.current = element;
+      }
+    } catch (error) {
+      console.error("AirWallex GooglePay: There is an error", error);
+      onError?.(error as Error);
     }
   });
 

@@ -1,5 +1,6 @@
 import type { FC } from "react";
 import type { Environment, StoreCode } from "@/types";
+import { useMemoizedFn } from "@/hooks";
 import { EnvironmentProvider } from "./components/EnvironmentContext";
 import QueryClientProvider from "./components/QueryClientProvider";
 import Main from "./components/Main";
@@ -15,7 +16,7 @@ interface LilyPaySDKProps {
   forterTokenCookie: string;
   onPaymentMethodSelected?: (paymentMethod: string) => void;
   onSubmit?: (orderId: string, paymentMethod: string) => void;
-  onComplete?: (orderId: string, paymentMethod: string) => void;
+  onCompleted?: (orderId: string, paymentMethod: string) => void;
   onError?: (error: Error) => void;
 }
 
@@ -28,7 +29,14 @@ const LilyPaySDK: FC<LilyPaySDKProps> = ({
   orderId,
   forterTokenCookie,
   onPaymentMethodSelected,
+  onCompleted,
 }) => {
+  const handleCompleted = useMemoizedFn(
+    (orderId: string, paymentMethod: string) => {
+      onCompleted?.(orderId, paymentMethod);
+    }
+  );
+
   return (
     <QueryClientProvider>
       <EnvironmentProvider key={env} env={env}>
@@ -41,6 +49,7 @@ const LilyPaySDK: FC<LilyPaySDKProps> = ({
           orderId={orderId}
           forterTokenCookie={forterTokenCookie}
           onPaymentMethodSelected={onPaymentMethodSelected}
+          onCompleted={handleCompleted}
         />
       </EnvironmentProvider>
     </QueryClientProvider>

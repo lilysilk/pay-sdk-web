@@ -158,9 +158,9 @@ function App() {
       memberId: 11111,
       shopId: 22222,
       customer: {
-        accountId: 0,
-        isLogin: false,
-        email: "email_6bff13a8c95f",
+        accountId: 11234,
+        isLogin: true,
+        email: email,
         created: 0,
         shopId: 10001,
         level: "1",
@@ -547,7 +547,7 @@ function App() {
             onSubmit={(orderId: string, paymentMethod: string) => {
               console.log("Payment submitted:", { orderId, paymentMethod });
             }}
-            onComplete={(orderId: string, paymentMethod: string) => {
+            onCompleted={(orderId: string, paymentMethod: string) => {
               console.log("Payment completed:", { orderId, paymentMethod });
               onPaymentCompleted({ orderId, paymentMethod });
             }}

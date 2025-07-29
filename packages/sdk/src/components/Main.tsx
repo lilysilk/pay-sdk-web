@@ -47,7 +47,7 @@ const Main: FC<MainProps> = ({
       const consultRes = await consultPayment({
         req_id: "web",
         // paymentOrderId: orderId,
-        paymentOrderId: "1151236977159300",
+        paymentOrderId: orderId,
         countryCode: countryCode,
         website: storeCode,
         paymentGroup: "wallet",
@@ -72,7 +72,11 @@ const Main: FC<MainProps> = ({
 
   const { mutateAsync: completePaymentMutateAsync } = useMutation({
     mutationFn: async (payment: CompleteData) => {
-      const res = await completePayment("123");
+      const res = await completePayment({
+        channel: "Web",
+        paymentOrderId: orderId,
+        pspType: payment.pspType,
+      });
       return res;
     },
     onSuccess(data) {

@@ -19,7 +19,7 @@ import { EnvironmentContext } from "@/components/EnvironmentContext";
 import LazyLoadWrapper from "@/components/LazyLoadWrapper";
 
 // 懒加载所有支付组件
-const PCICard = lazy(() => import("@/components/PaymentServiceProviders/Card"));
+const Card = lazy(() => import("@/components/PaymentServiceProviders/Card"));
 const Adyen = lazy(() => import("@/components/PaymentServiceProviders/Adyen"));
 const Airwallex = lazy(
   () => import("@/components/PaymentServiceProviders/Airwallex")
@@ -67,6 +67,7 @@ interface CombinedPaymentsProps {
   onPaymentMethodSelected?: (paymentMethod: string) => void;
   onSubmit?: (orderId: string, paymentMethod: string) => void;
   onComplete?: (payment: CompleteData) => Promise<any>;
+  // 渲染错误或者初始化错误 本组件自己处理 其它错误抛到上级
   onError?: (error: Error) => void;
 }
 
@@ -111,12 +112,12 @@ const CombinedPayments: FC<CombinedPaymentsProps> = ({
         returnUrl: getCurrentUrl(),
         paymentMethod: {
           ...payment.cardInfo,
-          shopCustomer: {
-            accountId: 11111,
-            isLogin: true,
-            email: "jdoe@example.com",
-            shopId: 10001,
-          },
+          // shopCustomer: {
+          //   accountId: 11111,
+          //   isLogin: true,
+          //   email: "jdoe@example.com",
+          //   shopId: 10001,
+          // },
         },
         riskMetadata: {
           // checkoutTime: getCurrentTime(),
@@ -172,7 +173,7 @@ const CombinedPayments: FC<CombinedPaymentsProps> = ({
   const renderPaymentServiceProvider = (item: ConsultPaymentItemSSD) => {
     if (item.type === PSP.CARD) {
       return (
-        <PCICard
+        <Card
           orderId={orderId}
           config={item}
           onPaymentMethodSelected={onPaymentMethodSelected}

@@ -1,6 +1,7 @@
 import { type FC, useRef, useState, useEffect } from "react";
 import { PSP, type PSPType, type ConsultKlarnaSSD } from "@/types";
 import { loadExternalScript } from "@/utils/loadExternalScript";
+import { useMemoizedFn } from "@/hooks";
 import PaymentMethodCard from "@/components/PaymentMethodCard";
 import KlarnaElement, { type SubmitData as ElementSubmitData } from "./Element";
 
@@ -39,7 +40,7 @@ const Klarna: FC<KlarnaProps> = ({
 }) => {
   const [klarna, setKlarna] = useState<any>(null);
 
-  const handleSubmit = async (payment: ElementSubmitData) => {
+  const handleSubmit = useMemoizedFn(async (payment: ElementSubmitData) => {
     const result = await onSubmit?.({
       pspType: PSP.KLARNA,
       paymentType: payment.type,
@@ -57,15 +58,19 @@ const Klarna: FC<KlarnaProps> = ({
       },
     });
     return result;
-  };
+  });
 
-  const handleComplete = async (type: string) => {
+  const handleComplete = useMemoizedFn(async (type: string) => {
     const result = await onComplete?.({
       pspType: PSP.KLARNA,
       paymentType: type,
     });
     return result;
-  };
+  });
+
+  const handleError = useMemoizedFn((error: Error) => {
+    onError?.(error);
+  });
 
   useEffect(() => {
     const initKlarna = async () => {
@@ -105,7 +110,7 @@ const Klarna: FC<KlarnaProps> = ({
           category={item.type}
           onSubmit={handleSubmit}
           onComplete={handleComplete}
-          onError={onError}
+          onError={handleError}
         />
       </PaymentMethodCard>
     ))

@@ -88,6 +88,10 @@ const Checkout: FC<CheckoutProps> = ({
     });
   });
 
+  const handleError = useMemoizedFn((error: Error) => {
+    onError?.(error);
+  });
+
   const handleClick = useMemoizedFn(async (component: Component) => {
     // 点击时触发的事件事件 埋点可能会需要 可能不需要再onSubmit里触发confirm
     console.log("************************");
@@ -119,7 +123,7 @@ const Checkout: FC<CheckoutProps> = ({
         checkout={checkout}
         onSubmit={handleSubmit}
         onComplete={handleComplete}
-        onError={onError}
+        onError={handleError}
       />
     );
   };

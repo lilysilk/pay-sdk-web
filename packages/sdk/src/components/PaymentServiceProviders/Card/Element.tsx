@@ -89,6 +89,7 @@ const CardElement: FC<CardElementProps> = ({
           // data.data 的类型是 { code: string; message: string; details?: any }
           const { code, message } = data.data;
           console.error("Payment error:", { code, message });
+          onError?.(new Error(message));
           break;
 
         default:

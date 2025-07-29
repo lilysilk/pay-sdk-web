@@ -64,6 +64,7 @@ export interface ConsultPaymentMethodSSD {
   name: string;
   brands?: string[];
 }
+
 export interface ConsultCheckoutSSD {
   id: number;
   authMeta: {
@@ -171,10 +172,18 @@ export interface ConsultKlarnaSSD {
   type: "KLARNA";
 }
 
-export interface CounsultPCICardSSD {
+export interface ConsultCardStoredPaymentMethodSSD {
+  id: string;
+  type: string;
+  brand: string;
+  lastFour: string;
+}
+
+export interface CounsultCardSSD {
   id: number;
   paymentConfiguration: {
     paymentMethods: ConsultPaymentMethodSSD[];
+    storedPaymentMethods: ConsultCardStoredPaymentMethodSSD[];
   };
   type: "CARD";
 }
@@ -197,7 +206,7 @@ export type ConsultPaymentItemSSD =
   | ConsultNuveiSSD
   | ConsultPayPalSSD
   | ConsultKlarnaSSD
-  | CounsultPCICardSSD;
+  | CounsultCardSSD;
 
 export interface ConsultPaymentSSD {
   paymentServiceProviders: ConsultPaymentItemSSD[];

@@ -99,6 +99,10 @@ const Airwallex: FC<AirwallexProps> = ({
     });
   });
 
+  const handleError = useMemoizedFn((error: Error) => {
+    onError?.(error);
+  });
+
   const renderMethod = (method: ConsultPaymentMethodSSD) => {
     if (method.type === "googlepay") {
       return (
@@ -109,7 +113,7 @@ const Airwallex: FC<AirwallexProps> = ({
           }}
           onSubmit={handleSubmit}
           onComplete={handleComplete}
-          onError={onError}
+          onError={handleError}
         />
       );
     } else if (method.type === "applepay" && isApplePaySupported) {
@@ -122,7 +126,7 @@ const Airwallex: FC<AirwallexProps> = ({
           }}
           onSubmit={handleSubmit}
           onComplete={handleComplete}
-          onError={onError}
+          onError={handleError}
         />
       );
     }

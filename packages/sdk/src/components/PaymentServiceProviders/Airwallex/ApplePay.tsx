@@ -38,35 +38,40 @@ const AirWallexApplePay: FC<AirWallexApplePayProps> = ({
   const countRef = useRef(0);
 
   const initElement = useMemoizedFn(async () => {
-    const currentCount = countRef.current;
-    const element = await createElement("applePayButton", {
-      mode: "payment",
-      autoCapture: config.autoCapture,
-      intent_id: config.intent_id,
-      client_secret: config.client_secret,
-      amount: {
-        value: config.amount,
-        currency: config.currency,
-      },
-      countryCode: config.countryCode,
-      billingContact: {
-        emailAddress: config?.billing?.email,
-        familyName: config?.billing?.last_name,
-        givenName: config?.billing?.first_name,
-        phoneNumber: config?.billing?.phone_number,
-        phoneticFamilyName: config?.billing?.last_name,
-        phoneticGivenName: config?.billing?.first_name,
-        addressLines: [config?.billing?.address?.street],
-        locality: config?.billing?.address?.city,
-        administrativeArea: config?.billing?.address?.state,
-        postalCode: config?.billing?.address?.postcode,
-        countryCode: config?.billing?.address?.country_code,
-      },
-    });
+    try {
+      const currentCount = countRef.current;
+      const element = await createElement("applePayButton", {
+        mode: "payment",
+        autoCapture: config.autoCapture,
+        intent_id: config.intent_id,
+        client_secret: config.client_secret,
+        amount: {
+          value: config.amount,
+          currency: config.currency,
+        },
+        countryCode: config.countryCode,
+        billingContact: {
+          emailAddress: config?.billing?.email,
+          familyName: config?.billing?.last_name,
+          givenName: config?.billing?.first_name,
+          phoneNumber: config?.billing?.phone_number,
+          phoneticFamilyName: config?.billing?.last_name,
+          phoneticGivenName: config?.billing?.first_name,
+          addressLines: [config?.billing?.address?.street],
+          locality: config?.billing?.address?.city,
+          administrativeArea: config?.billing?.address?.state,
+          postalCode: config?.billing?.address?.postcode,
+          countryCode: config?.billing?.address?.country_code,
+        },
+      });
 
-    if (currentCount === countRef.current) {
-      element.mount(containerRef.current!);
-      elementRef.current = element;
+      if (currentCount === countRef.current) {
+        element.mount(containerRef.current!);
+        elementRef.current = element;
+      }
+    } catch (error) {
+      console.error("AirWallex ApplePay: There is an error", error);
+      onError?.(error as Error);
     }
   });
 
