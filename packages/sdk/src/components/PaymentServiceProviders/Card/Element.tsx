@@ -1,6 +1,6 @@
-import type { FC } from "react";
 import { useEffect, useRef, useState } from "react";
 import { v4 as uuidv4 } from "uuid";
+import { PaymentError } from "@/utils";
 import {
   isIframeMessage,
   validateMessageOrigin,
@@ -8,23 +8,47 @@ import {
   type SuccessData,
 } from "./utils/messageChannel";
 
-interface CardElementProps {
-  type: "card" | "bind";
+type CardSuccessData = SuccessData;
+export type BindSuccessData = SuccessData & {
+  cardToken?: string;
+};
+
+type SuccessDataMap = {
+  card: CardSuccessData;
+  bind: BindSuccessData;
+};
+
+interface BaseCardElementProps<T extends keyof SuccessDataMap> {
+  type: T;
   orderId: string;
-  allowSave?: boolean;
-  onSubmit?: (data: SuccessData) => Promise<any> | undefined;
+  onSubmit?: (
+    data: SuccessDataMap[T] & { type: T }
+  ) => Promise<any> | undefined;
   onComplete?: (payment: any) => Promise<any>;
-  onError?: (error: Error) => void;
+  onError?: (error: PaymentError) => void;
 }
 
-const CardElement: FC<CardElementProps> = ({
-  type,
-  orderId,
-  allowSave = false,
-  onSubmit,
-  onComplete,
-  onError,
-}) => {
+type CardElementProps<T extends keyof SuccessDataMap> =
+  BaseCardElementProps<T> &
+    (T extends "card"
+      ? { allowSave?: boolean }
+      : T extends "bind"
+      ? { cardToken?: string }
+      : {});
+
+function CardElement<T extends keyof SuccessDataMap>(
+  props: CardElementProps<T>
+): JSX.Element {
+  const { type, orderId, onSubmit, onComplete, onError } = props;
+
+  // 根据type安全地访问特定属性
+  const allowSave =
+    type === "card"
+      ? (props as CardElementProps<"card">).allowSave || false
+      : false;
+  const cardToken =
+    type === "bind" ? (props as CardElementProps<"bind">).cardToken : undefined;
+
   const iframeRef = useRef<HTMLIFrameElement>(null);
   const redirectUrl = useRef<string>();
   const instanceIdRef = useRef<string>(uuidv4());
@@ -35,66 +59,74 @@ const CardElement: FC<CardElementProps> = ({
 
   useEffect(() => {
     const handleMessage = async (event: MessageEvent) => {
-      const { origin, data } = event;
+      try {
+        const { origin, data } = event;
 
-      // 验证消息来源
-      if (!validateMessageOrigin(origin)) {
-        console.warn("Message from unauthorized origin:", origin);
-        return;
-      }
+        // 验证消息来源
+        if (!validateMessageOrigin(origin)) {
+          console.warn("Message from unauthorized origin:", origin);
+          return;
+        }
 
-      // 使用类型守卫确保消息格式正确
-      if (!isIframeMessage(data)) {
-        return;
-      }
+        // 使用类型守卫确保消息格式正确
+        if (!isIframeMessage(data)) {
+          return;
+        }
 
-      // 验证命名空间和实例ID(确保iframe和当前的sdk实例ID一致)
-      if (
-        data.namespace !== MESSAGE_NAMESPACE ||
-        data.instanceId !== instanceIdRef.current
-      ) {
-        return;
-      }
+        // 验证命名空间和实例ID(确保iframe和当前的sdk实例ID一致)
+        if (
+          data.namespace !== MESSAGE_NAMESPACE ||
+          data.instanceId !== instanceIdRef.current
+        ) {
+          return;
+        }
 
-      console.log("Received message:", data);
+        console.log("Received message:", data);
 
-      // 根据不同的消息类型处理，现在有完整的类型推断
-      switch (data.type) {
-        case "READY":
-          // data.data 的类型是 { instanceId?: string }
-          console.log("Iframe ready with instanceId:", data.data.instanceId);
-          break;
+        // 根据不同的消息类型处理，现在有完整的类型推断
+        switch (data.type) {
+          case "READY":
+            // data.data 的类型是 { instanceId?: string }
+            console.log("Iframe ready with instanceId:", data.data.instanceId);
+            break;
 
-        case "RESIZE":
-          // data.data 的类型是 { width: number; height: number }
-          const { height, width } = data.data;
-          if (height > 0 && height <= 2000) {
-            setIframeHeight(height);
-          }
-          console.log("Resize request:", width, height);
-          break;
+          case "RESIZE":
+            // data.data 的类型是 { width: number; height: number }
+            const { height, width } = data.data;
+            if (height > 0 && height <= 2000) {
+              setIframeHeight(height);
+            }
+            console.log("Resize request:", width, height);
+            break;
 
-        case "SUCCESS":
-          const { data: paymentData } = data.data;
-          console.log("Payment success:", paymentData);
-          try {
-            const result = await onSubmit?.(paymentData);
-            onComplete?.(paymentData);
-          } catch (error) {
-            console.error("Payment error:", error);
-          }
-          break;
+          case "SUCCESS":
+            const { data: paymentData } = data.data;
+            console.log("Payment success:", paymentData);
+            try {
+              const result = await onSubmit?.({
+                type,
+                ...paymentData,
+                ...(type === "bind" && cardToken ? { cardToken } : {}),
+              });
+              onComplete?.(paymentData);
+            } catch (error) {
+              console.error("Payment error:", error);
+            }
+            break;
 
-        case "ERROR":
-          // data.data 的类型是 { code: string; message: string; details?: any }
-          const { code, message } = data.data;
-          console.error("Payment error:", { code, message });
-          onError?.(new Error(message));
-          break;
+          case "ERROR":
+            // data.data 的类型是 { code: string; message: string; details?: any }
+            const { code, message } = data.data;
+            console.error("Payment error:", { code, message });
+            onError?.(PaymentError.businessError(message));
+            break;
 
-        default:
-          // TypeScript 会确保这里是 never 类型，即所有情况都被处理了
-          console.warn("Unknown message type:", data);
+          default:
+            // TypeScript 会确保这里是 never 类型，即所有情况都被处理了
+            console.warn("Unknown message type:", data);
+        }
+      } catch (error) {
+        onError?.(PaymentError.businessError((error as Error)?.message));
       }
     };
 
@@ -159,6 +191,6 @@ const CardElement: FC<CardElementProps> = ({
       )}
     </>
   );
-};
+}
 
 export default CardElement;

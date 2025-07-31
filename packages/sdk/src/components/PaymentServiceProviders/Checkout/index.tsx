@@ -11,7 +11,7 @@ import {
   type PSPType,
   PSP,
 } from "@/types";
-import { isApplePaySupported } from "@/utils";
+import { isApplePaySupported, PaymentError } from "@/utils";
 import { useMemoizedFn } from "@/hooks";
 import { EnvironmentContext } from "@/components/EnvironmentContext";
 import PaymentMethodCard from "@/components/PaymentMethodCard";
@@ -34,7 +34,7 @@ interface CheckoutProps {
   onPaymentMethodSelected?: (paymentMethod: string) => void;
   onSubmit?: (payment: SubmitData) => Promise<any>;
   onComplete?: (payment: CompleteData) => Promise<any>;
-  onError?: (error: Error) => void;
+  onError?: (error: PaymentError) => void;
 }
 
 const Checkout: FC<CheckoutProps> = ({
@@ -61,7 +61,7 @@ const Checkout: FC<CheckoutProps> = ({
         });
         setCheckout(client);
       } catch (error) {
-        onError?.(error as Error);
+        onError?.(PaymentError.initError((error as Error)?.message));
         setCheckout(null);
       }
     };
@@ -88,7 +88,7 @@ const Checkout: FC<CheckoutProps> = ({
     });
   });
 
-  const handleError = useMemoizedFn((error: Error) => {
+  const handleError = useMemoizedFn((error: PaymentError) => {
     onError?.(error);
   });
 

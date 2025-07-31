@@ -1,11 +1,9 @@
 import { useEffect, useRef, useState, type FC } from "react";
 import { css } from "@emotion/react";
+import { PaymentError } from "@/utils";
+
 import { useMemoizedFn } from "@/hooks";
-import {
-  createElement,
-  type ElementTypes,
-  type InitResult,
-} from "@airwallex/components-sdk";
+import { createElement, type ElementTypes } from "@airwallex/components-sdk";
 import Loading from "@/components/Loading";
 
 export interface AirWallexGooglePayConfig {
@@ -21,7 +19,7 @@ interface AirWallexGooglePayProps {
   config: AirWallexGooglePayConfig;
   onSubmit?: (type: string) => Promise<any>;
   onComplete?: (type: string) => Promise<any>;
-  onError?: (error: Error) => void;
+  onError?: (error: PaymentError) => void;
 }
 
 const AirWallexGooglePay: FC<AirWallexGooglePayProps> = ({
@@ -34,6 +32,7 @@ const AirWallexGooglePay: FC<AirWallexGooglePayProps> = ({
   const containerRef = useRef<HTMLDivElement>(null);
   const elementRef = useRef<ElementTypes["googlePayButton"]>();
   const countRef = useRef(0);
+  const isUnmountedRef = useRef(false);
 
   const initElement = useMemoizedFn(async () => {
     try {
@@ -53,13 +52,13 @@ const AirWallexGooglePay: FC<AirWallexGooglePayProps> = ({
         buttonSizeMode: "fill",
       });
 
-      if (currentCount === countRef.current) {
+      if (currentCount === countRef.current && !isUnmountedRef.current) {
         element.mount(containerRef.current!);
         elementRef.current = element;
       }
     } catch (error) {
       console.error("AirWallex GooglePay: There is an error", error);
-      onError?.(error as Error);
+      onError?.(PaymentError.businessError((error as Error)?.message));
     }
   });
 
@@ -72,7 +71,7 @@ const AirWallexGooglePay: FC<AirWallexGooglePayProps> = ({
   });
 
   const handleError = useMemoizedFn(async (error: Error) => {
-    onError?.(error);
+    onError?.(PaymentError.businessError(error?.message));
   });
 
   useEffect(() => {
@@ -146,6 +145,7 @@ const AirWallexGooglePay: FC<AirWallexGooglePayProps> = ({
         "onCancel",
         handleElementCancel as EventListener
       );
+      isUnmountedRef.current = true;
       elementRef.current?.unmount();
       elementRef.current = undefined;
     };

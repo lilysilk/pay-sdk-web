@@ -1,9 +1,10 @@
 import type { FC } from "react";
 import type { Environment, StoreCode } from "@/types";
+import { type PaymentError } from "@/utils";
 import { useMemoizedFn } from "@/hooks";
 import { EnvironmentProvider } from "./components/EnvironmentContext";
 import QueryClientProvider from "./components/QueryClientProvider";
-import Main from "./components/Main";
+import Main, { type CompletedData, type SubmitData } from "./components/Main";
 
 // 导出主SDK组件
 interface LilyPaySDKProps {
@@ -15,9 +16,9 @@ interface LilyPaySDKProps {
   orderId: string;
   forterTokenCookie: string;
   onPaymentMethodSelected?: (paymentMethod: string) => void;
-  onSubmit?: (orderId: string, paymentMethod: string) => void;
-  onCompleted?: (orderId: string, paymentMethod: string) => void;
-  onError?: (error: Error) => void;
+  onSubmit?: (data: SubmitData) => void;
+  onCompleted?: (data: CompletedData) => void;
+  onError?: (error: PaymentError) => void;
 }
 
 const LilyPaySDK: FC<LilyPaySDKProps> = ({
@@ -29,13 +30,21 @@ const LilyPaySDK: FC<LilyPaySDKProps> = ({
   orderId,
   forterTokenCookie,
   onPaymentMethodSelected,
+  onSubmit,
   onCompleted,
+  onError,
 }) => {
-  const handleCompleted = useMemoizedFn(
-    (orderId: string, paymentMethod: string) => {
-      onCompleted?.(orderId, paymentMethod);
-    }
-  );
+  const handleSubmit = useMemoizedFn((data: SubmitData) => {
+    onSubmit?.(data);
+  });
+
+  const handleCompleted = useMemoizedFn((data: CompletedData) => {
+    onCompleted?.(data);
+  });
+
+  const handleError = useMemoizedFn((error: PaymentError) => {
+    onError?.(error);
+  });
 
   return (
     <QueryClientProvider>
@@ -50,6 +59,8 @@ const LilyPaySDK: FC<LilyPaySDKProps> = ({
           forterTokenCookie={forterTokenCookie}
           onPaymentMethodSelected={onPaymentMethodSelected}
           onCompleted={handleCompleted}
+          onSubmit={handleSubmit}
+          onError={handleError}
         />
       </EnvironmentProvider>
     </QueryClientProvider>

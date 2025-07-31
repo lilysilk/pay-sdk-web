@@ -1,4 +1,5 @@
 export * from "./loadExternalScript";
+export * from "./error";
 
 declare global {
   interface Window {

@@ -13,7 +13,7 @@ import {
   type RenderStatus,
   PSP,
 } from "@/types";
-import { getCurrentUrl } from "@/utils";
+import { getCurrentUrl, PaymentError } from "@/utils";
 import { useMemoizedFn, useCurrentTime } from "@/hooks";
 import { EnvironmentContext } from "@/components/EnvironmentContext";
 import LazyLoadWrapper from "@/components/LazyLoadWrapper";
@@ -35,6 +35,11 @@ const Paypal = lazy(
   () => import("@/components/PaymentServiceProviders/Paypal")
 );
 
+export interface SubmitData {
+  pspType: PSPType;
+  paymentType: string;
+}
+
 export interface CompleteData {
   pspType: PSPType;
   paymentType: string;
@@ -52,8 +57,8 @@ interface ConfirmPaymentParams {
   cardInfo?: {
     lpsCardToken: string;
     lpsCardTokenVersion: string;
-    // kmsVersionId: string;
-    isServer: boolean;
+    isServer?: boolean;
+    cardTokenId?: string;
   };
 }
 
@@ -65,10 +70,10 @@ interface CombinedPaymentsProps {
   forterTokenCookie: string;
   paymentServiceProviders: ConsultPaymentItemSSD[];
   onPaymentMethodSelected?: (paymentMethod: string) => void;
-  onSubmit?: (orderId: string, paymentMethod: string) => void;
-  onComplete?: (payment: CompleteData) => Promise<any>;
+  onSubmit?: (data: SubmitData) => void;
+  onComplete?: (data: CompleteData) => Promise<any>;
   // 渲染错误或者初始化错误 本组件自己处理 其它错误抛到上级
-  onError?: (error: Error) => void;
+  onError?: (error: PaymentError) => void;
 }
 
 const CombinedPayments: FC<CombinedPaymentsProps> = ({
@@ -93,6 +98,7 @@ const CombinedPayments: FC<CombinedPaymentsProps> = ({
   );
 
   // 状态变化处理器
+  // 看下是否需要把card模式排除在外
   const handleStatusChange = useCallback(
     (name: string, status: RenderStatus) => {
       setCombinedPaymentsRenderStates((prev) => ({ ...prev, [name]: status }));
@@ -112,12 +118,6 @@ const CombinedPayments: FC<CombinedPaymentsProps> = ({
         returnUrl: getCurrentUrl(),
         paymentMethod: {
           ...payment.cardInfo,
-          // shopCustomer: {
-          //   accountId: 11111,
-          //   isLogin: true,
-          //   email: "jdoe@example.com",
-          //   shopId: 10001,
-          // },
         },
         riskMetadata: {
           // checkoutTime: getCurrentTime(),
@@ -126,16 +126,23 @@ const CombinedPayments: FC<CombinedPaymentsProps> = ({
         },
         ...payment.external,
       });
+      if (!res.success) {
+        throw new Error(res.message);
+      }
       return res;
     },
     onSuccess(data) {},
     onError(error) {
-      onError?.(error);
+      // confirm接口报错了 抛到上层处理 应该要重新consult
+      onError?.(PaymentError.apiError(error.message));
     },
   });
 
   const handleSubmit = useMemoizedFn(async (payment: ConfirmPaymentParams) => {
-    onSubmit?.("123", "123");
+    onSubmit?.({
+      pspType: payment.pspType,
+      paymentType: payment.paymentType,
+    });
 
     console.log("handleSubmit", payment);
     return confirmPaymentMutateAsync(payment);

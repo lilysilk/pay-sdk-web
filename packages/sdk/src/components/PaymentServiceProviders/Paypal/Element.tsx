@@ -1,12 +1,13 @@
 import type { FC } from "react";
 import { PayPalButtons, usePayPalScriptReducer } from "@paypal/react-paypal-js";
+import { PaymentError } from "@/utils";
 import Loading from "@/components/Loading";
 
 interface PaypalElementProps {
   fundingSource?: "paypal" | "paylater";
   onSubmit?: () => Promise<any>;
   onComplete?: () => Promise<any>;
-  onError?: (error: Error) => void;
+  onError?: (error: PaymentError) => void;
 }
 
 const PaypalElement: FC<PaypalElementProps> = ({
@@ -35,9 +36,9 @@ const PaypalElement: FC<PaypalElementProps> = ({
       onError={(error) => {
         // 错误处理要根据需求来处理
         if (error.toString().includes("close")) {
-        } else {
-          onError?.(new Error(error.toString()));
+          return;
         }
+        onError?.(PaymentError.businessError(error.toString()));
       }}
     />
   );

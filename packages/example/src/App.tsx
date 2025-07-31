@@ -7,7 +7,7 @@ function App() {
   const [website, setWebsite] = useState("us");
   const [currency, setCurrency] = useState("USD");
   const [amountValue, setAmountValue] = useState("11000");
-  const [email, setEmail] = useState("jdoe@example.com");
+  const [email, setEmail] = useState("simon@example.com");
   const [locale, setLocale] = useState("en");
 
   // UI state
@@ -19,10 +19,7 @@ function App() {
   const lilyPaySDKRef = useRef<any>(null);
 
   // Payment callbacks
-  const onPaymentCompleted = (result: any) => {
-    alert("onPaymentCompleted");
-    console.log("onPaymentCompleted", result);
-  };
+  const onPaymentCompleted = (result: any) => {};
 
   const onVerifyingPaymentResult = () => {
     console.log("onVerifyingPaymentResult");
@@ -158,7 +155,7 @@ function App() {
       memberId: 11111,
       shopId: 22222,
       customer: {
-        accountId: 11234,
+        accountId: 112345,
         isLogin: true,
         email: email,
         created: 0,
@@ -544,12 +541,12 @@ function App() {
             onPaymentMethodSelected={(method: any) => {
               console.log("Payment method selected:", method);
             }}
-            onSubmit={(orderId: string, paymentMethod: string) => {
-              console.log("Payment submitted:", { orderId, paymentMethod });
+            onSubmit={(data) => {
+              console.log("Payment submitted:", data);
             }}
-            onCompleted={(orderId: string, paymentMethod: string) => {
-              console.log("Payment completed:", { orderId, paymentMethod });
-              onPaymentCompleted({ orderId, paymentMethod });
+            onCompleted={(data) => {
+              console.log("Payment completed:", data);
+              alert("onPaymentCompleted");
             }}
             onError={(error: Error) => {
               console.error("Payment error:", error);

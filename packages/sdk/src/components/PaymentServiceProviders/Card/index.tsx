@@ -2,9 +2,10 @@ import type { FC } from "react";
 import { size } from "lodash-es";
 import PaymentMethodCard from "@/components/PaymentMethodCard";
 import { PSP, type CounsultCardSSD, type PSPType } from "@/types";
+import { PaymentError } from "@/utils";
 import { useMemoizedFn } from "@/hooks";
 import { type SuccessData } from "./utils/messageChannel";
-import CardElement from "./Element";
+import CardElement, { type BindSuccessData } from "./Element";
 
 export interface SubmitData {
   pspType: PSPType;
@@ -13,8 +14,8 @@ export interface SubmitData {
   cardInfo: {
     lpsCardToken: string;
     lpsCardTokenVersion: string;
-    // kmsVersionId: string;
-    isServer: boolean;
+    isServer?: boolean;
+    cardTokenId?: string;
   };
 }
 
@@ -29,7 +30,7 @@ interface CardProps {
   onPaymentMethodSelected?: (paymentMethod: string) => void;
   onSubmit?: (data: SubmitData) => Promise<any>;
   onComplete?: (data: CompleteData) => Promise<any>;
-  onError?: (error: Error) => void;
+  onError?: (error: PaymentError) => void;
 }
 
 const MAX_STORED_PAYMENT_METHODS = 5;
@@ -45,47 +46,52 @@ const Card: FC<CardProps> = ({
   const storedPaymentMethods = config.paymentConfiguration.storedPaymentMethods;
   const allowSave = size(storedPaymentMethods) <= MAX_STORED_PAYMENT_METHODS;
 
-  const handleSubmit = useMemoizedFn(async (data: SuccessData) => {
-    await onSubmit?.({
-      pspType: PSP.CARD,
-      paymentType: "card",
-      pspId: config.id,
-      cardInfo: {
-        lpsCardToken: data.lpsCardToken,
-        lpsCardTokenVersion: data.version,
-        // kmsVersionId: "lhd",
-        isServer: true,
-      },
-    });
-    await onComplete?.({
-      pspType: PSP.CARD,
-      paymentType: "card",
-    });
-  });
+  const handleSubmit = useMemoizedFn(
+    async (
+      data:
+        | (SuccessData & { type: "card" })
+        | (BindSuccessData & { type: "bind" })
+    ) => {
+      await onSubmit?.({
+        pspType: PSP.CARD,
+        paymentType: data.type,
+        pspId: config.id,
+        cardInfo: {
+          lpsCardToken: data.lpsCardToken,
+          lpsCardTokenVersion: data.version,
+          ...(data.type === "card" && {
+            isServer: true,
+          }),
+          ...(data.type === "bind" && {
+            cardTokenId: data.cardToken,
+          }),
+        },
+      });
+      await onComplete?.({
+        pspType: PSP.CARD,
+        paymentType: "card",
+      });
+    }
+  );
 
-  const handleError = useMemoizedFn((error: Error) => {
+  const handleError = useMemoizedFn((error: PaymentError) => {
     onError?.(error);
   });
 
   return (
     <>
-      {/* <PaymentMethodCard
-        id="card-credit-bind"
-        onSelect={onPaymentMethodSelected}
-      >
-        <CreditBind />
-      </PaymentMethodCard> */}
       {storedPaymentMethods.map((item) => {
         return (
           <PaymentMethodCard
             key={item.id}
             id={`card-${item.id}`}
-            title={`${item.brand} **** **** **** ${item.lastFour}`}
+            title={`${item.brand} ${item.bin}******${item.lastFour}`}
             onSelect={onPaymentMethodSelected}
           >
             <CardElement
               type="bind"
               orderId={orderId}
+              cardToken={item.id}
               onSubmit={handleSubmit}
               onError={handleError}
             />

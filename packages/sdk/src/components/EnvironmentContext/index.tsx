@@ -8,6 +8,8 @@ import {
   Response,
   ConsultPaymentParams,
   ConsultPaymentSSD,
+  ConfirmPaymentParams,
+  ConfirmPaymentSSD,
 } from "@/types";
 
 const apiBaseByEnvMap: Record<Environment, string> = {
@@ -36,7 +38,9 @@ export interface EnviromentContextProps {
   consultPayment: (
     params: ConsultPaymentParams
   ) => Promise<Response<ConsultPaymentSSD>>;
-  confirmPayment: (params: {}) => Promise<Response<any>>;
+  confirmPayment: (
+    params: ConfirmPaymentParams
+  ) => Promise<Response<ConfirmPaymentSSD>>;
   completePayment: (params: {}) => Promise<Response<any>>;
   getPaymentStatuss: (storeCode: string) => Promise<Response<any>>;
   getServerTime: () => Promise<Response<any>>;
@@ -75,9 +79,9 @@ export const EnvironmentProvider: FC<EnviromentProviderProps> = ({
           })
           .json();
       },
-      confirmPayment: async (params: {}) => {
+      confirmPayment: async (params: ConfirmPaymentParams) => {
         return requestRef.current
-          .post<Response<any>>(`api/v1/payments/confirm`, {
+          .post<Response<ConfirmPaymentSSD>>(`api/v1/payments/confirm`, {
             json: params,
           })
           .json();

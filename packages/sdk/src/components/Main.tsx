@@ -1,12 +1,23 @@
 import { useEffect, useContext, type FC } from "react";
 import { Provider as JotaiProvider } from "jotai";
 import { useMutation } from "@tanstack/react-query";
-import type { StoreCode } from "@/types";
+import type { PSPType, StoreCode } from "@/types";
+import { PaymentError } from "@/utils";
 import { useMemoizedFn } from "@/hooks";
 import { EnvironmentContext } from "./EnvironmentContext";
 import Container from "./Container";
 import CombinedPayments, { type CompleteData } from "./CombinedPayments";
 import { testData } from "./testData";
+
+export interface SubmitData {
+  pspType: PSPType;
+  paymentType: string;
+}
+
+export interface CompletedData {
+  pspType: PSPType;
+  paymentType: string;
+}
 
 interface MainProps {
   countryCode: string;
@@ -16,9 +27,9 @@ interface MainProps {
   orderId: string;
   forterTokenCookie: string;
   onPaymentMethodSelected?: (paymentMethod: string) => void;
-  onSubmit?: (orderId: string, paymentMethod: string) => void;
-  onCompleted?: (orderId: string, paymentMethod: string) => void;
-  onError?: (error: Error) => void;
+  onSubmit?: (data: SubmitData) => void;
+  onCompleted?: (data: CompletedData) => void;
+  onError?: (error: PaymentError) => void;
 }
 
 const Main: FC<MainProps> = ({
@@ -66,7 +77,8 @@ const Main: FC<MainProps> = ({
       console.log(data);
     },
     onError(error) {
-      onError?.(error);
+      // 这里接口报错了 应该在当前组件处理 展示错误信息和重试按钮 错误信息打印下就行了
+      console.error("consult error: ", error);
     },
   });
 
@@ -77,14 +89,21 @@ const Main: FC<MainProps> = ({
         paymentOrderId: orderId,
         pspType: payment.pspType,
       });
+      if (!res.success) {
+        throw new Error(res.message);
+      }
       return res;
     },
-    onSuccess(data) {
+    onSuccess(data, variables) {
       console.log(data);
-      onCompleted?.("123", "123");
+      onCompleted?.({
+        pspType: variables.pspType,
+        paymentType: variables.paymentType,
+      });
     },
     onError(error) {
-      onError?.(error);
+      // complete报错需要抛给上层 应该还要刷新收银台
+      onError?.(PaymentError.apiError(error.message));
     },
   });
 
@@ -92,7 +111,7 @@ const Main: FC<MainProps> = ({
     return completePaymentMutateAsync(payment);
   });
 
-  const handleError = useMemoizedFn((error: Error) => {
+  const handleError = useMemoizedFn((error: PaymentError) => {
     onError?.(error);
   });
 

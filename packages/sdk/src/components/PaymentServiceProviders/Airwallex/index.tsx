@@ -6,7 +6,7 @@ import {
   type PSPType,
   PSP,
 } from "@/types";
-import { isApplePaySupported } from "@/utils";
+import { isApplePaySupported, PaymentError } from "@/utils";
 import { useMemoizedFn } from "@/hooks";
 import PaymentMethodCard from "@/components/PaymentMethodCard";
 // import AirWallexDropIn from "./DropIn";
@@ -31,7 +31,7 @@ interface AirwallexProps {
   onPaymentMethodSelected?: (paymentMethod: string) => void;
   onSubmit?: (payment: SubmitData) => Promise<any>;
   onComplete?: (payment: CompleteData) => Promise<any>;
-  onError?: (error: Error) => void;
+  onError?: (error: PaymentError) => void;
 }
 
 // 原来airwallex只能全局初始化一次 看下现在好了没
@@ -72,7 +72,7 @@ const Airwallex: FC<AirwallexProps> = ({
         // globalAirwallex = client;
         setAirwallex(client);
       } catch (error) {
-        onError?.(error as Error);
+        onError?.(PaymentError.initError((error as Error)?.message));
         setAirwallex(null);
       }
     };
@@ -99,7 +99,7 @@ const Airwallex: FC<AirwallexProps> = ({
     });
   });
 
-  const handleError = useMemoizedFn((error: Error) => {
+  const handleError = useMemoizedFn((error: PaymentError) => {
     onError?.(error);
   });
 

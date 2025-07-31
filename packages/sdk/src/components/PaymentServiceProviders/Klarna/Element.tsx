@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState, type FC } from "react";
+import { PaymentError } from "@/utils";
 import { useMemoizedFn } from "@/hooks";
 import Button from "@/components/Button";
 
@@ -11,7 +12,7 @@ interface KlarnaElementProps {
   category: string;
   onSubmit?: (payment: SubmitData) => Promise<any>;
   onComplete?: (type: string) => Promise<any>;
-  onError?: (error: Error) => void;
+  onError?: (error: PaymentError) => void;
 }
 
 const KlarnaElement: FC<KlarnaElementProps> = ({
@@ -35,6 +36,7 @@ const KlarnaElement: FC<KlarnaElementProps> = ({
           setIsLoading(false);
         } else if (error) {
           // 根据需求看是否需要处理错误
+          onError?.(PaymentError.businessError((error as Error)?.message));
         }
       }
     );
@@ -67,16 +69,16 @@ const KlarnaElement: FC<KlarnaElementProps> = ({
               });
               await onComplete?.(category);
             } catch (error) {
-              onError?.(error as Error);
+              onError?.(PaymentError.businessError((error as Error)?.message));
             }
           } else if (error) {
             // 根据需求看是否需要处理错误 看文档如何处理
-            // onError?.(error as Error);
+            onError?.(PaymentError.businessError((error as Error)?.message));
           }
         }
       );
     } catch (error) {
-      onError?.(error as Error);
+      onError?.(PaymentError.businessError((error as Error)?.message));
     } finally {
       setIsLoading(false);
     }

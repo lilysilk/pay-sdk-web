@@ -1,6 +1,7 @@
 import { useContext, type FC } from "react";
 import { PayPalScriptProvider } from "@paypal/react-paypal-js";
 import { PSP, type ConsultPayPalSSD, type PSPType } from "@/types";
+import { PaymentError } from "@/utils";
 import { useMemoizedFn } from "@/hooks";
 import { EnvironmentContext } from "@/components/EnvironmentContext";
 import PaymentMethodCard from "@/components/PaymentMethodCard";
@@ -24,7 +25,7 @@ interface PaypalProps {
   onPaymentMethodSelected?: (paymentMethod: string) => void;
   onSubmit?: (payment: SubmitData) => Promise<any>;
   onComplete?: (payment: CompleteData) => Promise<any>;
-  onError?: (error: Error) => void;
+  onError?: (error: PaymentError) => void;
 }
 
 const Paypal: FC<PaypalProps> = ({
@@ -65,7 +66,7 @@ const Paypal: FC<PaypalProps> = ({
     return result;
   });
 
-  const handleError = useMemoizedFn((error: Error) => {
+  const handleError = useMemoizedFn((error: PaymentError) => {
     onError?.(error);
   });
 

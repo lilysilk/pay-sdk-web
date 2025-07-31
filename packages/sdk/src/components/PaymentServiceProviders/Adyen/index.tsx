@@ -12,7 +12,7 @@ import {
   type ConsultAdyenPaymentMethodSSD,
   type PSPType,
 } from "@/types";
-import { isApplePaySupported } from "@/utils";
+import { isApplePaySupported, PaymentError } from "@/utils";
 import { useMemoizedFn } from "@/hooks";
 import { EnvironmentContext } from "@/components/EnvironmentContext";
 import PaymentMethodCard from "@/components/PaymentMethodCard";
@@ -55,7 +55,7 @@ interface AdyenProps {
   onPaymentMethodSelected?: (paymentMethod: string) => void;
   onSubmit?: (payment: SubmitData) => Promise<any>;
   onComplete?: (payment: CompleteData) => Promise<any>;
-  onError?: (error: Error) => void;
+  onError?: (error: PaymentError) => void;
 }
 
 const Adyen: FC<AdyenProps> = ({
@@ -91,7 +91,7 @@ const Adyen: FC<AdyenProps> = ({
     });
   });
 
-  const handleError = useMemoizedFn((error: Error) => {
+  const handleError = useMemoizedFn((error: PaymentError) => {
     onError?.(error);
   });
 
@@ -129,23 +129,26 @@ const Adyen: FC<AdyenProps> = ({
           },
           onPaymentCompleted: (result, component) => {
             console.info("onPaymentCompleted", result, component);
-            handleComplete(component?.data.paymentMethod.type);
+            handleComplete(component?.data?.paymentMethod?.type);
           },
           onPaymentFailed: (result, component) => {
             console.info("onPaymentFailed", result, component);
           },
           onError: (error, component) => {
             // 用户Cancel就不报错了  error.name为CANCEL
-            console.log(
-              "onError",
-              error.name,
-              (error.cause as Object).toString()
-            );
+            console.log(error);
+            if (error.name === "CANCEL") {
+              console.log(
+                `Adyen-${component?.data?.paymentMethod?.type}: user cancel`
+              );
+              return;
+            }
+            handleError(PaymentError.businessError(error.message));
           },
         });
         setAdyenCheckout(client);
       } catch (error) {
-        handleError(error as Error);
+        handleError(PaymentError.initError((error as Error)?.message));
         setAdyenCheckout(null);
       }
     };

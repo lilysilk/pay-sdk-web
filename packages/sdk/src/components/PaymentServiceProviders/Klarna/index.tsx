@@ -1,6 +1,6 @@
 import { type FC, useRef, useState, useEffect } from "react";
 import { PSP, type PSPType, type ConsultKlarnaSSD } from "@/types";
-import { loadExternalScript } from "@/utils/loadExternalScript";
+import { loadExternalScript, PaymentError } from "@/utils";
 import { useMemoizedFn } from "@/hooks";
 import PaymentMethodCard from "@/components/PaymentMethodCard";
 import KlarnaElement, { type SubmitData as ElementSubmitData } from "./Element";
@@ -28,7 +28,7 @@ interface KlarnaProps {
   onPaymentMethodSelected?: (paymentMethod: string) => void;
   onSubmit?: (payment: SubmitData) => Promise<any>;
   onComplete?: (payment: CompleteData) => Promise<any>;
-  onError?: (error: Error) => void;
+  onError?: (error: PaymentError) => void;
 }
 
 const Klarna: FC<KlarnaProps> = ({
@@ -68,7 +68,7 @@ const Klarna: FC<KlarnaProps> = ({
     return result;
   });
 
-  const handleError = useMemoizedFn((error: Error) => {
+  const handleError = useMemoizedFn((error: PaymentError) => {
     onError?.(error);
   });
 
@@ -91,7 +91,7 @@ const Klarna: FC<KlarnaProps> = ({
         });
         setKlarna(window?.Klarna);
       } catch (error) {
-        onError?.(error as Error);
+        onError?.(PaymentError.initError((error as Error)?.message));
         setKlarna(null);
       }
     };

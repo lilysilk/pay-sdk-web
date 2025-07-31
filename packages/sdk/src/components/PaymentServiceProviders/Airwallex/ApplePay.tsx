@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState, type FC } from "react";
 import { css } from "@emotion/react";
+import { PaymentError } from "@/utils";
 import { useMemoizedFn } from "@/hooks";
 import {
   init,
@@ -23,7 +24,7 @@ interface AirWallexApplePayProps {
   config: AirWallexApplePayConfig;
   onSubmit?: (payment: any) => Promise<any>;
   onComplete?: (payment: any) => Promise<any>;
-  onError?: (error: Error) => void;
+  onError?: (error: PaymentError) => void;
 }
 
 const AirWallexApplePay: FC<AirWallexApplePayProps> = ({
@@ -36,6 +37,7 @@ const AirWallexApplePay: FC<AirWallexApplePayProps> = ({
   const containerRef = useRef<HTMLDivElement>(null);
   const elementRef = useRef<ElementTypes["applePayButton"]>();
   const countRef = useRef(0);
+  const isUnmountedRef = useRef(false);
 
   const initElement = useMemoizedFn(async () => {
     try {
@@ -65,13 +67,13 @@ const AirWallexApplePay: FC<AirWallexApplePayProps> = ({
         },
       });
 
-      if (currentCount === countRef.current) {
+      if (currentCount === countRef.current && !isUnmountedRef.current) {
         element.mount(containerRef.current!);
         elementRef.current = element;
       }
     } catch (error) {
       console.error("AirWallex ApplePay: There is an error", error);
-      onError?.(error as Error);
+      onError?.(PaymentError.businessError((error as Error)?.message));
     }
   });
 
@@ -84,7 +86,7 @@ const AirWallexApplePay: FC<AirWallexApplePayProps> = ({
   });
 
   const handleError = useMemoizedFn(async (error: Error) => {
-    onError?.(error);
+    onError?.(PaymentError.businessError(error?.message));
   });
 
   useEffect(() => {
@@ -154,6 +156,7 @@ const AirWallexApplePay: FC<AirWallexApplePayProps> = ({
         "onCancel",
         handleElementCancel as EventListener
       );
+      isUnmountedRef.current = true;
       elementRef.current?.unmount();
       elementRef.current = undefined;
     };

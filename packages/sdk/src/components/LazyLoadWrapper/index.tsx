@@ -26,6 +26,7 @@ const LazyLoadWrapper: FC<{
   name: string;
   onStatusChange: (name: string, status: RenderStatus) => void;
 }> = ({ children, name, onStatusChange }) => {
+  // todo 这里的判断可能有问题 错误组件数量方面的 再自己研究下
   return (
     <ErrorBoundary
       fallback={null} // 静默失败，什么都不显示

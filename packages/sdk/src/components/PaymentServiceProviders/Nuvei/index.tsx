@@ -1,7 +1,7 @@
 import { useRef, type FC } from "react";
 import PaymentMethodCard from "@/components/PaymentMethodCard";
 import type { ConsultNuveiSSD } from "@/types";
-import { loadExternalScript } from "@/utils";
+import { loadExternalScript, PaymentError } from "@/utils";
 
 declare global {
   interface Window {
@@ -14,7 +14,7 @@ interface NuveiProps {
   onPaymentMethodSelected?: (paymentMethod: string) => void;
   onSubmit?: (payment: any) => Promise<any>;
   onComplete?: (payment: any) => Promise<any>;
-  onError?: (error: Error) => void;
+  onError?: (error: PaymentError) => void;
 }
 
 const Nuvei: FC<NuveiProps> = ({

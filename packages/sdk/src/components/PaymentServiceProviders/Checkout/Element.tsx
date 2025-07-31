@@ -11,6 +11,7 @@ import type {
   WalletComponentOptions,
   FlowComponentOptions,
 } from "@checkout.com/checkout-web-components";
+import { PaymentError } from "@/utils";
 
 type ComponentOptionsByComponentName = {
   /**
@@ -129,7 +130,7 @@ interface CheckoutElementPropss<T extends ComponentNameUnion> {
   extraOptions?: Partial<ComponentOptionsByComponentName[T]>;
   onSubmit?: (type: string) => Promise<any>;
   onComplete?: (type: string) => Promise<any>;
-  onError?: (error: Error) => void;
+  onError?: (error: PaymentError) => void;
 }
 
 const CheckoutElement = <T extends ComponentNameUnion>({
@@ -143,6 +144,7 @@ const CheckoutElement = <T extends ComponentNameUnion>({
   const containerRef = useRef<HTMLDivElement>(null);
   const elementRef = useRef<Component>();
   const countRef = useRef(0);
+  const isUnmountedRef = useRef(false);
 
   const handleSubmit = useMemoizedFn(async (type: string) => {
     onSubmit?.(type);
@@ -153,7 +155,7 @@ const CheckoutElement = <T extends ComponentNameUnion>({
   });
 
   const handleError = useMemoizedFn(async (error: Error) => {
-    onError?.(error);
+    onError?.(PaymentError.businessError(error?.message));
   });
 
   const initElement = useMemoizedFn(async () => {
@@ -179,7 +181,11 @@ const CheckoutElement = <T extends ComponentNameUnion>({
         ...extraOptions,
       });
       const isAvailable = await element.isAvailable();
-      if (currentCount === countRef.current && isAvailable) {
+      if (
+        currentCount === countRef.current &&
+        !isUnmountedRef.current &&
+        isAvailable
+      ) {
         element.mount(containerRef.current!);
         elementRef.current = element;
       }
@@ -197,6 +203,7 @@ const CheckoutElement = <T extends ComponentNameUnion>({
     initElement();
 
     return () => {
+      isUnmountedRef.current = true;
       elementRef.current?.unmount();
       elementRef.current = undefined;
     };

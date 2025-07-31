@@ -175,7 +175,16 @@ export interface ConsultKlarnaSSD {
 export interface ConsultCardStoredPaymentMethodSSD {
   id: string;
   type: string;
-  brand: string;
+  brand:
+    | "Visa"
+    | "Mastercard"
+    | "American Express"
+    | "Discover"
+    | "Diners Club International"
+    | "UATP"
+    | "Maestro"
+    | "JCB";
+  bin: string;
   lastFour: string;
 }
 
@@ -210,4 +219,43 @@ export type ConsultPaymentItemSSD =
 
 export interface ConsultPaymentSSD {
   paymentServiceProviders: ConsultPaymentItemSSD[];
+}
+
+export interface ConfirmPaymentParams {
+  idempotencyId: string;
+  channel: string;
+  paymentOrderId: string;
+  pspType: PSPType;
+  paymentType: string;
+  pspId: number | string;
+  returnUrl?: string;
+  paymentMethod?: {
+    lpsCardToken?: string;
+    lpsCardTokenVersion?: string;
+    isServer?: boolean;
+    cardTokenId?: string;
+  };
+  riskMetadata: {
+    checkoutTime: string;
+    forterTokenCookie: string;
+  };
+  [key: string]: any;
+}
+
+export interface ConfirmPaymentSSD {
+  errorCode: string;
+  errorMessage: string;
+  authMeta: {
+    [key: string]: any;
+  };
+  status: string;
+  paymentIntent: {
+    cents: number;
+    currency: string;
+    errorCode: string;
+    errorMessage: string;
+    paymentServiceProviderId: string;
+    paymentServiceProviderType: string;
+    paymentType: string;
+  };
 }
