@@ -60,9 +60,9 @@ export const EnvironmentProvider: FC<EnviromentProviderProps> = ({
   const requestRef = useRef<KyInstance>(
     ky.extend({
       prefixUrl: `${apiBaseByEnvMap[env]}`,
-      credentials: "include",
+      credentials: "same-origin",
       timeout: 30000,
-      retry: 1,
+      retry: 0,
       headers: {
         Authorization: `Bearer ${authTokenByEnvMap[env]}`,
       },
