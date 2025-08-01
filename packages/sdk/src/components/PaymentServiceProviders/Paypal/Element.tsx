@@ -15,32 +15,34 @@ const PaypalElement: FC<PaypalElementProps> = ({
   onComplete,
   onError,
 }) => {
-  const [{ isPending, isRejected }] = usePayPalScriptReducer();
+  const [{ isPending, isResolved }] = usePayPalScriptReducer();
 
-  return isRejected ? (
-    <div>Load Error</div>
-  ) : isPending ? (
-    <Loading />
-  ) : (
-    <PayPalButtons
-      style={{ label: "paypal", layout: "vertical", tagline: false }}
-      disabled={false}
-      createOrder={async () => {
-        const order = await onSubmit?.();
-        return order;
-      }}
-      onApprove={async () => {
-        const payment = await onComplete?.();
-        return payment;
-      }}
-      onError={(error) => {
-        // 错误处理要根据需求来处理
-        if (error.toString().includes("close")) {
-          return;
-        }
-        onError?.(PaymentError.businessError(error.toString()));
-      }}
-    />
+  if (isPending) {
+    return <Loading />;
+  }
+
+  return (
+    isResolved && (
+      <PayPalButtons
+        style={{ label: "paypal", layout: "vertical", tagline: false }}
+        disabled={false}
+        createOrder={async () => {
+          const order = await onSubmit?.();
+          return order;
+        }}
+        onApprove={async () => {
+          const payment = await onComplete?.();
+          return payment;
+        }}
+        onError={(error) => {
+          // 错误处理要根据需求来处理
+          if (error.toString().includes("close")) {
+            return;
+          }
+          onError?.(PaymentError.businessError(error.toString()));
+        }}
+      />
+    )
   );
 };
 

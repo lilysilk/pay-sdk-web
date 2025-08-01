@@ -15,7 +15,7 @@ interface SubmitData {
   pspType: PSPType;
   paymentType: string;
   pspId: string | number;
-  extranal?: Record<string, any>;
+  external?: Record<string, any>;
 }
 
 interface CompleteData {
@@ -40,12 +40,38 @@ const Klarna: FC<KlarnaProps> = ({
 }) => {
   const [klarna, setKlarna] = useState<any>(null);
 
+  useEffect(() => {
+    const initKlarna = async () => {
+      try {
+        const klarnaReadyPromise = new Promise<any>((resolve) => {
+          window.klarnaAsyncCallback = () => {
+            resolve(window.Klarna);
+          };
+        });
+
+        await loadExternalScript(
+          "klarna-sdk",
+          "https://x.klarnacdn.net/kp/lib/v1/api.js"
+        );
+        await klarnaReadyPromise;
+        window?.Klarna?.Payments?.init({
+          client_token: config.authMeta.token,
+        });
+        setKlarna(window?.Klarna);
+      } catch (error) {
+        handleError?.(PaymentError.initError((error as Error)?.message));
+        setKlarna(null);
+      }
+    };
+    initKlarna();
+  }, [config.authMeta.token]);
+
   const handleSubmit = useMemoizedFn(async (payment: ElementSubmitData) => {
     const result = await onSubmit?.({
       pspType: PSP.KLARNA,
       paymentType: payment.type,
       pspId: config.id,
-      extranal: {
+      external: {
         authenticationData: { authorizationToken: payment.authorization_token },
         browserInfo: {
           colorDepth: screen?.colorDepth,
@@ -69,34 +95,9 @@ const Klarna: FC<KlarnaProps> = ({
   });
 
   const handleError = useMemoizedFn((error: PaymentError) => {
+    error.meta.pspType = config.type;
     onError?.(error);
   });
-
-  useEffect(() => {
-    const initKlarna = async () => {
-      try {
-        const klarnaReadyPromise = new Promise<any>((resolve) => {
-          window.klarnaAsyncCallback = () => {
-            resolve(window.Klarna);
-          };
-        });
-
-        await loadExternalScript(
-          "klarna-sdk",
-          "https://x.klarnacdn.net/kp/lib/v1/api.js"
-        );
-        await klarnaReadyPromise;
-        window?.Klarna?.Payments?.init({
-          client_token: config.authMeta.token,
-        });
-        setKlarna(window?.Klarna);
-      } catch (error) {
-        onError?.(PaymentError.initError((error as Error)?.message));
-        setKlarna(null);
-      }
-    };
-    initKlarna();
-  }, [config.authMeta.token]);
 
   return (
     klarna &&

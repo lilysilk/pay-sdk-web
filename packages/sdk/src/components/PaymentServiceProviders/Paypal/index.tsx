@@ -5,13 +5,14 @@ import { PaymentError } from "@/utils";
 import { useMemoizedFn } from "@/hooks";
 import { EnvironmentContext } from "@/components/EnvironmentContext";
 import PaymentMethodCard from "@/components/PaymentMethodCard";
+import LoadWrapper from "./LoadWrapper";
 import PaypalElement from "./Element";
 
 interface SubmitData {
   pspType: PSPType;
   paymentType: string;
   pspId: string | number;
-  extranal?: Record<string, any>;
+  external?: Record<string, any>;
 }
 
 interface CompleteData {
@@ -44,7 +45,7 @@ const Paypal: FC<PaypalProps> = ({
       pspType: PSP.PAYPAL,
       paymentType: "wallet",
       pspId: config.merchantConfiguration.clientId,
-      extranal: {
+      external: {
         browserInfo: {
           colorDepth: screen?.colorDepth,
           javaEnabled: navigator?.javaEnabled,
@@ -67,6 +68,7 @@ const Paypal: FC<PaypalProps> = ({
   });
 
   const handleError = useMemoizedFn((error: PaymentError) => {
+    error.meta.pspType = config.type;
     onError?.(error);
   });
 
@@ -83,17 +85,19 @@ const Paypal: FC<PaypalProps> = ({
         commit: false,
       }}
     >
-      <PaymentMethodCard
-        id="paypal"
-        title="Paypal"
-        onSelect={onPaymentMethodSelected}
-      >
-        <PaypalElement
-          onSubmit={handleSubmit}
-          onComplete={handleComplete}
-          onError={handleError}
-        />
-      </PaymentMethodCard>
+      <LoadWrapper onError={handleError}>
+        <PaymentMethodCard
+          id="paypal"
+          title="Paypal"
+          onSelect={onPaymentMethodSelected}
+        >
+          <PaypalElement
+            onSubmit={handleSubmit}
+            onComplete={handleComplete}
+            onError={handleError}
+          />
+        </PaymentMethodCard>
+      </LoadWrapper>
     </PayPalScriptProvider>
   );
 };

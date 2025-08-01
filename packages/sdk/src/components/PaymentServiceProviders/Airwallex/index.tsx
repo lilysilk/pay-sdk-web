@@ -17,7 +17,7 @@ interface SubmitData {
   pspType: PSPType;
   paymentType: string;
   pspId: string | number;
-  extranal?: Record<string, any>;
+  external?: Record<string, any>;
 }
 
 interface CompleteData {
@@ -72,7 +72,7 @@ const Airwallex: FC<AirwallexProps> = ({
         // globalAirwallex = client;
         setAirwallex(client);
       } catch (error) {
-        onError?.(PaymentError.initError((error as Error)?.message));
+        handleError?.(PaymentError.initError((error as Error)?.message));
         setAirwallex(null);
       }
     };
@@ -84,14 +84,13 @@ const Airwallex: FC<AirwallexProps> = ({
       pspType: PSP.AIRWALLEX,
       paymentType: type,
       pspId: config.id,
-      extranal: {
+      external: {
         authenticationData: {
           intentId: config.authMeta.id,
         },
       },
     });
   });
-
   const handleComplete = useMemoizedFn(async (type: string) => {
     onComplete?.({
       pspType: PSP.AIRWALLEX,
@@ -100,6 +99,7 @@ const Airwallex: FC<AirwallexProps> = ({
   });
 
   const handleError = useMemoizedFn((error: PaymentError) => {
+    error.meta.pspType = config.type;
     onError?.(error);
   });
 

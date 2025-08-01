@@ -13,7 +13,7 @@ import {
   type RenderStatus,
   PSP,
 } from "@/types";
-import { getCurrentUrl, PaymentError } from "@/utils";
+import { getCurrentUrl, PaymentError, PaymentErrorType } from "@/utils";
 import { useMemoizedFn, useCurrentTime } from "@/hooks";
 import { EnvironmentContext } from "@/components/EnvironmentContext";
 import LazyLoadWrapper from "@/components/LazyLoadWrapper";
@@ -98,12 +98,13 @@ const CombinedPayments: FC<CombinedPaymentsProps> = ({
   );
 
   // 状态变化处理器
-  // 看下是否需要把card模式排除在外
-  const handleStatusChange = useCallback(
+  // 看下是否需要把card模式排除在外-不需要
+  // init失败了也要走这个逻辑
+  const handleStatusChange = useMemoizedFn(
     (name: string, status: RenderStatus) => {
+      console.log("handleStatusChange", name, status);
       setCombinedPaymentsRenderStates((prev) => ({ ...prev, [name]: status }));
-    },
-    []
+    }
   );
 
   const { mutateAsync: confirmPaymentMutateAsync } = useMutation({
@@ -116,9 +117,7 @@ const CombinedPayments: FC<CombinedPaymentsProps> = ({
         pspId: payment.pspId,
         paymentOrderId: orderId,
         returnUrl: getCurrentUrl(),
-        paymentMethod: {
-          ...payment.cardInfo,
-        },
+        paymentMethod: payment.cardInfo ? payment.cardInfo : undefined,
         riskMetadata: {
           // checkoutTime: getCurrentTime(),
           checkoutTime: "need to be fixed",
@@ -146,6 +145,14 @@ const CombinedPayments: FC<CombinedPaymentsProps> = ({
 
     console.log("handleSubmit", payment);
     return confirmPaymentMutateAsync(payment);
+  });
+
+  const handleError = useMemoizedFn((error: PaymentError) => {
+    // init的错误走setCombinedPaymentsRenderStates逻辑
+    if (error.type === PaymentErrorType.INIT) {
+      handleStatusChange(error.meta.pspType, "error");
+    }
+    onError?.(error);
   });
 
   // 如果所有组件都失败，显示总的回退UI
@@ -186,7 +193,7 @@ const CombinedPayments: FC<CombinedPaymentsProps> = ({
           onPaymentMethodSelected={onPaymentMethodSelected}
           onSubmit={handleSubmit}
           onComplete={onComplete}
-          onError={onError}
+          onError={handleError}
         />
       );
     }
@@ -200,7 +207,7 @@ const CombinedPayments: FC<CombinedPaymentsProps> = ({
           onPaymentMethodSelected={onPaymentMethodSelected}
           onSubmit={handleSubmit}
           onComplete={onComplete}
-          onError={onError}
+          onError={handleError}
         />
       );
     }
@@ -212,7 +219,7 @@ const CombinedPayments: FC<CombinedPaymentsProps> = ({
           onPaymentMethodSelected={onPaymentMethodSelected}
           onSubmit={handleSubmit}
           onComplete={onComplete}
-          onError={onError}
+          onError={handleError}
         />
       );
     }
@@ -223,7 +230,7 @@ const CombinedPayments: FC<CombinedPaymentsProps> = ({
           onPaymentMethodSelected={onPaymentMethodSelected}
           onSubmit={handleSubmit}
           onComplete={onComplete}
-          onError={onError}
+          onError={handleError}
         />
       );
     }
@@ -234,7 +241,7 @@ const CombinedPayments: FC<CombinedPaymentsProps> = ({
           onPaymentMethodSelected={onPaymentMethodSelected}
           onSubmit={handleSubmit}
           onComplete={onComplete}
-          onError={onError}
+          onError={handleError}
         />
       );
     }
@@ -245,7 +252,7 @@ const CombinedPayments: FC<CombinedPaymentsProps> = ({
           onPaymentMethodSelected={onPaymentMethodSelected}
           onSubmit={handleSubmit}
           onComplete={onComplete}
-          onError={onError}
+          onError={handleError}
         />
       );
     }
@@ -257,7 +264,7 @@ const CombinedPayments: FC<CombinedPaymentsProps> = ({
           onPaymentMethodSelected={onPaymentMethodSelected}
           onSubmit={handleSubmit}
           onComplete={onComplete}
-          onError={onError}
+          onError={handleError}
         />
       );
     }

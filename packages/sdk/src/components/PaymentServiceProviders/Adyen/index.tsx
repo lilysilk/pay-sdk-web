@@ -39,7 +39,7 @@ interface SubmitData {
   pspType: PSPType;
   paymentType: string;
   pspId: string | number;
-  extranal?: Record<string, any>;
+  external?: Record<string, any>;
 }
 
 interface CompleteData {
@@ -73,28 +73,6 @@ const Adyen: FC<AdyenProps> = ({
   const adyenEnv =
     env === "prod" ? config.merchantConfiguration.payEnvironment : "test";
 
-  const handleSubmit = useMemoizedFn(async (state: AdyenSubmitData) => {
-    return onSubmit?.({
-      pspType: PSP.ADYEN,
-      paymentType: state.data.paymentMethod.type,
-      pspId: config.id,
-      extranal: {
-        ...state.data,
-      },
-    });
-  });
-
-  const handleComplete = useMemoizedFn(async (type: string) => {
-    onComplete?.({
-      pspType: PSP.ADYEN,
-      paymentType: type,
-    });
-  });
-
-  const handleError = useMemoizedFn((error: PaymentError) => {
-    onError?.(error);
-  });
-
   const handleClick = useMemoizedFn((type: string) => {
     // applepay和googlepay的点击事件 用作埋点？
     console.log("+++++++++++++++++", type);
@@ -115,17 +93,27 @@ const Adyen: FC<AdyenProps> = ({
           },
           onSubmit: async (state, component, actions) => {
             console.log(state, component, actions);
-            const result = await handleSubmit(state);
-            // actions.resolve({
-            //   resultCode: "Authorised",
-            //   action: "Authorise",
-            //   order: {
-            //     amount: {
-            //       value: 10000,
-            //       currency: "EUR",
-            //     },
-            //   },
-            // });
+            const response = await handleSubmit(state);
+            try {
+              const result = JSON.parse(response.data.authMeta.adyenResponse);
+              if (!result.resultCode) {
+                actions.reject();
+                return;
+              }
+
+              const { resultCode, action, order, donationToken } = result;
+
+              // If the /payments request request from your server is successful, you must call this to resolve whichever of the listed objects are available.
+              // You must call this, even if the result of the payment is unsuccessful.
+              actions.resolve({
+                resultCode,
+                action,
+                order,
+                donationToken,
+              });
+            } catch (error) {
+              actions.reject();
+            }
           },
           onPaymentCompleted: (result, component) => {
             console.info("onPaymentCompleted", result, component);
@@ -154,6 +142,29 @@ const Adyen: FC<AdyenProps> = ({
     };
     initAdyenCheckout();
   }, [adyenEnv, amount, currency]);
+
+  const handleSubmit = useMemoizedFn(async (state: AdyenSubmitData) => {
+    return onSubmit?.({
+      pspType: PSP.ADYEN,
+      paymentType: state.data.paymentMethod.type,
+      pspId: config.id,
+      external: {
+        ...state.data,
+      },
+    });
+  });
+
+  const handleComplete = useMemoizedFn(async (type: string) => {
+    onComplete?.({
+      pspType: PSP.ADYEN,
+      paymentType: type,
+    });
+  });
+
+  const handleError = useMemoizedFn((error: PaymentError) => {
+    error.meta.pspType = config.type;
+    onError?.(error);
+  });
 
   const renderMethod = (
     item: ConsultAdyenPaymentMethodSSD,

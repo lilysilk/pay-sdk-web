@@ -75,6 +75,7 @@ const Card: FC<CardProps> = ({
   );
 
   const handleError = useMemoizedFn((error: PaymentError) => {
+    error.meta.pspType = config.type;
     onError?.(error);
   });
 

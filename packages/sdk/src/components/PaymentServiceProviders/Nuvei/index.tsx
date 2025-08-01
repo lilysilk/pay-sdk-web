@@ -2,6 +2,7 @@ import { useRef, type FC } from "react";
 import PaymentMethodCard from "@/components/PaymentMethodCard";
 import type { ConsultNuveiSSD } from "@/types";
 import { loadExternalScript, PaymentError } from "@/utils";
+import { useMemoizedFn } from "@/hooks";
 
 declare global {
   interface Window {
@@ -37,6 +38,11 @@ const Nuvei: FC<NuveiProps> = ({
       });
     })()
   );
+
+  const handleError = useMemoizedFn((error: PaymentError) => {
+    error.meta.pspType = config.type;
+    onError?.(error);
+  });
 
   return (
     <>

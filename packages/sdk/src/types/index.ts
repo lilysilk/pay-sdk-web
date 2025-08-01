@@ -246,16 +246,20 @@ export interface ConfirmPaymentSSD {
   errorCode: string;
   errorMessage: string;
   authMeta: {
+    adyenResponse?: string;
+    resultCode?: string;
     [key: string]: any;
   };
   status: string;
   paymentIntent: {
     cents: number;
     currency: string;
-    errorCode: string;
-    errorMessage: string;
+    idempotencyId: string;
+    paymentIntentId: string;
     paymentServiceProviderId: string;
     paymentServiceProviderType: string;
     paymentType: string;
+    pspEvent: string;
+    pspStatus: string;
   };
 }
