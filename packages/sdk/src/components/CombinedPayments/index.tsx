@@ -7,12 +7,7 @@ import {
   combinedPaymentsRenderStatesAtom,
   combinedPaymentsRenderAllFailedAtom,
 } from "@/atom";
-import {
-  type PSPType,
-  type ConsultPaymentItemSSD,
-  type RenderStatus,
-  PSP,
-} from "@/types";
+import { type PSPType, type ConsultPaymentItemSSD, PSP } from "@/types";
 import { getCurrentUrl, PaymentError, PaymentErrorType } from "@/utils";
 import { useMemoizedFn, useCurrentTime } from "@/hooks";
 import { EnvironmentContext } from "@/components/EnvironmentContext";
@@ -76,6 +71,7 @@ interface CombinedPaymentsProps {
   onError?: (error: PaymentError) => void;
 }
 
+// todo 考虑只有一个applePay的情况下 非mac不展示 但是也没有可以展示的组件了
 const CombinedPayments: FC<CombinedPaymentsProps> = ({
   orderId,
   amount,
@@ -100,12 +96,13 @@ const CombinedPayments: FC<CombinedPaymentsProps> = ({
   // 状态变化处理器
   // 看下是否需要把card模式排除在外-不需要
   // init失败了也要走这个逻辑
-  const handleStatusChange = useMemoizedFn(
-    (name: string, status: RenderStatus) => {
-      console.log("handleStatusChange", name, status);
-      setCombinedPaymentsRenderStates((prev) => ({ ...prev, [name]: status }));
-    }
-  );
+  const handleRenderError = useMemoizedFn((name: string) => {
+    console.log("handleRenderError", name);
+    setCombinedPaymentsRenderStates((prev) => ({
+      total: paymentServiceProviders.length,
+      loadError: { ...prev.loadError, [name]: true },
+    }));
+  });
 
   const { mutateAsync: confirmPaymentMutateAsync } = useMutation({
     mutationFn: async (payment: ConfirmPaymentParams) => {
@@ -150,7 +147,7 @@ const CombinedPayments: FC<CombinedPaymentsProps> = ({
   const handleError = useMemoizedFn((error: PaymentError) => {
     // init的错误走setCombinedPaymentsRenderStates逻辑
     if (error.type === PaymentErrorType.INIT) {
-      handleStatusChange(error.meta.pspType, "error");
+      handleRenderError(error.meta.pspType);
     }
     onError?.(error);
   });
@@ -276,7 +273,7 @@ const CombinedPayments: FC<CombinedPaymentsProps> = ({
       <LazyLoadWrapper
         key={item.type}
         name={item.type}
-        onStatusChange={handleStatusChange}
+        onRenderError={handleRenderError}
       >
         {renderPaymentServiceProvider(item)}
       </LazyLoadWrapper>

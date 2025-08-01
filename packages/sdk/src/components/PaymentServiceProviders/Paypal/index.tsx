@@ -44,7 +44,7 @@ const Paypal: FC<PaypalProps> = ({
     const result = await onSubmit?.({
       pspType: PSP.PAYPAL,
       paymentType: "wallet",
-      pspId: config.merchantConfiguration.clientId,
+      pspId: config.id,
       external: {
         browserInfo: {
           colorDepth: screen?.colorDepth,

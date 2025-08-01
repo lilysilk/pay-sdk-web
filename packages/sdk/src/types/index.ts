@@ -35,8 +35,6 @@ export type AdyenEnvironment =
   | "live-apse"
   | "live-in";
 
-export type RenderStatus = "success" | "error";
-
 export const PSP = {
   ADYEN: "ADYEN",
   AIRWALLEX: "AIRWALLEX",
